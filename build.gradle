@@ -20,6 +20,7 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
   compile 'io.github.cdimascio:dotenv-java:2.2.0'
+  implementation "com.discord4j:discord4j-core:3.1.1"
 }
 
 test {
