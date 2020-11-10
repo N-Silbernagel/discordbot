@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,13 +23,19 @@ class DiscordbotApplicationTests {
   @Autowired
   private TestRestTemplate testRestTemplate;
 
+  private UriComponentsBuilder uriBuilder;
+
+  @BeforeEach
+  public void init() {
+    this.uriBuilder = UriComponentsBuilder.fromHttpUrl("http://localhost").path("users").port(this.port);
+  }
+
   @Test
   public void shouldReturn200WhenSendingGetRequestToUserEndpoint() throws Exception {
-    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost").path("users").port(port)
-        .queryParam("id", 1);
+    this.uriBuilder.queryParam("id", 1);
 
     @SuppressWarnings("rawtypes")
-    ResponseEntity<Map> entity = this.testRestTemplate.getForEntity(builder.toUriString(), Map.class);
+    ResponseEntity<Map> entity = this.testRestTemplate.getForEntity(this.uriBuilder.toUriString(), Map.class);
 
     then(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
   }
@@ -36,22 +43,21 @@ class DiscordbotApplicationTests {
   @Test
   public void shouldReturn400WhenSendingGetRequestToUsersEndpointWithoutProvidingId() throws Exception {
     @SuppressWarnings("rawtypes")
-    ResponseEntity<Map> entity = this.testRestTemplate.getForEntity("http://localhost:" + this.port + "/users",
-        Map.class);
+    ResponseEntity<Map> entity = this.testRestTemplate.getForEntity(this.uriBuilder.toUriString(), Map.class);
 
     then(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
   }
 
   @Test
   public void shouldReturn405WhenSendingPostRequestToUsersEndpoint() {
-    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("http://localhost").path("users").port(port)
-        .queryParam("id", 1);
+    this.uriBuilder.queryParam("id", 1);
 
     Map<String, Object> randomPostData = new HashMap<String, Object>();
     randomPostData.put("name", "ich");
 
     @SuppressWarnings("rawtypes")
-    ResponseEntity<Map> entity = this.testRestTemplate.postForEntity(builder.toUriString(), randomPostData, Map.class);
+    ResponseEntity<Map> entity = this.testRestTemplate.postForEntity(this.uriBuilder.toUriString(), randomPostData,
+        Map.class);
 
     then(entity.getStatusCode()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
   }
