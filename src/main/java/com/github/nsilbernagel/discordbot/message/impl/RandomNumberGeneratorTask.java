@@ -9,26 +9,26 @@ import java.util.Random;
 
 public class RandomNumberGeneratorTask extends AbstractMessageTask implements IMessageTask {
 
-    public static final String KEYWORD = "dice";
+  public static final String KEYWORD = "dice";
 
-    public RandomNumberGeneratorTask(Message message, CommandPattern pattern) {
-        super(message, pattern);
+  public RandomNumberGeneratorTask(Message message, CommandPattern pattern) {
+    super(message, pattern);
+  }
+
+  @Override
+  public void execute() {
+
+  }
+
+  private int getRandomNumber(int lowerBorder, int upperBorder) throws FalseInputException {
+    Random random = new Random();
+    if (lowerBorder >= upperBorder) {
+      throw new FalseInputException("Upper Border cannot be greater than lower Border!");
     }
+    return random.nextInt(upperBorder - lowerBorder);
+  }
 
-    @Override
-    public void execute() {
-
-    }
-
-    private int getRandomNumber(int lowerBorder, int upperBorder) throws FalseInputException {
-        Random random = new Random();
-        if (lowerBorder >= upperBorder) {
-            throw new FalseInputException("Upper Border cannot be greater than lower Border!");
-        }
-        random.nextInt(upperBorder - lowerBorder);
-    }
-
-    public static String getKeyword() {
-        return KEYWORD;
-    }
+  public static String getKeyword() {
+    return KEYWORD;
+  }
 }
