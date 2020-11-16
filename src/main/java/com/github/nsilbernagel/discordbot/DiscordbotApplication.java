@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DiscordbotApplication {
 
   public static void main(String[] args) {
-    Dotenv env = Dotenv.load();
+    Dotenv env = Dotenv.configure().ignoreIfMissing().load();
 
     DiscordClient dClient = DiscordClient.create(env.get("DISCORD_TOKEN"));
     GatewayDiscordClient client = dClient.login().block();
