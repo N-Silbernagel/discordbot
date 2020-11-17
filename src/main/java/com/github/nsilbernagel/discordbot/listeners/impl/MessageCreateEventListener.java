@@ -13,7 +13,6 @@ public class MessageCreateEventListener implements EventListener<MessageCreateEv
 
     @Override
     public void execute(MessageCreateEvent event) {
-        MessageToTaskHandler.getMessageTask(event.getMessage())
-                .ifPresent(IMessageTask::execute);
+        MessageToTaskHandler.getMessageTask(event.getMessage()).ifPresent(IMessageTask::execute);
     }
 }
