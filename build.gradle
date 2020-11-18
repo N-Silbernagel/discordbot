@@ -14,12 +14,11 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'mysql:mysql-connector-java'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	implementation 'io.github.cdimascio:dotenv-java:2.2.0'
-	implementation "com.discord4j:discord4j-core:3.1.1"
+	implementation 'com.discord4j:discord4j-core:3.1.1'
 }
 
 test {
