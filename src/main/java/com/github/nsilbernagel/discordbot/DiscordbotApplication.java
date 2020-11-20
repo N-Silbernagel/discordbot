@@ -5,24 +5,32 @@ import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListe
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import io.github.cdimascio.dotenv.Dotenv;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class DiscordbotApplication {
+public class DiscordbotApplication implements CommandLineRunner {
+  @Value("${app.discord.token:}")
+  private String botToken;
 
-  public static void main(String[] args) {
-    Dotenv env = Dotenv.configure().ignoreIfMissing().load();
+  @Override
+  public void run(String... args) throws Exception {
+    if (botToken.length() == 0) {
+      throw new MissingTokenException();
+    }
 
-    DiscordClient dClient = DiscordClient.create(env.get("DISCORD_TOKEN"));
+    DiscordClient dClient = DiscordClient.create(botToken);
     GatewayDiscordClient client = dClient.login().block();
     EventListener<MessageCreateEvent> listener = new MessageCreateEventListener();
     client.on(listener.getEventType()).subscribe(listener::execute);
 
     client.onDisconnect().block();
-
-    SpringApplication.run(DiscordbotApplication.class, args);
   }
 
+  public static void main(String[] args) {
+    SpringApplication.run(DiscordbotApplication.class, args);
+  }
 }
