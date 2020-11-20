@@ -1,1 +1,1 @@
-worker: java -jar build/libs/discordbot.jar
+worker: java -jar build/libs/discordbot.jar --spring.profiles.active="prod"
