@@ -4,10 +4,10 @@ import com.github.nsilbernagel.discordbot.message.CommandPattern;
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import discord4j.core.object.entity.Message;
 
-public class Nils extends AbstractMessageTask implements IMessageTask {
+public class NilsTask extends AbstractMessageTask implements IMessageTask {
     private final static String KEYWORD = "meinung";
 
-    public Nils(Message message, CommandPattern pattern) {
+    public NilsTask(Message message, CommandPattern pattern) {
         super(message, pattern);
     }
 

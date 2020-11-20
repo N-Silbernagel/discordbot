@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.message;
 
-import com.github.nsilbernagel.discordbot.message.impl.Nils;
+import com.github.nsilbernagel.discordbot.message.impl.NilsTask;
 import com.github.nsilbernagel.discordbot.message.impl.PongTask;
 import com.github.nsilbernagel.discordbot.message.impl.RandomNumberGeneratorTask;
 import com.github.nsilbernagel.discordbot.message.impl.VoteKickTask;
@@ -16,10 +16,10 @@ public enum EMessageToTaskMapper {
         }
     },
 
-    NILS(Nils.getKeyword()) {
+    NILS(NilsTask.getKeyword()) {
         @Override
         public IMessageTask getTask(Message message, CommandPattern commandPattern) {
-            return new Nils(message, commandPattern);
+            return new NilsTask(message, commandPattern);
         }
     },
 
