@@ -3,28 +3,37 @@ package com.github.nsilbernagel.discordbot.message;
 import com.github.nsilbernagel.discordbot.message.impl.Nils;
 import com.github.nsilbernagel.discordbot.message.impl.PongTask;
 import com.github.nsilbernagel.discordbot.message.impl.RandomNumberGeneratorTask;
+import com.github.nsilbernagel.discordbot.message.impl.VoteKickTask;
+
 import discord4j.core.object.entity.Message;
 
 public enum EMessageToTaskMapper {
 
-    PONG (PongTask.getKeyword()) {
+    PONG(PongTask.getKeyword()) {
         @Override
         public IMessageTask getTask(Message message, CommandPattern commandPattern) {
             return new PongTask(message, commandPattern);
         }
     },
 
-    NILS (Nils.getKeyword()) {
+    NILS(Nils.getKeyword()) {
         @Override
         public IMessageTask getTask(Message message, CommandPattern commandPattern) {
             return new Nils(message, commandPattern);
         }
     },
 
-    DICE (RandomNumberGeneratorTask.getKeyword()) {
+    DICE(RandomNumberGeneratorTask.getKeyword()) {
         @Override
         public IMessageTask getTask(Message message, CommandPattern commandPattern) {
             return new RandomNumberGeneratorTask(message, commandPattern);
+        }
+    },
+
+    VOTEKICK(VoteKickTask.getKeyword()) {
+        @Override
+        public IMessageTask getTask(Message message, CommandPattern commandPattern) {
+            return new VoteKickTask(message, commandPattern);
         }
     };
 
