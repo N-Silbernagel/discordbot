@@ -11,4 +11,13 @@ abstract class AbstractMessageTask {
         this.message = message;
         this.commandPattern = pattern;
     }
+
+    /**
+     * Answer the message with a given text on the same channel
+     *
+     * @param answerText
+     */
+    public void answerMessage(String answerText) {
+        message.getChannel().flatMap(messageChannel -> messageChannel.createMessage(answerText)).subscribe();
+    }
 }
