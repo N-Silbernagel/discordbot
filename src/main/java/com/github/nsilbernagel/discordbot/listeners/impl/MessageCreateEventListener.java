@@ -18,8 +18,10 @@ public class MessageCreateEventListener implements EventListener<MessageCreateEv
     public void execute(MessageCreateEvent event) {
         Optional<IMessageTask> msgTask = MessageToTaskHandler.getMessageTask(event.getMessage());
         if (msgTask.isPresent()) {
+            // execute task if it exists
             msgTask.get().execute();
         } else {
+            // react with question mark if it doesnt
             event.getMessage().addReaction(ReactionEmoji.unicode("\u2753")).block();
         }
     }

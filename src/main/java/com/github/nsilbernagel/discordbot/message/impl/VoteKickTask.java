@@ -9,9 +9,11 @@ import com.github.nsilbernagel.discordbot.model.Vote;
 import com.github.nsilbernagel.discordbot.registries.KickVotingRegistry;
 
 import discord4j.common.util.Snowflake;
+import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.VoiceChannel;
 
 public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
     private final static String KEYWORD = "votekick";
@@ -45,6 +47,18 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
             return;
         }
 
+        Optional<VoiceState> membersVoiceState = memberToKick.get().getVoiceState().blockOptional();
+        if (membersVoiceState.isEmpty()) {
+            this.answerMessage(memberToKick.get().getDisplayName() + " ist nicht in einem voice Channel.");
+            return;
+        }
+
+        Optional<VoiceChannel> memberVoiceChannel = membersVoiceState.get().getChannel().blockOptional();
+        if (memberVoiceChannel.isEmpty()) {
+            this.answerMessage(memberToKick.get().getDisplayName() + " ist nicht in einem voice Channel.");
+            return;
+        }
+
         Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick.get());
         if (!runningKickVoting.isPresent()) {
             runningKickVoting = this.registry.createKickVoting(memberToKick.get());
@@ -54,10 +68,10 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
         boolean enoughVotes = runningKickVoting.get().addVote(voteByMsgAuthor);
         if (!enoughVotes) {
             this.answerMessage("Noch " + runningKickVoting.get().remainingVotes() + " Stimmen bis "
-                    + runningKickVoting.get().getMemberToKick().getUsername() + " rausgeworfen wird.");
+                    + memberToKick.get().getDisplayName() + " rausgeworfen wird.");
         } else {
             this.registry.getVotings().remove(runningKickVoting.get());
-            this.answerMessage(runningKickVoting.get().getMemberToKick().getUsername() + " gekickt.");
+            this.answerMessage(memberToKick.get().getDisplayName() + " gekickt.");
         }
     }
 
