@@ -2,17 +2,17 @@ package com.github.nsilbernagel.discordbot.model;
 
 import java.time.Duration;
 
-import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.Member;
 import lombok.Getter;
 
 public class KickVoting extends AbstractVoting {
   @Getter
-  private User userToKick;
+  private Member memberToKick;
 
-  public KickVoting(User userToKick, long votesNeeded) {
+  public KickVoting(Member memberToKick, long votesNeeded) {
     super(votesNeeded, 1, Duration.ofMinutes(10));
 
-    this.userToKick = userToKick;
+    this.memberToKick = memberToKick;
   }
 
   @Override

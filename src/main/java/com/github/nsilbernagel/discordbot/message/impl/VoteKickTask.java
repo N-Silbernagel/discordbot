@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import java.time.Instant;
 import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.message.CommandPattern;
@@ -9,6 +8,8 @@ import com.github.nsilbernagel.discordbot.model.KickVoting;
 import com.github.nsilbernagel.discordbot.model.Vote;
 import com.github.nsilbernagel.discordbot.registries.KickVotingRegistry;
 
+import discord4j.common.util.Snowflake;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 
@@ -23,33 +24,40 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
 
     @Override
     public void execute() {
-        User firstMention = this.message.getUserMentions().blockFirst();
-        addVoteToRunningVoting(firstMention, this.message.getAuthor(), this.message.getTimestamp());
-    }
-
-    private void addVoteToRunningVoting(User userToKick, Optional<User> msgAuthor, Instant time) {
-        if (!msgAuthor.isPresent()) {
+        User userToKick = this.message.getUserMentions().blockFirst();
+        if (this.message.getAuthor().isEmpty()) {
             return;
         }
+        User msgAuthor = this.message.getAuthor().get();
 
-        if (userToKick == null) {
+        if (userToKick == null || userToKick.isBot()) {
             this.answerMessage("Bitte gebe einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
             return;
         }
 
-        Optional<KickVoting> runningKickVoting = this.registry.getByUser(userToKick);
-        if (!runningKickVoting.isPresent()) {
-            runningKickVoting = this.registry.createKickVoting(userToKick);
+        Optional<Snowflake> guildId = this.message.getGuildId();
+        if (guildId.isEmpty()) {
+            return;
         }
 
-        Vote voteByMsgAuthor = new Vote(msgAuthor.get(), time);
+        Optional<Member> memberToKick = userToKick.asMember(guildId.get()).blockOptional();
+        if (memberToKick.isEmpty()) {
+            return;
+        }
+
+        Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick.get());
+        if (!runningKickVoting.isPresent()) {
+            runningKickVoting = this.registry.createKickVoting(memberToKick.get());
+        }
+
+        Vote voteByMsgAuthor = new Vote(msgAuthor, this.message.getTimestamp());
         boolean enoughVotes = runningKickVoting.get().addVote(voteByMsgAuthor);
         if (!enoughVotes) {
             this.answerMessage("Noch " + runningKickVoting.get().remainingVotes() + " Stimmen bis "
-                    + runningKickVoting.get().getUserToKick().getUsername() + " rausgeworfen wird.");
+                    + runningKickVoting.get().getMemberToKick().getUsername() + " rausgeworfen wird.");
         } else {
             this.registry.getVotings().remove(runningKickVoting.get());
-            this.answerMessage(runningKickVoting.get().getUserToKick().getUsername() + " gekickt.");
+            this.answerMessage(runningKickVoting.get().getMemberToKick().getUsername() + " gekickt.");
         }
     }
 

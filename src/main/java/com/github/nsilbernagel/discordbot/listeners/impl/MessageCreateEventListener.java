@@ -7,7 +7,7 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 
 public class MessageCreateEventListener implements EventListener<MessageCreateEvent> {
     @Override
-    public Class getEventType() {
+    public Class<MessageCreateEvent> getEventType() {
         return MessageCreateEvent.class;
     }
 
