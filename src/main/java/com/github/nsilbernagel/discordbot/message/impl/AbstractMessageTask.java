@@ -1,6 +1,7 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.message.CommandPattern;
+
 import discord4j.core.object.entity.Message;
 
 abstract class AbstractMessageTask {

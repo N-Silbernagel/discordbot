@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.message.CommandPattern;
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
+import com.github.nsilbernagel.discordbot.message.TaskLogicException;
 import com.github.nsilbernagel.discordbot.model.KickVoting;
 import com.github.nsilbernagel.discordbot.model.Vote;
 import com.github.nsilbernagel.discordbot.registries.KickVotingRegistry;
@@ -13,7 +14,6 @@ import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
-import discord4j.core.object.entity.channel.VoiceChannel;
 
 public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
     private final static String KEYWORD = "votekick";
@@ -26,52 +26,39 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
 
     @Override
     public void execute() {
+        User msgAuthor = this.message.getAuthor().orElseThrow(() -> new TaskLogicException());
+
         User userToKick = this.message.getUserMentions().blockFirst();
-        if (this.message.getAuthor().isEmpty()) {
-            return;
-        }
-        User msgAuthor = this.message.getAuthor().get();
-
         if (userToKick == null || userToKick.isBot()) {
-            this.answerMessage("Bitte gebe einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
-            return;
+            throw new TaskLogicException("Bitte gebe einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
         }
 
-        Optional<Snowflake> guildId = this.message.getGuildId();
-        if (guildId.isEmpty()) {
-            return;
-        }
+        Snowflake guildId = this.message.getGuildId().orElseThrow(() -> new TaskLogicException());
 
-        Optional<Member> memberToKick = userToKick.asMember(guildId.get()).blockOptional();
-        if (memberToKick.isEmpty()) {
-            return;
-        }
+        Member memberToKick = userToKick.asMember(guildId).blockOptional()
+                .orElseThrow(() -> new TaskLogicException(userToKick.getUsername() + "ist kein Member dieses Server."));
 
-        Optional<VoiceState> membersVoiceState = memberToKick.get().getVoiceState().blockOptional();
-        if (membersVoiceState.isEmpty()) {
-            this.answerMessage(memberToKick.get().getDisplayName() + " ist nicht in einem voice Channel.");
-            return;
-        }
+        // member cannot be kicked if it is not in voice channel
+        VoiceState membersVoiceState = memberToKick.getVoiceState().blockOptional().orElseThrow(
+                () -> new TaskLogicException(memberToKick.getDisplayName() + " ist nicht in einem voice Channel."));
+        membersVoiceState.getChannel().blockOptional().orElseThrow(
+                () -> new TaskLogicException(memberToKick.getDisplayName() + " ist nicht in einem voice Channel."));
 
-        Optional<VoiceChannel> memberVoiceChannel = membersVoiceState.get().getChannel().blockOptional();
-        if (memberVoiceChannel.isEmpty()) {
-            this.answerMessage(memberToKick.get().getDisplayName() + " ist nicht in einem voice Channel.");
-            return;
-        }
-
-        Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick.get());
+        Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick);
         if (!runningKickVoting.isPresent()) {
-            runningKickVoting = this.registry.createKickVoting(memberToKick.get());
+            runningKickVoting = this.registry.createKickVoting(memberToKick);
         }
 
         Vote voteByMsgAuthor = new Vote(msgAuthor, this.message.getTimestamp());
+
         boolean enoughVotes = runningKickVoting.get().addVote(voteByMsgAuthor);
+
         if (!enoughVotes) {
             this.answerMessage("Noch " + runningKickVoting.get().remainingVotes() + " Stimmen bis "
-                    + memberToKick.get().getDisplayName() + " rausgeworfen wird.");
+                    + memberToKick.getDisplayName() + " rausgeworfen wird.");
         } else {
             this.registry.getVotings().remove(runningKickVoting.get());
-            this.answerMessage(memberToKick.get().getDisplayName() + " gekickt.");
+            this.answerMessage(memberToKick.getDisplayName() + " gekickt.");
         }
     }
 
