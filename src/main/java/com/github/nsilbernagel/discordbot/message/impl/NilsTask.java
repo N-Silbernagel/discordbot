@@ -5,18 +5,18 @@ import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import discord4j.core.object.entity.Message;
 
 public class NilsTask extends AbstractMessageTask implements IMessageTask {
-    private final static String KEYWORD = "meinung";
+  private final static String KEYWORD = "meinung";
 
-    public NilsTask(Message message, CommandPattern pattern) {
-        super(message, pattern);
-    }
+  public NilsTask(Message message, CommandPattern pattern) {
+    super(message, pattern);
+  }
 
-    @Override
-    public void execute() {
-        message.getChannel().flatMap(messageChannel -> messageChannel.createMessage("Richtiger Lappen.")).subscribe();
-    }
+  @Override
+  public void execute() {
+    message.getChannel().flatMap(messageChannel -> messageChannel.createMessage("Richtiger Lappen.")).subscribe();
+  }
 
-    public static String getKeyword() {
-        return KEYWORD;
-    }
+  public static String getKeyword() {
+    return KEYWORD;
+  }
 }

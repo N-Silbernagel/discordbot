@@ -10,53 +10,52 @@ import com.github.nsilbernagel.discordbot.model.Vote;
 import com.github.nsilbernagel.discordbot.registries.KickVotingRegistry;
 
 import discord4j.common.util.Snowflake;
-import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 
 public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
-    private final static String KEYWORD = "votekick";
+  private final static String KEYWORD = "votekick";
 
-    private KickVotingRegistry registry = KickVotingRegistry.getInstance();
+  private KickVotingRegistry registry = KickVotingRegistry.getInstance();
 
-    public VoteKickTask(Message message, CommandPattern pattern) {
-        super(message, pattern);
+  public VoteKickTask(Message message, CommandPattern pattern) {
+    super(message, pattern);
+  }
+
+  @Override
+  public void execute() {
+    Snowflake guildId = this.message.getGuildId().orElseThrow(() -> new TaskLogicException());
+
+    User msgAuthor = this.message.getAuthor().orElseThrow(() -> new TaskLogicException());
+    Member msgAuthorAsMember = userAsMemberOfGuild(msgAuthor, guildId);
+
+    User userToKick = this.message.getUserMentions().blockFirst();
+    if (userToKick == null || userToKick.isBot()) {
+      throw new TaskLogicException("Bitte gebe einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
     }
 
-    @Override
-    public void execute() {
-        Snowflake guildId = this.message.getGuildId().orElseThrow(() -> new TaskLogicException());
+    Member memberToKick = userAsMemberOfGuild(userToKick, guildId);
 
-        User msgAuthor = this.message.getAuthor().orElseThrow(() -> new TaskLogicException());
-        Member msgAuthorAsMember = userAsMemberOfGuild(msgAuthor, guildId);
-
-        User userToKick = this.message.getUserMentions().blockFirst();
-        if (userToKick == null || userToKick.isBot()) {
-            throw new TaskLogicException("Bitte gebe einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
-        }
-
-        Member memberToKick = userAsMemberOfGuild(userToKick, guildId);
-
-        Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick);
-        if (!runningKickVoting.isPresent()) {
-            runningKickVoting = this.registry.createKickVoting(memberToKick);
-        }
-
-        Vote voteByMsgAuthor = new Vote(msgAuthorAsMember, this.message.getTimestamp());
-
-        boolean enoughVotes = runningKickVoting.get().addVote(voteByMsgAuthor);
-
-        if (!enoughVotes) {
-            this.answerMessage("Noch " + runningKickVoting.get().remainingVotes() + " Stimmen bis "
-                    + memberToKick.getDisplayName() + " rausgeworfen wird.");
-        } else {
-            this.registry.getVotings().remove(runningKickVoting.get());
-            this.answerMessage(memberToKick.getDisplayName() + " gekickt.");
-        }
+    Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick);
+    if (!runningKickVoting.isPresent()) {
+      runningKickVoting = this.registry.createKickVoting(memberToKick);
     }
 
-    public static String getKeyword() {
-        return KEYWORD;
+    Vote voteByMsgAuthor = new Vote(msgAuthorAsMember, this.message.getTimestamp());
+
+    boolean enoughVotes = runningKickVoting.get().addVote(voteByMsgAuthor);
+
+    if (!enoughVotes) {
+      this.answerMessage("Noch " + runningKickVoting.get().remainingVotes() + " Stimmen bis "
+          + memberToKick.getDisplayName() + " rausgeworfen wird.");
+    } else {
+      this.registry.getVotings().remove(runningKickVoting.get());
+      this.answerMessage(memberToKick.getDisplayName() + " gekickt.");
     }
+  }
+
+  public static String getKeyword() {
+    return KEYWORD;
+  }
 }
