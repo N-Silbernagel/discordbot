@@ -26,30 +26,24 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
 
     @Override
     public void execute() {
+        Snowflake guildId = this.message.getGuildId().orElseThrow(() -> new TaskLogicException());
+
         User msgAuthor = this.message.getAuthor().orElseThrow(() -> new TaskLogicException());
+        Member msgAuthorAsMember = userAsMemberOfGuild(msgAuthor, guildId);
 
         User userToKick = this.message.getUserMentions().blockFirst();
         if (userToKick == null || userToKick.isBot()) {
             throw new TaskLogicException("Bitte gebe einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
         }
 
-        Snowflake guildId = this.message.getGuildId().orElseThrow(() -> new TaskLogicException());
-
-        Member memberToKick = userToKick.asMember(guildId).blockOptional()
-                .orElseThrow(() -> new TaskLogicException(userToKick.getUsername() + "ist kein Member dieses Server."));
-
-        // member cannot be kicked if it is not in voice channel
-        VoiceState membersVoiceState = memberToKick.getVoiceState().blockOptional().orElseThrow(
-                () -> new TaskLogicException(memberToKick.getDisplayName() + " ist nicht in einem voice Channel."));
-        membersVoiceState.getChannel().blockOptional().orElseThrow(
-                () -> new TaskLogicException(memberToKick.getDisplayName() + " ist nicht in einem voice Channel."));
+        Member memberToKick = userAsMemberOfGuild(userToKick, guildId);
 
         Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick);
         if (!runningKickVoting.isPresent()) {
             runningKickVoting = this.registry.createKickVoting(memberToKick);
         }
 
-        Vote voteByMsgAuthor = new Vote(msgAuthor, this.message.getTimestamp());
+        Vote voteByMsgAuthor = new Vote(msgAuthorAsMember, this.message.getTimestamp());
 
         boolean enoughVotes = runningKickVoting.get().addVote(voteByMsgAuthor);
 

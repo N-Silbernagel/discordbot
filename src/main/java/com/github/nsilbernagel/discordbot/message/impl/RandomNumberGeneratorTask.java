@@ -20,7 +20,7 @@ public class RandomNumberGeneratorTask extends AbstractMessageTask implements IM
 
   }
 
-  private int getRandomNumber(int lowerBorder, int upperBorder) throws FalseInputException {
+  private int getRandomNumber(int lowerBorder, int upperBorder) {
     Random random = new Random();
     if (lowerBorder >= upperBorder) {
       throw new FalseInputException("Upper Border cannot be greater than lower Border!");

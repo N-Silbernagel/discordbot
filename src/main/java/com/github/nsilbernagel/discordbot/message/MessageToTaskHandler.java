@@ -37,6 +37,8 @@ public class MessageToTaskHandler {
             CommandPattern pattern = new CommandPattern(keyword, additionalInfo);
             return Optional.of(task.get().getTask(message, pattern));
         } else {
+            // react to members message with question mark emoji to show that the command
+            // was not found
             message.addReaction(ReactionEmoji.unicode("\u2753")).block();
             return Optional.empty();
         }
