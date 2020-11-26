@@ -61,5 +61,5 @@ abstract class AbstractVoting {
    *
    * @return success
    */
-  abstract protected boolean onEnoughVotes();
+  abstract protected void onEnoughVotes();
 }
