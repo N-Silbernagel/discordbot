@@ -5,18 +5,18 @@ import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import discord4j.core.object.entity.Message;
 
 public class PongTask extends AbstractMessageTask implements IMessageTask {
-    private final static String KEYWORD = "ping";
+  private final static String KEYWORD = "ping";
 
-    public PongTask(Message message, CommandPattern pattern) {
-        super(message, pattern);
-    }
+  public PongTask(Message message, CommandPattern pattern) {
+    super(message, pattern);
+  }
 
-    @Override
-    public void execute() {
-        message.getChannel().flatMap(messageChannel -> messageChannel.createMessage("pong")).subscribe();
-    }
+  @Override
+  public void execute() {
+    message.getChannel().flatMap(messageChannel -> messageChannel.createMessage("pong")).subscribe();
+  }
 
-    public static String getKeyword() {
-        return KEYWORD;
-    }
+  public static String getKeyword() {
+    return KEYWORD;
+  }
 }

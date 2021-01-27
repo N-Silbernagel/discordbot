@@ -16,8 +16,8 @@ public class KickVoting extends AbstractVoting {
   }
 
   @Override
-  protected boolean onEnoughVotes() {
-    return true;
+  protected void onEnoughVotes() {
+    this.memberToKick.kick("Demokratie.");
   }
 
 }
