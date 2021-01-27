@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import discord4j.core.object.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -54,6 +55,11 @@ abstract class AbstractVoting {
 
   public long remainingVotes() {
     return this.votesNeeded - this.votes.size();
+  }
+
+  public boolean userHasVoted(User user) {
+    return this.votes.stream().filter((vote) -> vote.getVoter().getId().compareTo(user.getId()) == 0).findFirst()
+        .isPresent();
   }
 
   /**
