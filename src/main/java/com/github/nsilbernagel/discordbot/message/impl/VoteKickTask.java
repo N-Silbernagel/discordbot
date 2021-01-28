@@ -2,7 +2,6 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.message.CommandPattern;
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskLogicException;
 import com.github.nsilbernagel.discordbot.model.KickVoting;
@@ -19,8 +18,8 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
 
   private KickVotingRegistry registry = KickVotingRegistry.getInstance();
 
-  public VoteKickTask(Message message, CommandPattern pattern) {
-    super(message, pattern);
+  public VoteKickTask(Message message) {
+    super(message);
   }
 
   @Override

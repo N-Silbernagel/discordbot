@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.CommandPattern;
 import com.github.nsilbernagel.discordbot.message.TaskLogicException;
 
 import discord4j.common.util.Snowflake;
@@ -10,11 +9,9 @@ import discord4j.core.object.entity.User;
 
 abstract class AbstractMessageTask {
   final Message message;
-  final CommandPattern commandPattern;
 
-  public AbstractMessageTask(Message message, CommandPattern pattern) {
+  public AbstractMessageTask(Message message) {
     this.message = message;
-    this.commandPattern = pattern;
   }
 
   /**

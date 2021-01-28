@@ -21,20 +21,17 @@ public class MessageToTaskHandler {
     }
 
     String keyword;
-    String additionalInfo = "";
     messageContent = messageContent.replaceFirst("!", "");
     int firstWhitespace = messageContent.indexOf(" ");
     if (firstWhitespace == (-1)) {
       keyword = messageContent;
     } else {
       keyword = messageContent.substring(0, (firstWhitespace));
-      additionalInfo = messageContent.substring(firstWhitespace + 1);
     }
     Optional<EMessageToTaskMapper> task = Arrays.stream(EMessageToTaskMapper.values())
         .filter(messageTask -> messageTask.getMessageKey().equals(keyword)).findFirst();
     if (task.isPresent()) {
-      CommandPattern pattern = new CommandPattern(keyword, additionalInfo);
-      return Optional.of(task.get().getTask(message, pattern));
+      return Optional.of(task.get().getTask(message));
     } else {
       // react to members message with question mark emoji to show that the command
       // was not found

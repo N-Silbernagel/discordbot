@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.CommandPattern;
 import com.github.nsilbernagel.discordbot.message.FalseInputException;
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import discord4j.core.object.entity.Message;
@@ -11,8 +10,8 @@ public class RandomNumberGeneratorTask extends AbstractMessageTask implements IM
 
   public static final String KEYWORD = "dice";
 
-  public RandomNumberGeneratorTask(Message message, CommandPattern pattern) {
-    super(message, pattern);
+  public RandomNumberGeneratorTask(Message message) {
+    super(message);
   }
 
   @Override
