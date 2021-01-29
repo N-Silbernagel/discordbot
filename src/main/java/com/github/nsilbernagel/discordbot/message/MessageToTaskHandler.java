@@ -4,14 +4,17 @@ import discord4j.core.object.entity.Message;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import discord4j.core.object.reaction.ReactionEmoji;
 
 @Component
 public class MessageToTaskHandler {
+
+  @Value("${app.discord.command-token:!}")
+  private String commandToken;
 
   @Autowired
   private List<IMessageTask> tasks;
@@ -39,12 +42,12 @@ public class MessageToTaskHandler {
     }
 
     String messageContent = message.getContent().toLowerCase();
-    if (!messageContent.startsWith("!")) {
+    if (!messageContent.startsWith(commandToken)) {
       return new ArrayList<IMessageTask>();
     }
 
     String keyword;
-    messageContent = messageContent.replaceFirst("!", "");
+    messageContent = messageContent.replaceFirst(commandToken, "");
     int firstWhitespace = messageContent.indexOf(" ");
     if (firstWhitespace == (-1)) {
       keyword = messageContent;
