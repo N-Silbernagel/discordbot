@@ -8,11 +8,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 
 abstract class AbstractMessageTask {
-  final Message message;
-
-  public AbstractMessageTask(Message message) {
-    this.message = message;
-  }
+  public Message message;
 
   /**
    * Answer the message with a given text on the same channel
