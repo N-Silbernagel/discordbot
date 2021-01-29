@@ -2,29 +2,30 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.message.CommandPattern;
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskLogicException;
 import com.github.nsilbernagel.discordbot.model.KickVoting;
 import com.github.nsilbernagel.discordbot.model.Vote;
 import com.github.nsilbernagel.discordbot.registries.KickVotingRegistry;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 
+@Component
 public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
   private final static String KEYWORD = "votekick";
 
-  private KickVotingRegistry registry = KickVotingRegistry.getInstance();
-
-  public VoteKickTask(Message message, CommandPattern pattern) {
-    super(message, pattern);
-  }
+  @Autowired
+  private KickVotingRegistry registry;
 
   @Override
-  public void execute() {
+  public void execute(Message message) {
+    this.message = message;
     Snowflake guildId = this.message.getGuildId().orElseThrow(() -> new TaskLogicException());
 
     User msgAuthor = this.message.getAuthor().orElseThrow(() -> new TaskLogicException());
@@ -60,7 +61,7 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
     }
   }
 
-  public static String getKeyword() {
-    return KEYWORD;
+  public boolean canHandle(String keyword) {
+    return KEYWORD.equals(keyword);
   }
 }

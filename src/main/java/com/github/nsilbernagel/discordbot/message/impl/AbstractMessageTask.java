@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.CommandPattern;
 import com.github.nsilbernagel.discordbot.message.TaskLogicException;
 
 import discord4j.common.util.Snowflake;
@@ -9,13 +8,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
 
 abstract class AbstractMessageTask {
-  final Message message;
-  final CommandPattern commandPattern;
-
-  public AbstractMessageTask(Message message, CommandPattern pattern) {
-    this.message = message;
-    this.commandPattern = pattern;
-  }
+  public Message message;
 
   /**
    * Answer the message with a given text on the same channel

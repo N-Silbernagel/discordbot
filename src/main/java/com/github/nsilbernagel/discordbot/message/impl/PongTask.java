@@ -1,22 +1,22 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.CommandPattern;
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
+
+import org.springframework.stereotype.Component;
+
 import discord4j.core.object.entity.Message;
 
+@Component
 public class PongTask extends AbstractMessageTask implements IMessageTask {
   private final static String KEYWORD = "ping";
 
-  public PongTask(Message message, CommandPattern pattern) {
-    super(message, pattern);
-  }
-
   @Override
-  public void execute() {
+  public void execute(Message message) {
+    this.message = message;
     message.getChannel().flatMap(messageChannel -> messageChannel.createMessage("pong")).subscribe();
   }
 
-  public static String getKeyword() {
-    return KEYWORD;
+  public boolean canHandle(String keyword) {
+    return KEYWORD.equals(keyword);
   }
 }
