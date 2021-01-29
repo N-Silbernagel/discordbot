@@ -18,7 +18,7 @@ import discord4j.core.object.entity.User;
 
 @Component
 public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
-  private final static String KEYWORD = "votekick";
+  public final static String KEYWORD = "votekick";
 
   @Autowired
   private KickVotingRegistry registry;

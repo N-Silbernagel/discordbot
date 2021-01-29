@@ -1,14 +1,14 @@
 package com.github.nsilbernagel.discordbot.message;
 
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.reaction.ReactionEmoji;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import discord4j.core.object.reaction.ReactionEmoji;
 
 @Component
 public class MessageToTaskHandler {
@@ -33,14 +33,14 @@ public class MessageToTaskHandler {
   /*
    * Get the right task implementation depending on the keyword that was used.
    */
-  public Optional<IMessageTask> getMessageTask(Message message) {
+  public List<IMessageTask> getMessageTasks(Message message) {
     if (!message.getAuthor().isPresent() || message.getAuthor().get().isBot()) {
-      return Optional.empty();
+      return new ArrayList<IMessageTask>();
     }
 
     String messageContent = message.getContent().toLowerCase();
     if (!messageContent.startsWith("!")) {
-      return Optional.empty();
+      return new ArrayList<IMessageTask>();
     }
 
     String keyword;
@@ -53,16 +53,14 @@ public class MessageToTaskHandler {
     }
 
     List<IMessageTask> tasks = getTasksForKeyword(keyword);
-    // TODO: execute mutiple tasks that can handle a keyword, not just first
-    Optional<IMessageTask> task = tasks.stream()
-        .filter(messageTask -> messageTask.canHandle(keyword)).findFirst();
-    if (task.isPresent()) {
-      return task;
-    } else {
+
+    if (tasks.isEmpty()) {
       // react to members message with question mark emoji to show that the command
       // was not found
       message.addReaction(ReactionEmoji.unicode("\u2753")).block();
-      return Optional.empty();
+      return new ArrayList<IMessageTask>();
     }
+
+    return tasks;
   }
 }

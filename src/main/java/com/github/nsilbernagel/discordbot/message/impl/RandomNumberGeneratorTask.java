@@ -11,7 +11,6 @@ import discord4j.core.object.entity.Message;
 
 @Component
 public class RandomNumberGeneratorTask extends AbstractMessageTask implements IMessageTask {
-
   public static final String KEYWORD = "dice";
 
   @Override

@@ -8,7 +8,7 @@ import discord4j.core.object.entity.Message;
 
 @Component
 public class NilsTask extends AbstractMessageTask implements IMessageTask {
-  private final static String KEYWORD = "meinung";
+  public final static String KEYWORD = "meinung";
 
   @Override
   public void execute(Message message) {
