@@ -1,6 +1,8 @@
 package com.github.nsilbernagel.discordbot;
 
-import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
+import java.util.List;
+
+import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 
@@ -18,8 +20,9 @@ public class DiscordbotApplication implements CommandLineRunner {
 
   @Autowired
   private GatewayDiscordClient discordClient;
+
   @Autowired
-  private MessageCreateEventListener messageCreateEventListener;
+  private List<AbstractEventListener<?>> eventListeners;
 
   @Override
   public void run(String... args) throws Exception {
@@ -27,7 +30,9 @@ public class DiscordbotApplication implements CommandLineRunner {
       throw new MissingTokenException();
     }
 
-    this.discordClient.on(messageCreateEventListener.getEventType()).subscribe(messageCreateEventListener::execute);
+    // register event listeners on all classes implementing the IEventListener
+    // interface
+    eventListeners.forEach((eventListener) -> eventListener.register());
 
     this.discordClient.onDisconnect().block();
   }

@@ -8,5 +8,12 @@ public interface IMessageTask {
    */
   void execute(Message message);
 
+  /**
+   * Check if a task can do anything with a given command keyword
+   *
+   * @param keyword
+   *                  the keyword to check
+   * @return can handle keyword
+   */
   public boolean canHandle(String keyword);
 }

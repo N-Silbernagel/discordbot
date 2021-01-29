@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.nsilbernagel.discordbot.listeners.EventListener;
+import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 import com.github.nsilbernagel.discordbot.message.TaskLogicException;
@@ -18,7 +18,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.Channel;
 
 @Component
-public class MessageCreateEventListener implements EventListener<MessageCreateEvent> {
+public class MessageCreateEventListener extends AbstractEventListener<MessageCreateEvent> {
   @Value("${app.discord.channels.blacklist:}")
   private BigInteger[] channelBlacklist;
 
@@ -52,6 +52,13 @@ public class MessageCreateEventListener implements EventListener<MessageCreateEv
     });
   }
 
+  /**
+   * Check if bot should answer on the message's channel as per the
+   * app.discord.channels.blacklist property
+   *
+   * @param channelInQuestion
+   *                            the channel of the current message
+   */
   private boolean canAnswerOnChannel(Channel channelInQuestion) {
     return Arrays.stream(this.channelBlacklist)
         .filter((channel) -> channelInQuestion.getId().asBigInteger().equals(channel)).findFirst().isEmpty();
