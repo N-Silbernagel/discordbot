@@ -8,6 +8,7 @@ import com.github.nsilbernagel.discordbot.model.KickVoting;
 import com.github.nsilbernagel.discordbot.model.Vote;
 import com.github.nsilbernagel.discordbot.registries.KickVotingRegistry;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import discord4j.common.util.Snowflake;
@@ -19,7 +20,8 @@ import discord4j.core.object.entity.User;
 public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
   private final static String KEYWORD = "votekick";
 
-  private KickVotingRegistry registry = KickVotingRegistry.getInstance();
+  @Autowired
+  private KickVotingRegistry registry;
 
   @Override
   public void execute(Message message) {

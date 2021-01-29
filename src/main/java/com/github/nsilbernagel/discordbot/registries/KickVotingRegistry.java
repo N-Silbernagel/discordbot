@@ -5,18 +5,20 @@ import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.model.KickVoting;
 
+import org.springframework.stereotype.Component;
+
 import discord4j.core.object.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
 
+@Component
 public class KickVotingRegistry {
-  private static KickVotingRegistry instance;
 
   @Getter
   @Setter
   private ArrayList<KickVoting> votings;
 
-  private KickVotingRegistry() {
+  public KickVotingRegistry() {
     this.votings = new ArrayList<KickVoting>();
   }
 
@@ -31,12 +33,5 @@ public class KickVotingRegistry {
     KickVoting voting = new KickVoting(member, 3);
     this.votings.add(voting);
     return Optional.of(voting);
-  }
-
-  public static KickVotingRegistry getInstance() {
-    if (KickVotingRegistry.instance == null) {
-      KickVotingRegistry.instance = new KickVotingRegistry();
-    }
-    return KickVotingRegistry.instance;
   }
 }
