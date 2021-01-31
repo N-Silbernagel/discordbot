@@ -15,6 +15,7 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.User;
+import discord4j.rest.http.client.ClientException;
 
 @Component
 public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
@@ -43,14 +44,21 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
       runningKickVoting = this.registry.createKickVoting(memberToKick);
     }
 
-    if (runningKickVoting.get().userHasVoted(msgAuthor)) {
-      this.answerMessage("Du hast bereits an dieser Abstimmung teilgenommen.");
-      return;
-    }
+    // if (runningKickVoting.get().userHasVoted(msgAuthor)) {
+    // this.answerMessage("Du hast bereits an dieser Abstimmung teilgenommen.");
+    // return;
+    // }
 
     Vote voteByMsgAuthor = new Vote(msgAuthorAsMember, this.message.getTimestamp());
 
-    boolean enoughVotes = runningKickVoting.get().addVote(voteByMsgAuthor);
+    boolean enoughVotes = false;
+
+    try {
+      enoughVotes = runningKickVoting.get().addVote(voteByMsgAuthor);
+    } catch (ClientException error) {
+      this.answerMessage(memberToKick.getNickname() + " kann nicht gekickt werden.");
+      return;
+    }
 
     if (!enoughVotes) {
       this.answerMessage("Noch " + runningKickVoting.get().remainingVotes() + " Stimmen bis "

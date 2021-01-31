@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot.model;
 import java.time.Duration;
 
 import discord4j.core.object.entity.Member;
+import discord4j.rest.http.client.ClientException;
 import lombok.Getter;
 
 public class KickVoting extends AbstractVoting {
@@ -16,8 +17,8 @@ public class KickVoting extends AbstractVoting {
   }
 
   @Override
-  protected void onEnoughVotes() {
-    this.memberToKick.kick("Demokratie.");
+  protected void onEnoughVotes() throws ClientException {
+    this.memberToKick.kick("Demokratie.").block();
   }
 
 }
