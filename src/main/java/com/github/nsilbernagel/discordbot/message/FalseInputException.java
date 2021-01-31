@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.message;
 
-public class FalseInputException extends TaskLogicException {
+public class FalseInputException extends TaskException {
   static final long serialVersionUID = 1L;
 
   public FalseInputException(String errorMessage) {

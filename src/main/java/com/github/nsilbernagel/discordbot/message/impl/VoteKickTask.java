@@ -3,7 +3,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
-import com.github.nsilbernagel.discordbot.message.TaskLogicException;
+import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.model.KickVoting;
 import com.github.nsilbernagel.discordbot.model.Vote;
 import com.github.nsilbernagel.discordbot.registries.KickVotingRegistry;
@@ -27,14 +27,14 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
   @Override
   public void execute(Message message) {
     this.message = message;
-    Snowflake guildId = this.message.getGuildId().orElseThrow(() -> new TaskLogicException());
+    Snowflake guildId = this.message.getGuildId().orElseThrow(() -> new TaskException());
 
-    User msgAuthor = this.message.getAuthor().orElseThrow(() -> new TaskLogicException());
+    User msgAuthor = this.message.getAuthor().orElseThrow(() -> new TaskException());
     Member msgAuthorAsMember = userAsMemberOfGuild(msgAuthor, guildId);
 
     User userToKick = this.message.getUserMentions().blockFirst();
     if (userToKick == null || userToKick.isBot()) {
-      throw new TaskLogicException("Bitte gebe einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
+      throw new TaskException("Bitte gebe einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
     }
 
     Member memberToKick = userAsMemberOfGuild(userToKick, guildId);

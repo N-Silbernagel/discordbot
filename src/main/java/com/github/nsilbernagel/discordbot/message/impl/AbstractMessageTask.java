@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.TaskLogicException;
+import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Member;
@@ -25,10 +25,10 @@ abstract class AbstractMessageTask {
    * @param user
    * @param guildId
    * @return the users member representation
-   * @throws TaskLogicException
+   * @throws TaskException
    */
-  public Member userAsMemberOfGuild(User user, Snowflake guildId) throws TaskLogicException {
+  public Member userAsMemberOfGuild(User user, Snowflake guildId) throws TaskException {
     return user.asMember(guildId).blockOptional()
-        .orElseThrow(() -> new TaskLogicException(user.getUsername() + " ist kein Member dieses Servers"));
+        .orElseThrow(() -> new TaskException(user.getUsername() + " ist kein Member dieses Servers"));
   }
 }

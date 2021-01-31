@@ -30,8 +30,8 @@ public class DiscordbotApplication implements CommandLineRunner {
       throw new MissingTokenException();
     }
 
-    // register event listeners on all classes implementing the IEventListener
-    // interface
+    // register event listeners on all classes extending the
+    // AbstractEventListener class
     eventListeners.forEach((eventListener) -> eventListener.register());
 
     this.discordClient.onDisconnect().block();

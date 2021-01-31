@@ -7,7 +7,7 @@ import java.util.List;
 import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
-import com.github.nsilbernagel.discordbot.message.TaskLogicException;
+import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,7 +43,7 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
     tasks.forEach(task -> {
       try {
         task.execute(event.getMessage());
-      } catch (TaskLogicException taskLogicError) {
+      } catch (TaskException taskLogicError) {
         if (taskLogicError.hasMessage()) {
           event.getMessage().getChannel()
               .flatMap(channel -> channel.createMessage(taskLogicError.getMessage())).block();
