@@ -44,10 +44,10 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
       runningKickVoting = this.registry.createKickVoting(memberToKick);
     }
 
-    // if (runningKickVoting.get().userHasVoted(msgAuthor)) {
-    // this.answerMessage("Du hast bereits an dieser Abstimmung teilgenommen.");
-    // return;
-    // }
+    if (runningKickVoting.get().userHasVoted(msgAuthor)) {
+      this.answerMessage("Du hast bereits an dieser Abstimmung teilgenommen.");
+      return;
+    }
 
     Vote voteByMsgAuthor = new Vote(msgAuthorAsMember, this.message.getTimestamp());
 
