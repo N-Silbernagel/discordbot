@@ -56,7 +56,7 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
     try {
       enoughVotes = runningKickVoting.get().addVote(voteByMsgAuthor);
     } catch (ClientException error) {
-      this.answerMessage(memberToKick.getNickname() + " kann nicht gekickt werden.");
+      this.answerMessage(memberToKick.getNickname().get() + " kann nicht gekickt werden.");
       return;
     }
 
