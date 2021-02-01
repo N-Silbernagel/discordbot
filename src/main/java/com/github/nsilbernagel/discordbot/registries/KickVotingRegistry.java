@@ -26,12 +26,9 @@ public class KickVotingRegistry {
     return this.votings.stream().filter(voting -> voting.getMemberToKick().equals(member)).findFirst();
   }
 
-  public Optional<KickVoting> createKickVoting(Member member) {
-    if (this.getByMember(member).isPresent()) {
-      return Optional.empty();
-    }
+  public KickVoting createKickVoting(Member member) {
     KickVoting voting = new KickVoting(member, 3);
     this.votings.add(voting);
-    return Optional.of(voting);
+    return voting;
   }
 }
