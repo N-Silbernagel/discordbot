@@ -26,6 +26,7 @@ public class InsultTask extends AbstractMessageTask implements IMessageTask {
         .uri("/generate_insult.php?lang=en&type=text")
         .retrieve()
         .bodyToMono(String.class)
+        .doOnError(err -> err.printStackTrace())
         .onErrorReturn("Dicke Qualle")
         .block();
 
