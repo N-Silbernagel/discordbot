@@ -28,14 +28,14 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
     Guild guild = this.message
         .getGuild()
         .doOnError(error -> {
-          throw new TaskException();
+          throw new TaskException(error);
         })
         .block();
 
     Member msgAuthor = this.message
         .getAuthorAsMember()
         .doOnError(error -> {
-          throw new TaskException();
+          throw new TaskException(error);
         })
         .block();
 
@@ -44,17 +44,11 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
     try {
       memberToKick = this.message
           .getUserMentions()
-          .doOnError(error -> {
-            throw new TaskException();
-          })
           .blockFirst()
           .asMember(guild.getId())
-          .doOnError(error -> {
-            throw new TaskException("Bitte gib einen Nutzer dieses Server an, indem du ihn mit '@NUTZER' markierst.");
-          })
           .block();
-    } catch (Throwable e) {
-      throw new TaskException("Bitte gib einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
+    } catch (Throwable error) {
+      throw new TaskException("Bitte gib einen Nutzer an, indem du ihn mit '@NUTZER' markierst.", error);
     }
 
     KickVoting runningKickVoting = this.registry

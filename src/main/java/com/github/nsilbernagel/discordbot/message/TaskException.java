@@ -7,15 +7,33 @@ package com.github.nsilbernagel.discordbot.message;
 public class TaskException extends RuntimeException {
   final static long serialVersionUID = 3L;
 
-  public TaskException() {
-    super();
-  }
+  private Throwable actualException;
 
   public TaskException(String errorMessage) {
     super(errorMessage);
   }
 
+  public TaskException(Throwable e) {
+    super();
+    this.actualException = e;
+    this.log();
+  }
+
+  public TaskException(String errorMessage, Throwable e) {
+    super(errorMessage);
+    this.actualException = e;
+    this.log();
+  }
+
   public boolean hasMessage() {
     return this.getMessage().length() > 0;
+  }
+
+  /**
+   * Log the actual error. Only to stderr for now. Might want to implement a file
+   * errror logging or something similar
+   */
+  private void log() {
+    this.actualException.printStackTrace();
   }
 }

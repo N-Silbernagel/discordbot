@@ -1,6 +1,7 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
+import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -26,8 +27,9 @@ public class InsultTask extends AbstractMessageTask implements IMessageTask {
         .uri("/generate_insult.php?lang=en&type=text")
         .retrieve()
         .bodyToMono(String.class)
-        .doOnError(err -> err.printStackTrace())
-        .onErrorReturn("Dicke Qualle")
+        .doOnError(err -> {
+          throw new TaskException("Dicke Qualle", err);
+        })
         .block();
 
     this.answerMessage(HtmlUtils.htmlUnescape(insult));
