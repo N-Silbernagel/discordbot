@@ -44,6 +44,7 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
     try {
       memberToKick = this.message
           .getUserMentions()
+          .filter((userMention) -> !userMention.isBot())
           .blockFirst()
           .asMember(guild.getId())
           .block();
