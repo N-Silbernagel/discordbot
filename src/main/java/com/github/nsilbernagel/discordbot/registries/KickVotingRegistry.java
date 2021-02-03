@@ -3,7 +3,7 @@ package com.github.nsilbernagel.discordbot.registries;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.model.KickVoting;
+import com.github.nsilbernagel.discordbot.vote.KickVoting;
 
 import org.springframework.stereotype.Component;
 

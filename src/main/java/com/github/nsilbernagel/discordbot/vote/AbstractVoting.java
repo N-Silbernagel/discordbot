@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.model;
+package com.github.nsilbernagel.discordbot.vote;
 
 import java.time.Duration;
 import java.util.ArrayList;
