@@ -1,0 +1,52 @@
+package com.github.nsilbernagel.discordbot.message.impl;
+
+
+import com.github.nsilbernagel.discordbot.message.IMessageTask;
+import com.github.nsilbernagel.discordbot.message.TaskException;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import discord4j.core.object.entity.Message;
+
+
+@Component
+public class RandomRedditPostTask extends AbstractMessageTask implements IMessageTask {
+
+    public static final String KEYWORD = "reddit";
+
+    public boolean canHandle(String keyword) {
+        return KEYWORD.equals(keyword);
+    }
+
+    public static String getRandomSubreddit() {
+        return WebClient.create("https://www.reddit.com")
+                            .get()
+                            .uri("/r/random")
+                            .exchange()
+                            .map(res -> res.headers().asHttpHeaders().getLocation().normalize().toString().split("/")[4])
+                            .doOnError(err -> {
+                            throw new TaskException("Ich konnte leider keinen Subreddit für dich finden", err);
+                            })
+                            .block();
+    }
+
+    public static String getRandomPost(){
+        return WebClient.create("https://www.reddit.com")
+                            .get()
+                            .uri("/r/" + getRandomSubreddit() + "/random.json")
+                            .exchange()
+                            .map(res -> res.headers().asHttpHeaders().getLocation().normalize().toString().split(".json")[0])
+                            .doOnError(err -> {
+                            throw new TaskException("Ich konnte leider keinen Post für dich finden", err);
+                            })
+                            .block(); 
+    }
+
+    @Override
+    public void execute(Message message) {
+        this.message = message;
+
+        this.answerMessage(getRandomPost());
+    }
+}
