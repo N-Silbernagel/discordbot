@@ -25,9 +25,6 @@ public abstract class AbstractEventListener<T extends Event> {
 
   /**
    * Register a D4J Event listener
-   *
-   * @param eventListener
-   *                        the event listener to register
    */
   public void register() {
     this.discordClient.on(this.getEventType()).subscribe(this::execute);
