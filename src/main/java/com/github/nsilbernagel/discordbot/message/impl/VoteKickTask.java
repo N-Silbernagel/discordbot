@@ -2,7 +2,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
-import com.github.nsilbernagel.discordbot.registries.KickVotingRegistry;
+import com.github.nsilbernagel.discordbot.registries.VotingRegistry;
 import com.github.nsilbernagel.discordbot.vote.KickVoting;
 import com.github.nsilbernagel.discordbot.vote.Vote;
 
@@ -19,7 +19,7 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
   public final static String KEYWORD = "votekick";
 
   @Autowired
-  private KickVotingRegistry registry;
+  private VotingRegistry registry;
 
   @Override
   public void execute(Message message) {
@@ -49,11 +49,11 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
           .asMember(guild.getId())
           .block();
     } catch (Throwable error) {
-      throw new TaskException("Bitte gib einen Nutzer an, indem du ihn mit '@NUTZER' markierst.", error);
+      throw new TaskException("Bitte gib einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
     }
 
     KickVoting runningKickVoting = this.registry
-        .getByMember(memberToKick)
+        .getByMember(memberToKick, KickVoting.class)
         .orElse(this.registry.createKickVoting(memberToKick));
 
     if (runningKickVoting.memberHasVoted(msgAuthor)) {
