@@ -26,8 +26,8 @@ public class RandomRedditPostTask extends AbstractMessageTask implements IMessag
             .asHttpHeaders()
             .getLocation()
             .normalize()
-            .toString()
-            .split("/")[4])
+            .getPath()
+            .split("/")[2])
         .doOnError(err -> {
           throw new TaskException("Ich konnte leider keinen Subreddit für dich finden", err);
         })
@@ -37,7 +37,7 @@ public class RandomRedditPostTask extends AbstractMessageTask implements IMessag
   public String getRandomPost() {
     return WebClient.create("https://www.reddit.com")
         .get()
-        .uri("/r/" + getRandomSubreddit() + "/random.json")
+        .uri("/r/" + this.getRandomSubreddit() + "/random.json")
         .exchange()
         .map(res -> res.headers()
             .asHttpHeaders()
@@ -55,6 +55,6 @@ public class RandomRedditPostTask extends AbstractMessageTask implements IMessag
   public void execute(Message message) {
     this.message = message;
 
-    this.answerMessage(getRandomPost());
+    this.answerMessage(this.getRandomPost());
   }
 }
