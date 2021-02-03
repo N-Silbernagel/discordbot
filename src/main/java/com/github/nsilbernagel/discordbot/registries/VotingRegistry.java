@@ -31,7 +31,7 @@ public class VotingRegistry {
   }
 
   public KickVoting createKickVoting(Member member) {
-    KickVoting voting = new KickVoting(member, 3);
+    KickVoting voting = new KickVoting(member);
     this.votings.add(voting);
     return voting;
   }
