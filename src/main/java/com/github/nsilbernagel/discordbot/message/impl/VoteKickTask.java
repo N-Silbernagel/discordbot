@@ -2,9 +2,9 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
-import com.github.nsilbernagel.discordbot.model.KickVoting;
-import com.github.nsilbernagel.discordbot.model.Vote;
-import com.github.nsilbernagel.discordbot.registries.KickVotingRegistry;
+import com.github.nsilbernagel.discordbot.registries.VotingRegistry;
+import com.github.nsilbernagel.discordbot.vote.KickVoting;
+import com.github.nsilbernagel.discordbot.vote.Vote;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
   public final static String KEYWORD = "votekick";
 
   @Autowired
-  private KickVotingRegistry registry;
+  private VotingRegistry registry;
 
   @Override
   public void execute(Message message) {
@@ -44,15 +44,16 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
     try {
       memberToKick = this.message
           .getUserMentions()
+          .filter((userMention) -> !userMention.isBot())
           .blockFirst()
           .asMember(guild.getId())
           .block();
     } catch (Throwable error) {
-      throw new TaskException("Bitte gib einen Nutzer an, indem du ihn mit '@NUTZER' markierst.", error);
+      throw new TaskException("Bitte gib einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
     }
 
     KickVoting runningKickVoting = this.registry
-        .getByMember(memberToKick)
+        .getByMember(memberToKick, KickVoting.class)
         .orElse(this.registry.createKickVoting(memberToKick));
 
     if (runningKickVoting.memberHasVoted(msgAuthor)) {

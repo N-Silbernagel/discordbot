@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.model;
+package com.github.nsilbernagel.discordbot.vote;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -8,7 +8,11 @@ import discord4j.core.object.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
 
-abstract class AbstractVoting {
+public abstract class AbstractVoting {
+  @Getter
+  /** the member the voting is targeting */
+  protected Member targetMember;
+
   @Getter
   @Setter
   private long votesNeeded;

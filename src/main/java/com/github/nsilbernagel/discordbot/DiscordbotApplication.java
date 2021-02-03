@@ -26,10 +26,6 @@ public class DiscordbotApplication implements CommandLineRunner {
 
   @Override
   public void run(String... args) throws Exception {
-    if (botToken.length() == 0) {
-      throw new MissingTokenException();
-    }
-
     // register event listeners on all classes extending the
     // AbstractEventListener class
     eventListeners.forEach((eventListener) -> eventListener.register());
@@ -43,6 +39,10 @@ public class DiscordbotApplication implements CommandLineRunner {
 
   @Bean
   public GatewayDiscordClient getDiscordClient() {
+    if (botToken.length() == 0) {
+      throw new MissingTokenException();
+    }
+
     return DiscordClient.create(this.botToken).login().block();
   }
 }
