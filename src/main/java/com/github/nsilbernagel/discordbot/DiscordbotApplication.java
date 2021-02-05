@@ -12,6 +12,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
 
 @SpringBootApplication
 public class DiscordbotApplication implements CommandLineRunner {
@@ -38,6 +39,7 @@ public class DiscordbotApplication implements CommandLineRunner {
   }
 
   @Bean
+  @DependsOn("LavaPlayerAudioProvider")
   public GatewayDiscordClient getDiscordClient() {
     if (botToken.length() == 0) {
       throw new MissingTokenException();
