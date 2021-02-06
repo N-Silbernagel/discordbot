@@ -17,8 +17,8 @@ import discord4j.core.object.entity.channel.VoiceChannel;
 @Component
 public class ChannelNameClock {
 
-  @Value("${app.discord.channels.rename}")
-  private Snowflake channelId;
+  @Value("${app.discord.channels.rename:}")
+  private String channelId;
 
   @Autowired
   private GatewayDiscordClient discordClient;
@@ -27,7 +27,10 @@ public class ChannelNameClock {
 
   @PostConstruct
   public void initialize() {
-    this.channel = (VoiceChannel) discordClient.getChannelById(channelId).block();
+    if (this.channelId.equals("")) {
+      return;
+    }
+    this.channel = (VoiceChannel) discordClient.getChannelById(Snowflake.of(channelId)).block();
   }
 
   @Scheduled(cron = "0 0 */1 * * ?")
@@ -44,6 +47,9 @@ public class ChannelNameClock {
 
   @PreDestroy
   public void shutdown() {
+    if (this.channelId.equals("")) {
+      return;
+    }
     this.channel.edit(spec -> spec.setName("Stammtisch")).block();
   }
 
