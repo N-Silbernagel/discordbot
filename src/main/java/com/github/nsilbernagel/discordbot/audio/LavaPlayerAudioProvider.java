@@ -13,12 +13,18 @@ import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBu
 import org.springframework.stereotype.Component;
 
 import discord4j.voice.AudioProvider;
+import lombok.Getter;
 
 @Component("LavaPlayerAudioProvider")
 public class LavaPlayerAudioProvider extends AudioProvider {
 
+  @Getter
   private final AudioPlayer player;
+
   private final MutableAudioFrame frame = new MutableAudioFrame();
+
+  @Getter
+  private final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
 
   public LavaPlayerAudioProvider() {
     // Allocate a ByteBuffer for Discord4J's AudioProvider to hold audio data
@@ -29,19 +35,16 @@ public class LavaPlayerAudioProvider extends AudioProvider {
     // just allocated
     frame.setBuffer(getBuffer());
 
-    // Creates AudioPlayer instances and translates URLs to AudioTrack instances
-    final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
-
     // This is an optimization strategy that Discord4J can utilize.
     // It is not important to understand
-    playerManager.getConfiguration()
+    this.playerManager.getConfiguration()
         .setFrameBufferFactory(NonAllocatingAudioFrameBuffer::new);
 
     // Allow playerManager to parse remote sources like YouTube links
-    AudioSourceManagers.registerRemoteSources(playerManager);
+    AudioSourceManagers.registerRemoteSources(this.playerManager);
 
     // Create an AudioPlayer so Discord4J can receive audio data
-    this.player = playerManager.createPlayer();
+    this.player = this.playerManager.createPlayer();
   }
 
   @Override

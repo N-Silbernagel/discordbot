@@ -21,13 +21,13 @@ public class LeaveTask extends AbstractMessageTask implements IMessageTask {
   }
 
   @Autowired
-  private JoinTask joinTask;
+  private SummonTask summonTask;
 
   @Override
   public void execute(Message message) {
     this.message = message;
 
-    Optional<VoiceConnection> existingVoiceConnection = joinTask.getVoiceConnection();
+    Optional<VoiceConnection> existingVoiceConnection = summonTask.getVoiceConnection();
 
     if (!existingVoiceConnection.isPresent()) {
       message.addReaction(ReactionEmoji.unicode("\u274c")).block();
@@ -36,7 +36,7 @@ public class LeaveTask extends AbstractMessageTask implements IMessageTask {
 
     existingVoiceConnection.get()
         .disconnect()
-        .doOnSuccess((v) -> joinTask.setVoiceConnection(Optional.empty()))
+        .doOnSuccess((v) -> summonTask.setVoiceConnection(Optional.empty()))
         .block();
   }
 }

@@ -17,9 +17,9 @@ import lombok.Setter;
 import reactor.core.publisher.Mono;
 
 @Component
-public class JoinTask extends AbstractMessageTask implements IMessageTask {
+public class SummonTask extends AbstractMessageTask implements IMessageTask {
 
-  public final static String KEYWORD = "join";
+  public final static String KEYWORD = "summon";
 
   @Getter
   @Setter
