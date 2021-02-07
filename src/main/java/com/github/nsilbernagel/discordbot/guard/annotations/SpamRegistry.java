@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.guard.annotations;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import discord4j.core.object.entity.Member;
 import discord4j.rest.util.Permission;
 import discord4j.rest.util.PermissionSet;
 import lombok.Getter;
+import reactor.core.publisher.Mono;
 
 @Component
 public class SpamRegistry {
@@ -30,13 +32,44 @@ public class SpamRegistry {
       return 0;
     }
 
+    return this.putAndScheduleReductionIfAbsent(member);
+  }
+
+  private Integer putAndScheduleReductionIfAbsent(Member member) {
     this.memberMessageCountMap.putIfAbsent(member, 0);
 
-    Integer currentUserMessageCount = this.memberMessageCountMap.get(member);
+    Integer currentMemberMessageCount = this.memberMessageCountMap.get(member);
 
-    this.memberMessageCountMap.replace(member, ++currentUserMessageCount);
+    this.memberMessageCountMap.replace(member, ++currentMemberMessageCount);
 
-    return currentUserMessageCount;
+    this.scheduleReduction(member);
+
+    return currentMemberMessageCount;
+  }
+
+  public Integer reduceMemberCount(Member member) {
+    Optional<Integer> countForMember = Optional.ofNullable(this.memberMessageCountMap.get(member));
+
+    if (!countForMember.isPresent()) {
+      return 0;
+    }
+
+    Integer newCount = countForMember.get() - 1;
+
+    this.memberMessageCountMap.replace(member, newCount);
+
+    if (newCount == 0) {
+      this.memberMessageCountMap.remove(member);
+      return 0;
+    }
+
+    return newCount;
+  }
+
+  private void scheduleReduction(Member member) {
+    Mono.delay(Duration.ofMinutes(1))
+        .doOnSuccess(onSuccess -> reduceMemberCount(member))
+        .subscribe();
   }
 
   /**
@@ -52,6 +85,6 @@ public class SpamRegistry {
       return false;
     }
 
-    return countForMember.get() >= 2;
+    return countForMember.get() >= 3;
   }
 }
