@@ -39,10 +39,6 @@ public class SpamRegistry {
       return 0;
     }
 
-    return this.putAndScheduleReductionIfAbsent(member);
-  }
-
-  private Integer putAndScheduleReductionIfAbsent(Member member) {
     this.memberMessageCountMap.putIfAbsent(member, 0);
 
     Integer currentMemberMessageCount = this.memberMessageCountMap.get(member);
@@ -54,6 +50,12 @@ public class SpamRegistry {
     return currentMemberMessageCount;
   }
 
+  /**
+   * Reduce the spam count of a member
+   * 
+   * @param member
+   * @return new spam count
+   */
   public Integer reduceMemberCount(Member member) {
     Optional<Integer> countForMember = Optional.ofNullable(this.memberMessageCountMap.get(member));
 
@@ -73,6 +75,11 @@ public class SpamRegistry {
     return newCount;
   }
 
+  /**
+   * Schedule the reduction of a members spam count
+   * 
+   * @param member
+   */
   private void scheduleReduction(Member member) {
     Mono.delay(Duration.ofMillis(this.reductionInterval))
         .doOnSuccess(onSuccess -> reduceMemberCount(member))
