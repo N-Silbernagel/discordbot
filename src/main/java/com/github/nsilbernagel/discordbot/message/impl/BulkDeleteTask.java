@@ -34,8 +34,8 @@ public class BulkDeleteTask extends AbstractMessageTask {
       throw new FalseInputException("Bitte gib eine Zahl an.");
     }
 
-    if (messagesCount < 1 || messagesCount > 5) {
-      throw new FalseInputException("Bitte gib eine Zahl zwischen 1 und 5 an.");
+    if (messagesCount < 1 || messagesCount > 10) {
+      throw new FalseInputException("Bitte gib eine Zahl zwischen 1 und 10 an.");
     }
 
     Mono<Void> bulkDeleteMono = this.getMessage().getChannel()
