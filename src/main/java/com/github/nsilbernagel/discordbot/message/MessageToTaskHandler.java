@@ -75,7 +75,7 @@ public class MessageToTaskHandler {
     if (tasks.isEmpty()) {
       // react to members message with question mark emoji to show that the command
       // was not found
-      message.addReaction(ReactionEmoji.unicode("\u2753")).block();
+      message.addReaction(ReactionEmoji.unicode("❓")).block();
       return new ArrayList<AbstractMessageTask>();
     }
 

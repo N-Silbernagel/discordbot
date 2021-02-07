@@ -1,10 +1,12 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
+import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.reaction.ReactionEmoji;
 import reactor.core.publisher.Mono;
 
 abstract public class AbstractMessageTask {
@@ -26,8 +28,30 @@ abstract public class AbstractMessageTask {
         .flatMap(messageChannel -> messageChannel.createMessage(answerText));
   }
 
+  /**
+   * Execute the message task action considering the needed permissions
+   */
   public void execute() {
-    this.action();
+    NeedsPermission needsPermissionAnnotation = this.getClass().getAnnotation(NeedsPermission.class);
+
+    if (needsPermissionAnnotation == null) {
+      this.action();
+      return;
+    }
+
+    boolean authorHasRequiredPermission = this.getMessage()
+        .getAuthorAsMember()
+        .flatMap(author -> author.getBasePermissions()
+            .flatMap(permissions -> Mono.just(permissions.contains(needsPermissionAnnotation.value()))))
+        .block();
+
+    if (!authorHasRequiredPermission) {
+      this.getMessage()
+          .addReaction(ReactionEmoji.unicode("👮‍♂️"))
+          .block();
+    } else {
+      this.action();
+    }
   }
 
   /*

@@ -1,12 +1,15 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
+import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.message.FalseInputException;
 
 import org.springframework.stereotype.Component;
 
+import discord4j.rest.util.Permission;
 import reactor.core.publisher.Mono;
 
 @Component
+@NeedsPermission(Permission.ADMINISTRATOR)
 public class BulkDeleteTask extends AbstractMessageTask {
 
   public final static String KEYWORD = "delete";

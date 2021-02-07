@@ -25,7 +25,7 @@ public class LeaveTask extends AbstractMessageTask {
     Optional<VoiceConnection> existingVoiceConnection = summonTask.getVoiceConnection();
 
     if (!existingVoiceConnection.isPresent()) {
-      this.getMessage().addReaction(ReactionEmoji.unicode("\u274c")).block();
+      this.getMessage().addReaction(ReactionEmoji.unicode("❌")).block();
       return;
     }
 
