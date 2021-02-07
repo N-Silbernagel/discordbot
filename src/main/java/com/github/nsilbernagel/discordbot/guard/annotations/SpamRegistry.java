@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.object.entity.Member;
@@ -17,6 +18,12 @@ import reactor.core.publisher.Mono;
 public class SpamRegistry {
   @Getter
   private Map<Member, Integer> memberMessageCountMap = new HashMap<Member, Integer>();
+
+  @Value("${app.guard.spam.commands.allowed:3}")
+  private Integer commandsPerInterval;
+
+  @Value("${app.guard.spam.reduction.timeout:60000}")
+  private Integer reductionInterval;
 
   /**
    * Count up the users messages counter or register him if not present yet
@@ -67,7 +74,7 @@ public class SpamRegistry {
   }
 
   private void scheduleReduction(Member member) {
-    Mono.delay(Duration.ofMinutes(1))
+    Mono.delay(Duration.ofMillis(this.reductionInterval))
         .doOnSuccess(onSuccess -> reduceMemberCount(member))
         .subscribe();
   }
@@ -85,6 +92,6 @@ public class SpamRegistry {
       return false;
     }
 
-    return countForMember.get() >= 3;
+    return countForMember.get() >= this.commandsPerInterval;
   }
 }
