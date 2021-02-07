@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.nsilbernagel.discordbot.guard.annotations.SpamRegistry;
 import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 import com.github.nsilbernagel.discordbot.message.TaskException;
@@ -16,11 +17,18 @@ import org.springframework.stereotype.Component;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.Channel;
+import discord4j.core.object.reaction.ReactionEmoji;
 
 @Component
 public class MessageCreateEventListener extends AbstractEventListener<MessageCreateEvent> {
   @Value("${app.discord.channels.blacklist:}")
   private BigInteger[] channelBlacklist;
+
+  @Value("${app.guard.spam.enabled:false}")
+  private boolean spamProtectionEnabled;
+
+  @Autowired
+  private SpamRegistry spamRegistry;
 
   @Autowired
   private MessageToTaskHandler messageToTaskHandler;
@@ -39,6 +47,10 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
     }
 
     List<AbstractMessageTask> tasks = messageToTaskHandler.getMessageTasks(message);
+
+    if (tasks.size() > 0) {
+      this.spamRegistry.countMemberUp(this.messageToTaskHandler.getMsgAuthor());
+    }
 
     tasks.forEach(task -> {
       try {
