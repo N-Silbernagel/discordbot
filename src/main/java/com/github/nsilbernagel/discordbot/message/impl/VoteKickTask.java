@@ -28,13 +28,6 @@ public class VoteKickTask extends AbstractMessageTask {
         })
         .block();
 
-    Member msgAuthor = this.getMessage()
-        .getAuthorAsMember()
-        .doOnError(error -> {
-          throw new TaskException(error);
-        })
-        .block();
-
     Member memberToKick = null;
 
     try {
@@ -52,11 +45,11 @@ public class VoteKickTask extends AbstractMessageTask {
         .getByMember(memberToKick, KickVoting.class)
         .orElse(this.registry.createKickVoting(memberToKick));
 
-    if (runningKickVoting.memberHasVoted(msgAuthor)) {
+    if (runningKickVoting.memberHasVoted(this.messageToTaskHandler.getMsgAuthor())) {
       throw new TaskException("Du hast bereits an dieser Abstimmung teilgenommen.");
     }
 
-    Vote voteByMsgAuthor = new Vote(msgAuthor, this.getMessage().getTimestamp());
+    Vote voteByMsgAuthor = new Vote(this.messageToTaskHandler.getMsgAuthor(), this.getMessage().getTimestamp());
 
     boolean enoughVotes = false;
 

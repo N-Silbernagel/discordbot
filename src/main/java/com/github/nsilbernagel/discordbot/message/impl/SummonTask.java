@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.object.VoiceState;
-import discord4j.core.object.entity.Member;
 import discord4j.voice.VoiceConnection;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,8 +38,8 @@ public class SummonTask extends AbstractMessageTask {
       this.leaveTask.execute();
     }
 
-    this.getMessage().getAuthorAsMember()
-        .flatMap(Member::getVoiceState)
+    this.messageToTaskHandler.getMsgAuthor()
+        .getVoiceState()
         .flatMap(VoiceState::getChannel)
         .flatMap(channel -> channel.join(spec -> spec.setProvider(lavaPlayerAudioProvider)))
         .flatMap(voiceConnection -> {

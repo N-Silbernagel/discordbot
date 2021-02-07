@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.message;
 
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 
 import java.util.ArrayList;
@@ -36,6 +37,9 @@ public class MessageToTaskHandler {
   @Getter
   private List<String> commandParameters;
 
+  @Getter
+  private Member msgAuthor;
+
   /**
    * Get tasks that can handle a given keywork
    */
@@ -56,15 +60,13 @@ public class MessageToTaskHandler {
   public List<AbstractMessageTask> getMessageTasks(Message message) {
     this.message = message;
 
-    if (!message.getAuthor().isPresent() || message.getAuthor().get().isBot()) {
+    this.msgAuthor = this.message.getAuthorAsMember().block();
+
+    if (!message.getContent().startsWith(commandToken) || this.msgAuthor.isBot()) {
       return new ArrayList<AbstractMessageTask>();
     }
 
-    if (!message.getContent().startsWith(commandToken)) {
-      return new ArrayList<AbstractMessageTask>();
-    }
-
-    if (spamRegistry.memberHasExceededThreshold(message.getAuthorAsMember().block())) {
+    if (spamRegistry.memberHasExceededThreshold(this.msgAuthor)) {
       message.addReaction(ReactionEmoji.unicode("👮‍♂️")).subscribe();
       return new ArrayList<AbstractMessageTask>();
     }

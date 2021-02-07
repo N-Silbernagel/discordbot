@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import reactor.core.publisher.Mono;
-
 @Component
 public class SpamHandlerTask extends AbstractMessageTask {
 
@@ -22,9 +20,6 @@ public class SpamHandlerTask extends AbstractMessageTask {
   }
 
   public void action() {
-    this.getMessage()
-        .getAuthorAsMember()
-        .flatMap(msgAuthor -> Mono.just(this.spamRegistry.countMemberUp(msgAuthor)))
-        .subscribe();
+    this.spamRegistry.countMemberUp(this.messageToTaskHandler.getMsgAuthor());
   }
 }

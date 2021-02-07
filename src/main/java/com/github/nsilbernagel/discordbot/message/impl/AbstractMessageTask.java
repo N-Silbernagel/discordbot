@@ -39,10 +39,9 @@ abstract public class AbstractMessageTask {
       return;
     }
 
-    boolean authorHasRequiredPermission = this.getMessage()
-        .getAuthorAsMember()
-        .flatMap(author -> author.getBasePermissions()
-            .flatMap(permissions -> Mono.just(permissions.contains(needsPermissionAnnotation.value()))))
+    boolean authorHasRequiredPermission = this.messageToTaskHandler.getMsgAuthor()
+        .getBasePermissions()
+        .flatMap(permissions -> Mono.just(permissions.contains(needsPermissionAnnotation.value())))
         .block();
 
     if (!authorHasRequiredPermission) {
