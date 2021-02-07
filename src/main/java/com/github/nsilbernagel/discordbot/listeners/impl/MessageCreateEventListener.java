@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.Channel;
-import discord4j.core.object.reaction.ReactionEmoji;
 
 @Component
 public class MessageCreateEventListener extends AbstractEventListener<MessageCreateEvent> {
