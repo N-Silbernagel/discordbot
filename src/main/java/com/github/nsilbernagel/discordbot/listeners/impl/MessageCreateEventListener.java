@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.nsilbernagel.discordbot.guard.annotations.SpamRegistry;
+import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
 import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 import com.github.nsilbernagel.discordbot.message.TaskException;
@@ -57,7 +57,8 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
       } catch (TaskException taskLogicError) {
         if (taskLogicError.hasMessage()) {
           event.getMessage().getChannel()
-              .flatMap(channel -> channel.createMessage(taskLogicError.getMessage())).block();
+              .flatMap(channel -> channel.createMessage(taskLogicError.getMessage()))
+              .block();
         }
       }
     });
@@ -72,6 +73,10 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
    */
   private boolean canAnswerOnChannel(Channel channelInQuestion) {
     return Arrays.stream(this.channelBlacklist)
-        .filter((channel) -> channelInQuestion.getId().asBigInteger().equals(channel)).findFirst().isEmpty();
+        .filter((channel) -> channelInQuestion.getId()
+            .asBigInteger()
+            .equals(channel))
+        .findFirst()
+        .isEmpty();
   }
 }

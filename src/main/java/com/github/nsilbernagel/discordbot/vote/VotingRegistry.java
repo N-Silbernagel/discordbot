@@ -1,10 +1,7 @@
-package com.github.nsilbernagel.discordbot.registries;
+package com.github.nsilbernagel.discordbot.vote;
 
 import java.util.ArrayList;
 import java.util.Optional;
-
-import com.github.nsilbernagel.discordbot.vote.KickVoting;
-import com.github.nsilbernagel.discordbot.vote.AbstractVoting;
 
 import org.springframework.stereotype.Component;
 

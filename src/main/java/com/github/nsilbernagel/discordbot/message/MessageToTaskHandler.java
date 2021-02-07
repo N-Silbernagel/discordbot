@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.github.nsilbernagel.discordbot.guard.annotations.SpamRegistry;
+import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
 import com.github.nsilbernagel.discordbot.message.impl.AbstractMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,9 @@
-package com.github.nsilbernagel.discordbot.schedules.impl;
+package com.github.nsilbernagel.discordbot.schedules;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import com.github.nsilbernagel.discordbot.schedules.dtos.CustomTime;
+import com.github.nsilbernagel.discordbot.schedules.dto.CustomTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

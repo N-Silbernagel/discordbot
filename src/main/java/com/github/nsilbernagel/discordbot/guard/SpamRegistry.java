@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.guard.annotations;
+package com.github.nsilbernagel.discordbot.guard;
 
 import java.time.Duration;
 import java.util.HashMap;

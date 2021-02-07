@@ -1,7 +1,7 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.message.TaskException;
-import com.github.nsilbernagel.discordbot.registries.VotingRegistry;
+import com.github.nsilbernagel.discordbot.vote.VotingRegistry;
 import com.github.nsilbernagel.discordbot.vote.KickVoting;
 import com.github.nsilbernagel.discordbot.vote.Vote;
 
