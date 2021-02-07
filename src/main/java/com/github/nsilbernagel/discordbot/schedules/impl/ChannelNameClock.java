@@ -35,6 +35,10 @@ public class ChannelNameClock {
 
   @Scheduled(cron = "0 0 */1 * * ?")
   public void changeChannelName() {
+    if (this.channel == null) {
+      return;
+    }
+
     CustomTime time = new CustomTime();
     if (time.getHour() >= 6 && time.getHour() < 12) {
       this.channel.edit(spec -> spec.setName(time.getString() + " |  Morgenrunde")).block();
@@ -47,9 +51,10 @@ public class ChannelNameClock {
 
   @PreDestroy
   public void shutdown() {
-    if (this.channelId.equals("")) {
+    if (this.channel == null) {
       return;
     }
+
     this.channel.edit(spec -> spec.setName("Stammtisch")).block();
   }
 
