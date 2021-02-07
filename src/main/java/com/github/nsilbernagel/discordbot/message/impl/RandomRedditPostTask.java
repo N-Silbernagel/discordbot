@@ -51,6 +51,6 @@ public class RandomRedditPostTask extends AbstractMessageTask implements IMessag
 
   @Override
   public void execute() {
-    this.answerMessage(this.getRandomPost());
+    this.answerMessage(this.getRandomPost()).block();
   }
 }

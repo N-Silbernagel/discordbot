@@ -28,6 +28,6 @@ public class InsultTask extends AbstractMessageTask implements IMessageTask {
         })
         .block();
 
-    this.answerMessage(HtmlUtils.htmlUnescape(insult));
+    this.answerMessage(HtmlUtils.htmlUnescape(insult)).block();
   }
 }

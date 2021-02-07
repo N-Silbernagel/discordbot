@@ -69,10 +69,10 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
 
     if (!enoughVotes) {
       this.answerMessage("Noch " + runningKickVoting.remainingVotes() + " Stimmen bis "
-          + memberToKick.getDisplayName() + " rausgeworfen wird.");
+          + memberToKick.getDisplayName() + " rausgeworfen wird.").block();
     } else {
       this.registry.getVotings().remove(runningKickVoting);
-      this.answerMessage(memberToKick.getDisplayName() + " gekickt.");
+      this.answerMessage(memberToKick.getDisplayName() + " gekickt.").block();
     }
   }
 

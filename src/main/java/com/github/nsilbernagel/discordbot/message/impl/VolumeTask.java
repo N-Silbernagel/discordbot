@@ -22,7 +22,7 @@ public class VolumeTask extends AbstractMessageTask implements IMessageTask {
   public void execute() {
 
     if (this.messageToTaskHandler.getCommandParameters().size() == 0) {
-      this.answerMessage("Aktuelle Lautstärke: " + this.lavaPlayerAudioProvider.getPlayer().getVolume() + "%");
+      this.answerMessage("Aktuelle Lautstärke: " + this.lavaPlayerAudioProvider.getPlayer().getVolume() + "%").block();
       return;
     }
 
