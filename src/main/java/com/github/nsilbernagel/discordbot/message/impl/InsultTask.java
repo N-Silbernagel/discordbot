@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.HtmlUtils;
 
-import discord4j.core.object.entity.Message;
-
 @Component
 public class InsultTask extends AbstractMessageTask implements IMessageTask {
 
@@ -19,9 +17,7 @@ public class InsultTask extends AbstractMessageTask implements IMessageTask {
   }
 
   @Override
-  public void execute(Message message) {
-    this.message = message;
-
+  public void execute() {
     String insult = WebClient.create("https://evilinsult.com")
         .get()
         .uri("/generate_insult.php?lang=en&type=text")

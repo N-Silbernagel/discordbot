@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
 import discord4j.rest.http.client.ClientException;
 
 @Component
@@ -22,17 +21,15 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
   private VotingRegistry registry;
 
   @Override
-  public void execute(Message message) {
-    this.message = message;
-
-    Guild guild = this.message
+  public void execute() {
+    Guild guild = this.getMessage()
         .getGuild()
         .doOnError(error -> {
           throw new TaskException(error);
         })
         .block();
 
-    Member msgAuthor = this.message
+    Member msgAuthor = this.getMessage()
         .getAuthorAsMember()
         .doOnError(error -> {
           throw new TaskException(error);
@@ -42,7 +39,7 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
     Member memberToKick = null;
 
     try {
-      memberToKick = this.message
+      memberToKick = this.getMessage()
           .getUserMentions()
           .filter((userMention) -> !userMention.isBot())
           .blockFirst()
@@ -60,7 +57,7 @@ public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
       throw new TaskException("Du hast bereits an dieser Abstimmung teilgenommen.");
     }
 
-    Vote voteByMsgAuthor = new Vote(msgAuthor, this.message.getTimestamp());
+    Vote voteByMsgAuthor = new Vote(msgAuthor, this.getMessage().getTimestamp());
 
     boolean enoughVotes = false;
 

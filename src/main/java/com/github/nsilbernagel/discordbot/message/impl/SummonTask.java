@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.Message;
 import discord4j.voice.VoiceConnection;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,14 +35,12 @@ public class SummonTask extends AbstractMessageTask implements IMessageTask {
   private LeaveTask leaveTask;
 
   @Override
-  public void execute(Message message) {
-    this.message = message;
-
+  public void execute() {
     if (this.voiceConnection.isPresent()) {
-      this.leaveTask.execute(message);
+      this.leaveTask.execute();
     }
 
-    this.message.getAuthorAsMember()
+    this.getMessage().getAuthorAsMember()
         .flatMap(Member::getVoiceState)
         .flatMap(VoiceState::getChannel)
         .flatMap(channel -> channel.join(spec -> spec.setProvider(lavaPlayerAudioProvider)))

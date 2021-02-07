@@ -3,12 +3,9 @@ package com.github.nsilbernagel.discordbot.message.impl;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.message.FalseInputException;
 import com.github.nsilbernagel.discordbot.message.IMessageTask;
-import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import discord4j.core.object.entity.Message;
 
 @Component
 public class VolumeTask extends AbstractMessageTask implements IMessageTask {
@@ -19,14 +16,10 @@ public class VolumeTask extends AbstractMessageTask implements IMessageTask {
   }
 
   @Autowired
-  private MessageToTaskHandler messageToTaskHandler;
-
-  @Autowired
   private LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
   @Override
-  public void execute(Message message) {
-    this.message = message;
+  public void execute() {
 
     if (this.messageToTaskHandler.getCommandParameters().size() == 0) {
       this.answerMessage("Aktuelle Lautstärke: " + this.lavaPlayerAudioProvider.getPlayer().getVolume() + "%");

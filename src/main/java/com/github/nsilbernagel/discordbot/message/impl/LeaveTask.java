@@ -7,7 +7,6 @@ import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import discord4j.core.object.entity.Message;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.voice.VoiceConnection;
 
@@ -24,13 +23,11 @@ public class LeaveTask extends AbstractMessageTask implements IMessageTask {
   private SummonTask summonTask;
 
   @Override
-  public void execute(Message message) {
-    this.message = message;
-
+  public void execute() {
     Optional<VoiceConnection> existingVoiceConnection = summonTask.getVoiceConnection();
 
     if (!existingVoiceConnection.isPresent()) {
-      message.addReaction(ReactionEmoji.unicode("\u274c")).block();
+      this.getMessage().addReaction(ReactionEmoji.unicode("\u274c")).block();
       return;
     }
 

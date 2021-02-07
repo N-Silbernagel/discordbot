@@ -4,16 +4,16 @@ import com.github.nsilbernagel.discordbot.message.IMessageTask;
 
 import org.springframework.stereotype.Component;
 
-import discord4j.core.object.entity.Message;
-
 @Component
 public class PongTask extends AbstractMessageTask implements IMessageTask {
   public final static String KEYWORD = "ping";
 
   @Override
-  public void execute(Message message) {
-    this.message = message;
-    message.getChannel().flatMap(messageChannel -> messageChannel.createMessage("pong")).subscribe();
+  public void execute() {
+    this.getMessage()
+        .getChannel()
+        .flatMap(messageChannel -> messageChannel.createMessage("pong"))
+        .block();
   }
 
   public boolean canHandle(String keyword) {

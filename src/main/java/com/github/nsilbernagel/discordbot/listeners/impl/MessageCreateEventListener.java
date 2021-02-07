@@ -42,7 +42,7 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
 
     tasks.forEach(task -> {
       try {
-        task.execute(event.getMessage());
+        task.execute();
       } catch (TaskException taskLogicError) {
         if (taskLogicError.hasMessage()) {
           event.getMessage().getChannel()

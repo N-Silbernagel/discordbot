@@ -6,8 +6,6 @@ import com.github.nsilbernagel.discordbot.message.TaskException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import discord4j.core.object.entity.Message;
-
 @Component
 public class RandomRedditPostTask extends AbstractMessageTask implements IMessageTask {
 
@@ -52,9 +50,7 @@ public class RandomRedditPostTask extends AbstractMessageTask implements IMessag
   }
 
   @Override
-  public void execute(Message message) {
-    this.message = message;
-
+  public void execute() {
     this.answerMessage(this.getRandomPost());
   }
 }

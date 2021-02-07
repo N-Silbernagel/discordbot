@@ -22,6 +22,9 @@ public class MessageToTaskHandler {
   private List<IMessageTask> tasks;
 
   @Getter
+  private Message message;
+
+  @Getter
   private String command;
 
   @Getter
@@ -45,6 +48,8 @@ public class MessageToTaskHandler {
    * Get the right task implementation depending on the keyword that was used.
    */
   public List<IMessageTask> getMessageTasks(Message message) {
+    this.message = message;
+
     if (!message.getAuthor().isPresent() || message.getAuthor().get().isBot()) {
       return new ArrayList<IMessageTask>();
     }
