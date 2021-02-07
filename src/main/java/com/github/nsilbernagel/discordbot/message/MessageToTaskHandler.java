@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.nsilbernagel.discordbot.guard.annotations.SpamRegistry;
 import com.github.nsilbernagel.discordbot.message.impl.AbstractMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class MessageToTaskHandler {
 
   @Autowired
   private List<AbstractMessageTask> tasks;
+
+  @Autowired
+  private SpamRegistry spamRegistry;
 
   @Getter
   private Message message;
@@ -57,6 +61,11 @@ public class MessageToTaskHandler {
     }
 
     if (!message.getContent().startsWith(commandToken)) {
+      return new ArrayList<AbstractMessageTask>();
+    }
+
+    if (spamRegistry.memberHasExceededThreshold(message.getAuthorAsMember().block())) {
+      message.addReaction(ReactionEmoji.unicode("👮‍♂️")).subscribe();
       return new ArrayList<AbstractMessageTask>();
     }
 
