@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import org.springframework.stereotype.Component;
@@ -8,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.HtmlUtils;
 
 @Component
-public class InsultTask extends AbstractMessageTask implements IMessageTask {
+public class InsultTask extends AbstractMessageTask {
 
   public final static String KEYWORD = "beleidige";
 
@@ -17,7 +16,7 @@ public class InsultTask extends AbstractMessageTask implements IMessageTask {
   }
 
   @Override
-  public void execute() {
+  public void action() {
     String insult = WebClient.create("https://evilinsult.com")
         .get()
         .uri("/generate_insult.php?lang=en&type=text")

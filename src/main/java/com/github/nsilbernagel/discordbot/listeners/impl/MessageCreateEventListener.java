@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
-import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 import com.github.nsilbernagel.discordbot.message.TaskException;
+import com.github.nsilbernagel.discordbot.message.impl.AbstractMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +38,7 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
       return;
     }
 
-    List<IMessageTask> tasks = messageToTaskHandler.getMessageTasks(message);
+    List<AbstractMessageTask> tasks = messageToTaskHandler.getMessageTasks(message);
 
     tasks.forEach(task -> {
       try {

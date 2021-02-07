@@ -1,13 +1,12 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
-public class RandomRedditPostTask extends AbstractMessageTask implements IMessageTask {
+public class RandomRedditPostTask extends AbstractMessageTask {
 
   public static final String KEYWORD = "reddit";
 
@@ -50,7 +49,7 @@ public class RandomRedditPostTask extends AbstractMessageTask implements IMessag
   }
 
   @Override
-  public void execute() {
+  public void action() {
     this.answerMessage(this.getRandomPost()).block();
   }
 }

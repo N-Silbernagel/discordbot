@@ -1,14 +1,13 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.message.FalseInputException;
-import com.github.nsilbernagel.discordbot.message.IMessageTask;
 
 import org.springframework.stereotype.Component;
 
 import reactor.core.publisher.Mono;
 
 @Component
-public class BulkDeleteTask extends AbstractMessageTask implements IMessageTask {
+public class BulkDeleteTask extends AbstractMessageTask {
 
   public final static String KEYWORD = "delete";
 
@@ -17,7 +16,7 @@ public class BulkDeleteTask extends AbstractMessageTask implements IMessageTask 
   }
 
   @Override
-  public void execute() {
+  public void action() {
     if (this.messageToTaskHandler.getCommandParameters().size() == 0) {
       throw new FalseInputException("Bitte gib eine Zahl an.");
     }

@@ -2,8 +2,6 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.message.IMessageTask;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +9,7 @@ import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.voice.VoiceConnection;
 
 @Component
-public class LeaveTask extends AbstractMessageTask implements IMessageTask {
+public class LeaveTask extends AbstractMessageTask {
 
   public final static String KEYWORD = "leave";
 
@@ -23,7 +21,7 @@ public class LeaveTask extends AbstractMessageTask implements IMessageTask {
   private SummonTask summonTask;
 
   @Override
-  public void execute() {
+  public void action() {
     Optional<VoiceConnection> existingVoiceConnection = summonTask.getVoiceConnection();
 
     if (!existingVoiceConnection.isPresent()) {

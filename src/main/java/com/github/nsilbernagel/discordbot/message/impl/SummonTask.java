@@ -3,7 +3,6 @@ package com.github.nsilbernagel.discordbot.message.impl;
 import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
-import com.github.nsilbernagel.discordbot.message.IMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,7 @@ import lombok.Setter;
 import reactor.core.publisher.Mono;
 
 @Component
-public class SummonTask extends AbstractMessageTask implements IMessageTask {
+public class SummonTask extends AbstractMessageTask {
 
   public final static String KEYWORD = "summon";
 
@@ -35,7 +34,7 @@ public class SummonTask extends AbstractMessageTask implements IMessageTask {
   private LeaveTask leaveTask;
 
   @Override
-  public void execute() {
+  public void action() {
     if (this.voiceConnection.isPresent()) {
       this.leaveTask.execute();
     }

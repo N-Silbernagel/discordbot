@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.IMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.registries.VotingRegistry;
 import com.github.nsilbernagel.discordbot.vote.KickVoting;
@@ -14,14 +13,14 @@ import discord4j.core.object.entity.Member;
 import discord4j.rest.http.client.ClientException;
 
 @Component
-public class VoteKickTask extends AbstractMessageTask implements IMessageTask {
+public class VoteKickTask extends AbstractMessageTask {
   public final static String KEYWORD = "votekick";
 
   @Autowired
   private VotingRegistry registry;
 
   @Override
-  public void execute() {
+  public void action() {
     Guild guild = this.getMessage()
         .getGuild()
         .doOnError(error -> {

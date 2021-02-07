@@ -1,15 +1,13 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.IMessageTask;
-
 import org.springframework.stereotype.Component;
 
 @Component
-public class PongTask extends AbstractMessageTask implements IMessageTask {
+public class PongTask extends AbstractMessageTask {
   public final static String KEYWORD = "ping";
 
   @Override
-  public void execute() {
+  public void action() {
     this.getMessage()
         .getChannel()
         .flatMap(messageChannel -> messageChannel.createMessage("pong"))

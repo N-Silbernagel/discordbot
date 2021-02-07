@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.github.nsilbernagel.discordbot.message.impl.AbstractMessageTask;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ public class MessageToTaskHandler {
   private String commandToken;
 
   @Autowired
-  private List<IMessageTask> tasks;
+  private List<AbstractMessageTask> tasks;
 
   @Getter
   private Message message;
@@ -33,9 +35,9 @@ public class MessageToTaskHandler {
   /**
    * Get tasks that can handle a given keywork
    */
-  private List<IMessageTask> getTasksForKeyword() {
-    List<IMessageTask> result = new ArrayList<>();
-    for (IMessageTask task : tasks) {
+  private List<AbstractMessageTask> getTasksForKeyword() {
+    List<AbstractMessageTask> result = new ArrayList<>();
+    for (AbstractMessageTask task : tasks) {
       if (task.canHandle(this.command)) {
         result.add(task);
       }
@@ -47,15 +49,15 @@ public class MessageToTaskHandler {
   /*
    * Get the right task implementation depending on the keyword that was used.
    */
-  public List<IMessageTask> getMessageTasks(Message message) {
+  public List<AbstractMessageTask> getMessageTasks(Message message) {
     this.message = message;
 
     if (!message.getAuthor().isPresent() || message.getAuthor().get().isBot()) {
-      return new ArrayList<IMessageTask>();
+      return new ArrayList<AbstractMessageTask>();
     }
 
     if (!message.getContent().startsWith(commandToken)) {
-      return new ArrayList<IMessageTask>();
+      return new ArrayList<AbstractMessageTask>();
     }
 
     String messageContent = message.getContent().replaceFirst(commandToken, "");
@@ -68,13 +70,13 @@ public class MessageToTaskHandler {
       this.commandParameters = new ArrayList<String>();
     }
 
-    List<IMessageTask> tasks = getTasksForKeyword();
+    List<AbstractMessageTask> tasks = getTasksForKeyword();
 
     if (tasks.isEmpty()) {
       // react to members message with question mark emoji to show that the command
       // was not found
       message.addReaction(ReactionEmoji.unicode("\u2753")).block();
-      return new ArrayList<IMessageTask>();
+      return new ArrayList<AbstractMessageTask>();
     }
 
     return tasks;
