@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ResumeTask extends AbstractMessageTask {
 
-  public final static String KEYWORD = "weiter";
+  public final static String KEYWORD = "resume";
 
   @Autowired
   private LavaPlayerAudioProvider lavaPlayerAudioProvider;
