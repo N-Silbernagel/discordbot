@@ -67,7 +67,7 @@ public class ExclusiveBotChannel {
         .block()
         .createMessage(msg -> msg
             .setContent(
-                "Bitte schreibe nur über den Textchannel '" + this.exclusiveBotChannel.getName() + "' mit mir."))
+                "Ich bin nur über <#" + this.exclusiveBotChannelIdString + "> erreichbar."))
         .block();
   }
 }
