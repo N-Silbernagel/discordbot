@@ -52,7 +52,12 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
   @Override
   public void execute(MessageCreateEvent event) {
     this.message = event.getMessage();
-    this.messageChannel = (TextChannel) this.message.getChannel().block();
+    try {
+      this.messageChannel = (TextChannel) this.message.getChannel().block();
+    } catch (ClassCastException e) {
+      // probably using a private channel which we dont support yet
+      return;
+    }
 
     if (!this.channelBlacklist.canAnswerOnChannel(this.messageChannel)) {
       return;
