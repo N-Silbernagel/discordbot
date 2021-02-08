@@ -14,7 +14,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.annotation.DependsOn;
@@ -51,7 +50,9 @@ public class DiscordbotApplication implements CommandLineRunner {
       throw new MissingTokenException();
     }
 
-    return DiscordClient.create(this.botToken).login().block();
+    return DiscordClient.create(this.botToken)
+        .login()
+        .block();
   }
 
   @Bean
