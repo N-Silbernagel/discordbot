@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.vote;
+package com.github.nsilbernagel.discordbot.vote.dto;
 
 import java.time.Instant;
 

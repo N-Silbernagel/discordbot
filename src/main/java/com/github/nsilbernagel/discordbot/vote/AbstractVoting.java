@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.nsilbernagel.discordbot.vote.dto.Vote;
+
 import discord4j.core.object.entity.Member;
 import lombok.Getter;
 import lombok.Setter;
