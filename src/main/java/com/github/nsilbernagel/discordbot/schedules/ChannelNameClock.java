@@ -8,17 +8,15 @@ import com.github.nsilbernagel.discordbot.schedules.dto.CustomTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.VoiceChannel;
 
-@Component
 public class ChannelNameClock {
 
-  @Value("${app.discord.channels.rename:}")
-  private String channelId;
+  @Value("${app.discord.channels.rename}")
+  private Snowflake channelId;
 
   @Autowired
   private GatewayDiscordClient discordClient;
@@ -27,18 +25,11 @@ public class ChannelNameClock {
 
   @PostConstruct
   public void initialize() {
-    if (this.channelId.equals("")) {
-      return;
-    }
-    this.channel = (VoiceChannel) discordClient.getChannelById(Snowflake.of(channelId)).block();
+    this.channel = (VoiceChannel) discordClient.getChannelById(channelId).block();
   }
 
   @Scheduled(cron = "0 0 */1 * * ?")
   public void changeChannelName() {
-    if (this.channel == null) {
-      return;
-    }
-
     CustomTime time = new CustomTime();
     if (time.getHour() >= 6 && time.getHour() < 12) {
       this.channel.edit(spec -> spec.setName(time.getString() + " |  Morgenrunde")).block();
@@ -51,10 +42,6 @@ public class ChannelNameClock {
 
   @PreDestroy
   public void shutdown() {
-    if (this.channel == null) {
-      return;
-    }
-
     this.channel.edit(spec -> spec.setName("Stammtisch")).block();
   }
 

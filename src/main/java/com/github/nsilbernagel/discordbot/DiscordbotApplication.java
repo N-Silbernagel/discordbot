@@ -3,6 +3,8 @@ package com.github.nsilbernagel.discordbot;
 import java.util.List;
 
 import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
+import com.github.nsilbernagel.discordbot.schedules.ChannelNameClock;
+
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 
@@ -11,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.annotation.DependsOn;
@@ -48,5 +52,11 @@ public class DiscordbotApplication implements CommandLineRunner {
     }
 
     return DiscordClient.create(this.botToken).login().block();
+  }
+
+  @Bean
+  @ConditionalOnExpression("!T(org.springframework.util.StringUtils).isEmpty('${app.discord.channels.rename:}')")
+  public ChannelNameClock channelNameClock() {
+    return new ChannelNameClock();
   }
 }
