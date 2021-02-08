@@ -62,10 +62,6 @@ public class MessageToTaskHandler {
 
     this.msgAuthor = this.message.getAuthorAsMember().block();
 
-    if (!message.getContent().startsWith(commandToken) || this.msgAuthor.isBot()) {
-      return new ArrayList<AbstractMessageTask>();
-    }
-
     if (spamRegistry.memberHasExceededThreshold(this.msgAuthor)) {
       message.addReaction(ReactionEmoji.unicode("👮‍♂️")).subscribe();
       return new ArrayList<AbstractMessageTask>();

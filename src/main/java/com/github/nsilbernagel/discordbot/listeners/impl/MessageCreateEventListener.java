@@ -13,10 +13,14 @@ import com.github.nsilbernagel.discordbot.message.impl.AbstractMessageTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
+import discord4j.common.util.Snowflake;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.Channel;
+import discord4j.core.object.entity.channel.TextChannel;
 
 @Component
 public class MessageCreateEventListener extends AbstractEventListener<MessageCreateEvent> {
@@ -26,11 +30,25 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
   @Value("${app.guard.spam.enabled:false}")
   private boolean spamProtectionEnabled;
 
+  @Value("${app.discord.channels.exclusive:}")
+  /**
+   * An ID of a text channel that the bot should soley act on
+   */
+  private String exclusiveBotChannelIdString;
+
+  @Value("${app.discord.command-token:!}")
+  private String commandToken;
+
   @Autowired
   private SpamRegistry spamRegistry;
 
   @Autowired
+  private GatewayDiscordClient gatewayDiscordClient;
+
+  @Autowired
   private MessageToTaskHandler messageToTaskHandler;
+
+  private Message message;
 
   @Override
   public Class<MessageCreateEvent> getEventType() {
@@ -39,13 +57,24 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
 
   @Override
   public void execute(MessageCreateEvent event) {
-    Message message = event.getMessage();
+    this.message = event.getMessage();
 
-    if (!this.canAnswerOnChannel(message.getChannel().block())) {
+    if (!this.canAnswerOnChannel(this.message.getChannel().block())) {
       return;
     }
 
-    List<AbstractMessageTask> tasks = messageToTaskHandler.getMessageTasks(message);
+    if (!this.message.getContent().startsWith(commandToken)) {
+      return;
+    }
+
+    if (!StringUtils.isEmpty(this.exclusiveBotChannelIdString)) {
+      boolean messageComingFromExclusiveBotChannel = this.handleExclusiveBotChannel();
+      if (!messageComingFromExclusiveBotChannel) {
+        return;
+      }
+    }
+
+    List<AbstractMessageTask> tasks = messageToTaskHandler.getMessageTasks(this.message);
 
     if (tasks.size() > 0) {
       this.spamRegistry.countMemberUp(this.messageToTaskHandler.getMsgAuthor());
@@ -78,5 +107,35 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
             .equals(channel))
         .findFirst()
         .isEmpty();
+  }
+
+  private boolean handleExclusiveBotChannel() {
+    Snowflake exclusiveBotChannelId = Snowflake.of(this.exclusiveBotChannelIdString);
+
+    TextChannel exclusiveChannel;
+    try {
+      exclusiveChannel = (TextChannel) this.gatewayDiscordClient.getChannelById(exclusiveBotChannelId)
+          .block();
+    } catch (Throwable e) {
+      throw new RuntimeException("Textchannel configured under prop app.discord.channels.exclusive could not be found.",
+          e);
+    }
+
+    boolean isExclusiveChannel = this.message.getChannelId().equals(exclusiveBotChannelId);
+    if (isExclusiveChannel) {
+      return true;
+    }
+    // delete message
+    this.message.delete().subscribe();
+    // tell user privatly to use exclusive channel
+    this.message.getAuthor()
+        .get()
+        .getPrivateChannel()
+        .block()
+        .createMessage(msg -> msg
+            .setContent("Bitte schreibe nur über den Textchannel '" + exclusiveChannel.getName() + "' mit mir."))
+        .block();
+
+    return false;
   }
 }
