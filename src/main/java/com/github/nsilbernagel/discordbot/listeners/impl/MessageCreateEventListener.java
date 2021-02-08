@@ -1,9 +1,8 @@
 package com.github.nsilbernagel.discordbot.listeners.impl;
 
-import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 
+import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
 import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
@@ -17,13 +16,11 @@ import org.springframework.stereotype.Component;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.Channel;
+import discord4j.core.object.entity.channel.TextChannel;
+import lombok.Getter;
 
 @Component
 public class MessageCreateEventListener extends AbstractEventListener<MessageCreateEvent> {
-  @Value("${app.discord.channels.blacklist:}")
-  private BigInteger[] channelBlacklist;
-
   @Value("${app.guard.spam.enabled:false}")
   private boolean spamProtectionEnabled;
 
@@ -37,9 +34,15 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
   private MessageToTaskHandler messageToTaskHandler;
 
   @Autowired
+  private ChannelBlacklist channelBlacklist;
+
+  @Autowired
   private ExclusiveBotChannel exclusiveBotChannel;
 
   private Message message;
+
+  @Getter
+  private TextChannel messageChannel;
 
   @Override
   public Class<MessageCreateEvent> getEventType() {
@@ -49,8 +52,9 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
   @Override
   public void execute(MessageCreateEvent event) {
     this.message = event.getMessage();
+    this.messageChannel = (TextChannel) this.message.getChannel().block();
 
-    if (!this.canAnswerOnChannel(this.message.getChannel().block())) {
+    if (!this.channelBlacklist.canAnswerOnChannel(this.messageChannel)) {
       return;
     }
 
@@ -74,27 +78,11 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
         task.execute();
       } catch (TaskException taskLogicError) {
         if (taskLogicError.hasMessage()) {
-          event.getMessage().getChannel()
-              .flatMap(channel -> channel.createMessage(taskLogicError.getMessage()))
+          this.getMessageChannel()
+              .createMessage(taskLogicError.getMessage())
               .block();
         }
       }
     });
-  }
-
-  /**
-   * Check if bot should answer on the message's channel as per the
-   * app.discord.channels.blacklist property
-   *
-   * @param channelInQuestion
-   *                            the channel of the current message
-   */
-  private boolean canAnswerOnChannel(Channel channelInQuestion) {
-    return Arrays.stream(this.channelBlacklist)
-        .filter((channel) -> channelInQuestion.getId()
-            .asBigInteger()
-            .equals(channel))
-        .findFirst()
-        .isEmpty();
   }
 }
