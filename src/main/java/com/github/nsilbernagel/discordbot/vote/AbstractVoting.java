@@ -22,26 +22,29 @@ public abstract class AbstractVoting {
   private long votesNeeded;
 
   @Getter
-  private List<Vote> votes;
+  private List<Vote> votes = new ArrayList<Vote>();
 
   @Getter
   @Setter
-  private int votesPerUser;
+  private int votesPerUser = 1;
 
   @Getter
   /** time until voting gets deleted */
-  private Duration ttl;
+  private Duration ttl = Duration.ofMinutes(10);
 
   @Getter
   /** the message because of which the voting was started */
   private Message trigger;
 
-  public AbstractVoting(long votesNeeded, int votesPerUser, Duration ttl, Message trigger) {
+  public AbstractVoting(long votesNeeded, Message trigger) {
     this.votesNeeded = votesNeeded;
-    this.votesPerUser = votesPerUser;
-    this.ttl = ttl;
-    this.votes = new ArrayList<Vote>();
     this.trigger = trigger;
+  }
+
+  public AbstractVoting(long votesNeeded, Message trigger, Duration ttl) {
+    this.votesNeeded = votesNeeded;
+    this.trigger = trigger;
+    this.ttl = ttl;
   }
 
   /**

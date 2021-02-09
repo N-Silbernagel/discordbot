@@ -1,7 +1,5 @@
 package com.github.nsilbernagel.discordbot.vote;
 
-import java.time.Duration;
-
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import discord4j.core.object.entity.Member;
@@ -11,7 +9,7 @@ public class KickVoting extends AbstractVoting {
   final public static int requiredVoiceChannelMembers = 3;
 
   public KickVoting(Member memberToKick, Message trigger) {
-    super(calculateVotesRequired(memberToKick), 1, Duration.ofMinutes(10), trigger);
+    super(calculateVotesRequired(memberToKick), trigger);
 
     this.targetMember = memberToKick;
   }
