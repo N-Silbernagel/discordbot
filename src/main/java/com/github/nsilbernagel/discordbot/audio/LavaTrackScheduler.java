@@ -21,6 +21,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
   @Autowired
   private LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
+  @Autowired
   private DiscordbotApplication discordbotApplication;
 
   private final BlockingQueue<AudioTrack> queue;
