@@ -16,7 +16,6 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class SpamRegistry {
-  @Getter
   private Map<Member, Integer> memberMessageCountMap = new HashMap<Member, Integer>();
 
   @Value("${app.guard.spam.commands.allowed:3}")
@@ -24,6 +23,10 @@ public class SpamRegistry {
 
   @Value("${app.guard.spam.reduction.timeout:60000}")
   private Integer reductionInterval;
+
+  @Getter
+  @Value("${app.guard.spam.enabled:false}")
+  private boolean spamProtectionEnabled;
 
   /**
    * Count up the users messages counter or register him if not present yet
@@ -52,7 +55,7 @@ public class SpamRegistry {
 
   /**
    * Reduce the spam count of a member
-   * 
+   *
    * @param member
    * @return new spam count
    */
@@ -77,7 +80,7 @@ public class SpamRegistry {
 
   /**
    * Schedule the reduction of a members spam count
-   * 
+   *
    * @param member
    */
   private void scheduleReduction(Member member) {

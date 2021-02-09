@@ -21,9 +21,6 @@ import lombok.Getter;
 
 @Component
 public class MessageCreateEventListener extends AbstractEventListener<MessageCreateEvent> {
-  @Value("${app.guard.spam.enabled:false}")
-  private boolean spamProtectionEnabled;
-
   @Value("${app.discord.command-token:!}")
   private String commandToken;
 
@@ -74,7 +71,7 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
 
     List<AbstractMessageTask> tasks = messageToTaskHandler.getMessageTasks(this.message);
 
-    if (tasks.size() > 0) {
+    if (tasks.size() > 0 && this.spamRegistry.isSpamProtectionEnabled()) {
       this.spamRegistry.countMemberUp(this.messageToTaskHandler.getMsgAuthor());
     }
 
