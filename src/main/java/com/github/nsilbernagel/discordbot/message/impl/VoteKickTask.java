@@ -44,7 +44,7 @@ public class VoteKickTask extends AbstractMessageTask {
 
     KickVoting runningKickVoting = this.registry
         .getByMember(memberToKick, KickVoting.class)
-        .orElse(this.registry.createKickVoting(memberToKick));
+        .orElse(this.registry.createKickVoting(memberToKick, this.getMessage()));
 
     if (runningKickVoting.memberHasVotedAsOftenAsHeMay(this.messageToTaskHandler.getMsgAuthor())) {
       throw new TaskException("Du darfst nicht noch einmal an dieser Abstimmung teilnehmen.");

@@ -5,12 +5,13 @@ import java.time.Duration;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Message;
 
 public class KickVoting extends AbstractVoting {
   final public static int requiredVoiceChannelMembers = 3;
 
-  public KickVoting(Member memberToKick) {
-    super(calculateVotesRequired(memberToKick), 1, Duration.ofMinutes(10));
+  public KickVoting(Member memberToKick, Message trigger) {
+    super(calculateVotesRequired(memberToKick), 1, Duration.ofMinutes(10), trigger);
 
     this.targetMember = memberToKick;
   }

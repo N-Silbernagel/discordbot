@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Message;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,8 +28,8 @@ public class VotingRegistry {
         .findFirst();
   }
 
-  public KickVoting createKickVoting(Member member) {
-    KickVoting voting = new KickVoting(member);
+  public KickVoting createKickVoting(Member member, Message trigger) {
+    KickVoting voting = new KickVoting(member, trigger);
     this.votings.add(voting);
     return voting;
   }

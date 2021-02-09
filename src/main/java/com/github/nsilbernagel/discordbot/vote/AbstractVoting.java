@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import com.github.nsilbernagel.discordbot.vote.dto.Vote;
 
 import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Message;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,11 +32,16 @@ public abstract class AbstractVoting {
   /** time until voting gets deleted */
   private Duration ttl;
 
-  public AbstractVoting(long votesNeeded, int votesPerUser, Duration ttl) {
+  @Getter
+  /** the message because of which the voting was started */
+  private Message trigger;
+
+  public AbstractVoting(long votesNeeded, int votesPerUser, Duration ttl, Message trigger) {
     this.votesNeeded = votesNeeded;
     this.votesPerUser = votesPerUser;
     this.ttl = ttl;
     this.votes = new ArrayList<Vote>();
+    this.trigger = trigger;
   }
 
   /**
