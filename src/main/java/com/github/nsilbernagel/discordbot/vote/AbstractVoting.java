@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot.vote;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.nsilbernagel.discordbot.vote.dto.Vote;
 
@@ -63,12 +64,13 @@ public abstract class AbstractVoting {
     return this.votesNeeded - this.votes.size();
   }
 
-  public boolean memberHasVoted(Member member) {
-    return this.votes
+  public boolean memberHasVotedAsOftenAsHeMay(Member member) {
+    List<Vote> votesByMember = this.votes
         .stream()
-        .filter((vote) -> vote.getVoter().getId().compareTo(member.getId()) == 0)
-        .findFirst()
-        .isPresent();
+        .filter((vote) -> vote.getVoter().getId().equals(member.getId()))
+        .collect(Collectors.toList());
+
+    return votesByMember.size() >= this.votesPerUser;
   }
 
   /**

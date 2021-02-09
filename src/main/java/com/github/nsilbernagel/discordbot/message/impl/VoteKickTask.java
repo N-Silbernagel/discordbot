@@ -46,8 +46,8 @@ public class VoteKickTask extends AbstractMessageTask {
         .getByMember(memberToKick, KickVoting.class)
         .orElse(this.registry.createKickVoting(memberToKick));
 
-    if (runningKickVoting.memberHasVoted(this.messageToTaskHandler.getMsgAuthor())) {
-      throw new TaskException("Du hast bereits an dieser Abstimmung teilgenommen.");
+    if (runningKickVoting.memberHasVotedAsOftenAsHeMay(this.messageToTaskHandler.getMsgAuthor())) {
+      throw new TaskException("Du darfst nicht noch einmal an dieser Abstimmung teilnehmen.");
     }
 
     Vote voteByMsgAuthor = new Vote(this.messageToTaskHandler.getMsgAuthor(), this.getMessage().getTimestamp());
