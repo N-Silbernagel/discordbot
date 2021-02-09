@@ -1,8 +1,7 @@
-package com.github.nsilbernagel.discordbot.message.impl;
+package com.github.nsilbernagel.discordbot.message;
 
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
-import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

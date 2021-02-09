@@ -1,6 +1,7 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.audio.LavaTrackScheduler;
+import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

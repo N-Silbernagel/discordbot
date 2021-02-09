@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerException;
 import com.github.nsilbernagel.discordbot.audio.LavaResultHandler;
+import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import org.springframework.beans.factory.annotation.Autowired;
