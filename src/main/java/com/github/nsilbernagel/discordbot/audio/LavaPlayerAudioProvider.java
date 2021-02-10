@@ -2,6 +2,8 @@ package com.github.nsilbernagel.discordbot.audio;
 
 import java.nio.ByteBuffer;
 
+import javax.annotation.PostConstruct;
+
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -10,6 +12,7 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import discord4j.voice.AudioProvider;
@@ -25,6 +28,9 @@ public class LavaPlayerAudioProvider extends AudioProvider {
 
   @Getter
   private final AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+
+  @Autowired
+  private LavaTrackScheduler lavaTrackScheduler;
 
   public LavaPlayerAudioProvider() {
     // Allocate a ByteBuffer for Discord4J's AudioProvider to hold audio data
@@ -45,6 +51,11 @@ public class LavaPlayerAudioProvider extends AudioProvider {
 
     // Create an AudioPlayer so Discord4J can receive audio data
     this.player = this.playerManager.createPlayer();
+  }
+
+  @PostConstruct
+  private void attachListener() {
+    this.player.addListener(lavaTrackScheduler);
   }
 
   @Override

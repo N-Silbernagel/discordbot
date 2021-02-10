@@ -33,6 +33,8 @@ public class PlayTask extends AbstractMessageTask {
       summonTask.execute();
     }
 
+    // TODO: validate parameters (first is link)
+
     try {
       lavaPlayerAudioProvider.getPlayerManager()
           .loadItem(

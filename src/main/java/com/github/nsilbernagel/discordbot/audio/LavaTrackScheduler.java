@@ -3,7 +3,6 @@ package com.github.nsilbernagel.discordbot.audio;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import com.github.nsilbernagel.discordbot.DiscordbotApplication;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -12,17 +11,20 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 
 @Component
 public class LavaTrackScheduler extends AudioEventAdapter {
 
+  private AudioTrack currentTrack;
+
   @Autowired
   private LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
   @Autowired
-  private DiscordbotApplication discordbotApplication;
+  private GatewayDiscordClient discordClient;
 
   private final BlockingQueue<AudioTrack> queue;
 
@@ -51,15 +53,10 @@ public class LavaTrackScheduler extends AudioEventAdapter {
    * Start the next track, stopping the current one if it is playing.
    */
   public void nextTrack() {
-    this.lavaPlayerAudioProvider.getPlayer()
-        .startTrack(queue.poll(), false);
-  }
+    AudioTrack nextTrack = queue.poll();
 
-  @Override
-  public void onTrackStart(AudioPlayer player, AudioTrack track) {
-    this.discordbotApplication.getDiscordClient()
-        .updatePresence(Presence.online(Activity.playing(track.getInfo().title)))
-        .subscribe();
+    this.lavaPlayerAudioProvider.getPlayer()
+        .startTrack(nextTrack, false);
   }
 
   @Override
@@ -69,9 +66,46 @@ public class LavaTrackScheduler extends AudioEventAdapter {
     if (endReason.mayStartNext) {
       nextTrack();
     } else {
-      this.discordbotApplication.getDiscordClient()
-          .updatePresence(Presence.online())
-          .subscribe();
+      this.setPresenceOnline();
     }
+  }
+
+  @Override
+  public void onPlayerPause(AudioPlayer player) {
+    if (this.currentTrack == null) {
+      return;
+    }
+    this.discordClient.updatePresence(Presence.online(Activity.playing("⏸" + this.currentTrack.getInfo().title)))
+        .subscribe();
+  }
+
+  @Override
+  public void onPlayerResume(AudioPlayer player) {
+    if (this.currentTrack == null) {
+      return;
+    }
+    this.discordClient.updatePresence(Presence.online(Activity.playing(this.currentTrack.getInfo().title)))
+        .subscribe();
+  }
+
+  @Override
+  public void onTrackStart(AudioPlayer player, AudioTrack track) {
+    this.setPresencePlayingTrack(track);
+  }
+
+  private void setPresencePlayingTrack(AudioTrack track) {
+    this.currentTrack = track;
+
+    this.discordClient
+        .updatePresence(Presence.online(Activity.playing(track.getInfo().title)))
+        .subscribe();
+  }
+
+  private void setPresenceOnline() {
+    this.currentTrack = null;
+
+    this.discordClient
+        .updatePresence(Presence.online())
+        .subscribe();
   }
 }
