@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
 import com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric;
 
@@ -9,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VolumeTask extends AbstractMessageTask {
+public class VolumeTask extends AbstractMessageTask implements ExplainedMessageTask {
   public final static String KEYWORD = "volume";
 
   public boolean canHandle(String keyword) {
@@ -32,5 +33,13 @@ public class VolumeTask extends AbstractMessageTask {
     }
 
     this.lavaPlayerAudioProvider.getPlayer().setVolume(this.volumeParam);
+  }
+
+  public String getKeyword() {
+    return KEYWORD;
+  }
+
+  public String getExplaination() {
+    return "Die Lautstärke des Bot anpassen.";
   }
 }

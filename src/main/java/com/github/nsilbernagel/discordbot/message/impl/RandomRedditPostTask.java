@@ -1,13 +1,14 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
-public class RandomRedditPostTask extends AbstractMessageTask {
+public class RandomRedditPostTask extends AbstractMessageTask implements ExplainedMessageTask {
 
   public static final String KEYWORD = "reddit";
 
@@ -52,5 +53,13 @@ public class RandomRedditPostTask extends AbstractMessageTask {
   @Override
   public void action() {
     this.answerMessage(this.getRandomPost()).block();
+  }
+
+  public String getKeyword() {
+    return KEYWORD;
+  }
+
+  public String getExplaination() {
+    return "Einen zufälligen Reddit post suchen.";
   }
 }

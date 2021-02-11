@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ import lombok.Setter;
 import reactor.core.publisher.Mono;
 
 @Component
-public class SummonTask extends AbstractMessageTask {
+public class SummonTask extends AbstractMessageTask implements ExplainedMessageTask {
 
   public final static String KEYWORD = "summon";
 
@@ -48,5 +49,13 @@ public class SummonTask extends AbstractMessageTask {
           return Mono.empty();
         })
         .block();
+  }
+
+  public String getKeyword() {
+    return KEYWORD;
+  }
+
+  public String getExplaination() {
+    return "Den Bot in den Sprachchannel beschwören.";
   }
 }
