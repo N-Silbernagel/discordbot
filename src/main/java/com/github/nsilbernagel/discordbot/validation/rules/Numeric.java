@@ -14,12 +14,21 @@ public class Numeric
       return true;
     } else {
       try {
-        Integer.parseInt(this.commandParam.get());
-        return true;
+        Integer commandParamInteger = Integer.parseInt(this.commandParam.get());
+        return validateMinMax(commandParamInteger);
       } catch (NumberFormatException e) {
         return false;
       }
     }
+  }
+
+  private boolean validateMinMax(Integer commandParam) {
+    long min = this.commandField.getAnnotation(
+        com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric.class).min();
+    long max = this.commandField.getAnnotation(
+        com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric.class).max();
+
+    return commandParam >= min && commandParam <= max;
   }
 
   public Class<com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric> getCorrespondingAnnotation() {

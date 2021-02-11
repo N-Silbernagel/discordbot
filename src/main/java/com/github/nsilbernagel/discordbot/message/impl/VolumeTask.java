@@ -21,7 +21,7 @@ public class VolumeTask extends AbstractMessageTask {
   private LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
   @CommandParam(0)
-  @Numeric("Bitte gib eine Zahl an.")
+  @Numeric(value = "Bitte gib eine Zahl zwischen 0 und 100 an.", min = 0, max = 100)
   private Integer volumeParam;
 
   @Override
@@ -30,10 +30,6 @@ public class VolumeTask extends AbstractMessageTask {
     if (this.volumeParam == null) {
       this.answerMessage("Aktuelle Lautstärke: " + this.lavaPlayerAudioProvider.getPlayer().getVolume() + "%").block();
       return;
-    }
-
-    if (this.volumeParam < 0 || this.volumeParam > 100) {
-      throw new FalseInputException("Bitte gib eine Zahl zwischen 0 und 100 an.");
     }
 
     this.lavaPlayerAudioProvider.getPlayer().setVolume(this.volumeParam);
