@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.reaction.ReactionEmoji;
+import lombok.Getter;
 import reactor.core.publisher.Mono;
 
 abstract public class AbstractMessageTask {
   @Autowired
+  @Getter
   protected MessageToTaskHandler messageToTaskHandler;
 
   @Autowired

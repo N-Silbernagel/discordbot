@@ -9,6 +9,7 @@ import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 import com.github.nsilbernagel.discordbot.message.TaskException;
+import com.github.nsilbernagel.discordbot.validation.MessageTaskPreparer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +36,9 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
 
   @Autowired
   private ExclusiveBotChannel exclusiveBotChannel;
+
+  @Autowired
+  private MessageTaskPreparer messageTaskPreparer;
 
   private Message message;
 
@@ -77,7 +81,7 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
 
     tasks.forEach(task -> {
       try {
-        task.execute();
+        this.prepareAndExecuteTask(task);
       } catch (TaskException taskLogicError) {
         if (taskLogicError.hasMessage()) {
           this.getMessageChannel()
@@ -86,5 +90,11 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
         }
       }
     });
+  }
+
+  private void prepareAndExecuteTask(AbstractMessageTask task) throws TaskException {
+    this.messageTaskPreparer.execute(task);
+
+    task.execute();
   }
 }

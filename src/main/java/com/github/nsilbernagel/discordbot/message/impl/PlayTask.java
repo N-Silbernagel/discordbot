@@ -5,6 +5,8 @@ import com.github.nsilbernagel.discordbot.audio.LavaPlayerException;
 import com.github.nsilbernagel.discordbot.audio.LavaResultHandler;
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
+import com.github.nsilbernagel.discordbot.validation.CommandParam;
+import com.github.nsilbernagel.discordbot.validation.rules.annotations.Required;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +23,10 @@ public class PlayTask extends AbstractMessageTask {
 
   @Autowired
   private LavaResultHandler lavaResultHandler;
+
+  @CommandParam(0)
+  @Required("Bitte gib einen Link zu einer Audioquelle an.")
+  private String audioSourceString;
 
   public boolean canHandle(String keyword) {
     return KEYWORD.equals(keyword);
