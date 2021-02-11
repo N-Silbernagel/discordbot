@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.voice.VoiceConnection;
 
 @Component
-public class LeaveTask extends AbstractMessageTask {
+public class LeaveTask extends AbstractMessageTask implements ExplainedMessageTask {
 
   public final static String KEYWORD = "leave";
 
@@ -35,5 +36,13 @@ public class LeaveTask extends AbstractMessageTask {
         .disconnect()
         .doOnSuccess((v) -> summonTask.setVoiceConnection(Optional.empty()))
         .block();
+  }
+
+  public String getKeyword() {
+    return KEYWORD;
+  }
+
+  public String getExplaination() {
+    return "Dem Bot befehlen den Sprachchannel zu verlassen.";
   }
 }

@@ -1,6 +1,7 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import org.springframework.stereotype.Component;
@@ -8,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.HtmlUtils;
 
 @Component
-public class InsultTask extends AbstractMessageTask {
+public class InsultTask extends AbstractMessageTask implements ExplainedMessageTask {
 
   public final static String KEYWORD = "beleidige";
 
@@ -30,4 +31,12 @@ public class InsultTask extends AbstractMessageTask {
 
     this.answerMessage(HtmlUtils.htmlUnescape(insult)).block();
   }
+
+  public String getKeyword() {
+    return KEYWORD;
+  };
+
+  public String getExplaination() {
+    return "Eine Nutzer beleidigen.";
+  };
 }

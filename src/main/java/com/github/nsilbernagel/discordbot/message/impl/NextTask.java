@@ -2,12 +2,13 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.audio.LavaTrackScheduler;
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NextTask extends AbstractMessageTask {
+public class NextTask extends AbstractMessageTask implements ExplainedMessageTask {
 
   public final static String KEYWORD = "next";
 
@@ -21,5 +22,13 @@ public class NextTask extends AbstractMessageTask {
   @Override
   public void action() {
     this.lavaTrackScheduler.nextTrack();
+  }
+
+  public String getKeyword() {
+    return KEYWORD;
+  }
+
+  public String getExplaination() {
+    return "Das nächste Lied abspielen.";
   }
 }

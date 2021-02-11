@@ -1,6 +1,7 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.vote.VotingRegistry;
 import com.github.nsilbernagel.discordbot.vote.KickVoting;
@@ -14,7 +15,7 @@ import discord4j.core.object.entity.Member;
 import discord4j.rest.http.client.ClientException;
 
 @Component
-public class VoteKickTask extends AbstractMessageTask {
+public class VoteKickTask extends AbstractMessageTask implements ExplainedMessageTask {
   public final static String KEYWORD = "votekick";
 
   @Autowired
@@ -71,5 +72,13 @@ public class VoteKickTask extends AbstractMessageTask {
 
   public boolean canHandle(String keyword) {
     return KEYWORD.equals(keyword);
+  }
+
+  public String getKeyword() {
+    return KEYWORD;
+  }
+
+  public String getExplaination() {
+    return "Demokratie walten lassen.";
   }
 }
