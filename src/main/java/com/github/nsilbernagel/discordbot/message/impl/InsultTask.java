@@ -11,10 +11,10 @@ import org.springframework.web.util.HtmlUtils;
 @Component
 public class InsultTask extends AbstractMessageTask implements ExplainedMessageTask {
 
-  public final static String KEYWORD = "beleidige";
+  public final static String KEYWORD = "insult";
 
   public boolean canHandle(String keyword) {
-    return KEYWORD.equals(keyword);
+    return KEYWORD.equals(keyword) || keyword.equals("beleidige");
   }
 
   @Override
