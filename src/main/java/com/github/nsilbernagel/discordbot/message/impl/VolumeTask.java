@@ -3,6 +3,8 @@ package com.github.nsilbernagel.discordbot.message.impl;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
 import com.github.nsilbernagel.discordbot.message.FalseInputException;
+import com.github.nsilbernagel.discordbot.validation.CommandParam;
+import com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,28 +20,22 @@ public class VolumeTask extends AbstractMessageTask {
   @Autowired
   private LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
+  @CommandParam(0)
+  @Numeric("Bitte gib eine Zahl an.")
+  private Integer volumeParam;
+
   @Override
   public void action() {
 
-    if (this.messageToTaskHandler.getCommandParameters().size() == 0) {
+    if (this.volumeParam == null) {
       this.answerMessage("Aktuelle Lautstärke: " + this.lavaPlayerAudioProvider.getPlayer().getVolume() + "%").block();
       return;
     }
 
-    String newVolumeString = this.messageToTaskHandler.getCommandParameters().get(0);
-
-    Integer newVolume;
-
-    try {
-      newVolume = Integer.parseInt(newVolumeString);
-    } catch (NumberFormatException e) {
-      throw new FalseInputException("Bitte gib eine Zahl an.");
-    }
-
-    if (newVolume < 0 || newVolume > 100) {
+    if (this.volumeParam < 0 || this.volumeParam > 100) {
       throw new FalseInputException("Bitte gib eine Zahl zwischen 0 und 100 an.");
     }
 
-    this.lavaPlayerAudioProvider.getPlayer().setVolume(newVolume);
+    this.lavaPlayerAudioProvider.getPlayer().setVolume(this.volumeParam);
   }
 }

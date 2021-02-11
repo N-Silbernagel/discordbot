@@ -39,14 +39,9 @@ public class PlayTask extends AbstractMessageTask {
       summonTask.execute();
     }
 
-    // TODO: validate parameters (first is link)
-
     try {
       lavaPlayerAudioProvider.getPlayerManager()
-          .loadItem(
-              messageToTaskHandler.getCommandParameters()
-                  .get(0),
-              this.lavaResultHandler);
+          .loadItem(this.audioSourceString, this.lavaResultHandler);
     } catch (LavaPlayerException e) {
       throw new TaskException(e.getMessage());
     }
