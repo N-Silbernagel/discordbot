@@ -24,7 +24,7 @@ public class SummonTask extends AbstractMessageTask {
   private Optional<VoiceConnection> voiceConnection = Optional.empty();
 
   public boolean canHandle(String keyword) {
-    return KEYWORD.equals(keyword);
+    return KEYWORD.equals(keyword) || KEYWORD.equals("join");
   }
 
   @Autowired
