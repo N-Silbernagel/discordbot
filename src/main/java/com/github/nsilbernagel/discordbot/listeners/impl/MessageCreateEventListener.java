@@ -10,6 +10,7 @@ import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.validation.MessageTaskPreparer;
+import com.github.nsilbernagel.discordbot.validation.MessageValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -93,7 +94,11 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
   }
 
   private void prepareAndExecuteTask(AbstractMessageTask task) throws TaskException {
-    this.messageTaskPreparer.execute(task);
+    try {
+      this.messageTaskPreparer.execute(task);
+    } catch (MessageValidationException e) {
+      throw new TaskException(e.getMessage(), e);
+    }
 
     task.execute();
   }

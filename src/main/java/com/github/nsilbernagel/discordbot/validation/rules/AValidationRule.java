@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
+import com.github.nsilbernagel.discordbot.validation.MessageValidationException;
+
 public abstract class AValidationRule<A extends Annotation> {
   protected Optional<String> commandParam;
   protected Field commandField;
@@ -17,9 +19,9 @@ public abstract class AValidationRule<A extends Annotation> {
 
   abstract protected boolean validateParam();
 
-  abstract protected void handleInvalid();
+  abstract protected void handleInvalid() throws MessageValidationException;
 
-  public void validate(Optional<String> commandParam, Field commandField) {
+  public void validate(Optional<String> commandParam, Field commandField) throws MessageValidationException {
     this.commandParam = commandParam;
     this.commandField = commandField;
 

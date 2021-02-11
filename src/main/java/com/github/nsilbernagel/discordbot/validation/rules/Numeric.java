@@ -1,6 +1,7 @@
 package com.github.nsilbernagel.discordbot.validation.rules;
 
 import com.github.nsilbernagel.discordbot.message.TaskException;
+import com.github.nsilbernagel.discordbot.validation.MessageValidationException;
 
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ public class Numeric
     return com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric.class;
   }
 
-  protected void handleInvalid() {
+  protected void handleInvalid() throws MessageValidationException {
     throw new TaskException(this.commandField.getAnnotation(
         com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric.class).value());
   }
