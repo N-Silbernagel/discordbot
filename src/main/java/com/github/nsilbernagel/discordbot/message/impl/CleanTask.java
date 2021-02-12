@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
+import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
 import com.github.nsilbernagel.discordbot.schedules.dto.ChannelCleaner;
@@ -7,19 +8,19 @@ import com.github.nsilbernagel.discordbot.schedules.dto.ChannelCleaner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import discord4j.core.GatewayDiscordClient;
+import discord4j.rest.util.Permission;
 
 @Component
+@NeedsPermission(Permission.BAN_MEMBERS)
 public class CleanTask extends AbstractMessageTask {
 
   public static final String KEYWORD = "clean";
 
-  private ChannelCleaner cleaner = new ChannelCleaner();
+  @Autowired
+  private ChannelCleaner channelCleaner;
 
   @Autowired
   private MessageCreateEventListener messageCreateEventListener;
-  @Autowired
-  private GatewayDiscordClient discordClient;
 
   public boolean canHandle(String keyword) {
     return KEYWORD.equals(keyword);
@@ -27,9 +28,8 @@ public class CleanTask extends AbstractMessageTask {
 
   @Override
   public void action() {
-    cleaner.setDiscordClient(discordClient)
-        .setChannel(this.messageCreateEventListener.getMessageChannel().getId())
-        .removeMessages();
+    this.channelCleaner
+        .execute(this.messageCreateEventListener.getMessageChannel());
   }
 
 }
