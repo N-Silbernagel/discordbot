@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
 import com.github.nsilbernagel.discordbot.schedules.ChannelNameClock;
+import com.github.nsilbernagel.discordbot.schedules.CleanSchedule;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
@@ -59,5 +60,11 @@ public class DiscordbotApplication implements CommandLineRunner {
   @ConditionalOnExpression("!T(org.springframework.util.StringUtils).isEmpty('${app.discord.channels.rename:}')")
   public ChannelNameClock channelNameClock() {
     return new ChannelNameClock();
+  }
+
+  @Bean
+  @ConditionalOnExpression("!T(org.springframework.util.StringUtils).isEmpty('${app.discord.channels.exclusive:}')")
+  public CleanSchedule cleanSchedule() {
+    return new CleanSchedule();
   }
 }
