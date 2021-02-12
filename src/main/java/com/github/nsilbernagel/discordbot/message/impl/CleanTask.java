@@ -28,8 +28,8 @@ public class CleanTask extends AbstractMessageTask {
   @Override
   public void action() {
     cleaner.setDiscordClient(discordClient)
-            .setChannel(this.messageCreateEventListener.getMessageChannel().getId())
-            .removeMessages();
+        .setChannel(this.messageCreateEventListener.getMessageChannel().getId())
+        .removeMessages();
   }
 
 }

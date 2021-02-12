@@ -11,19 +11,19 @@ import discord4j.core.GatewayDiscordClient;
 
 public class CleanSchedule {
 
-    @Value("${app.discord.channels.exclusive}")
-    private String channelIdString;
+  @Value("${app.discord.channels.exclusive}")
+  private String channelIdString;
 
-    @Autowired
-    private GatewayDiscordClient discordClient;
+  @Autowired
+  private GatewayDiscordClient discordClient;
 
-    private ChannelCleaner cleaner = new ChannelCleaner();
+  private ChannelCleaner cleaner = new ChannelCleaner();
 
-    @Scheduled(cron = "0 0 0 * * ?")
-    public void cleanBotChannel() {
-        cleaner.setDiscordClient(discordClient)
-                .setChannel(Snowflake.of(channelIdString))
-                .removeMessages();
-    }
+  @Scheduled(cron = "0 0 0 * * ?")
+  public void cleanBotChannel() {
+    cleaner.setDiscordClient(discordClient)
+        .setChannel(Snowflake.of(channelIdString))
+        .removeMessages();
+  }
 
 }
