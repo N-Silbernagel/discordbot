@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.entity.channel.TextChannel;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -16,9 +17,7 @@ public class ChannelCleaner {
   @Value("${app.discord.command-token:!}")
   private String commandToken;
 
-  private MessageChannel channel;
-
-  public void execute(MessageChannel channelId) {
+  public void execute(TextChannel channel) {
     channel.getMessagesBefore(Snowflake.of(Instant.now()))
         .take(50)
         .flatMap(message -> this.deleteIfFromBotOrCommand(message))
