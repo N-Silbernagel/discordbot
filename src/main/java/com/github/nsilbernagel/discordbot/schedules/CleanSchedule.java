@@ -2,7 +2,7 @@ package com.github.nsilbernagel.discordbot.schedules;
 
 import javax.annotation.PostConstruct;
 
-import com.github.nsilbernagel.discordbot.schedules.dto.ChannelCleaner;
+import com.github.nsilbernagel.discordbot.maintainance.ChannelCleaner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

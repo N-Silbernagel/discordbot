@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.schedules.dto;
+package com.github.nsilbernagel.discordbot.maintainance;
 
 import java.time.Instant;
 
