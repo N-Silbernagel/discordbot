@@ -43,7 +43,7 @@ abstract public class AbstractMessageTask {
       return;
     }
 
-    boolean authorHasRequiredPermission = this.messageToTaskHandler.getMsgAuthor()
+    boolean authorHasRequiredPermission = this.messageCreateEventListener.getMsgAuthor()
         .getBasePermissions()
         .flatMap(permissions -> Mono.just(permissions.contains(needsPermissionAnnotation.value())))
         .block();

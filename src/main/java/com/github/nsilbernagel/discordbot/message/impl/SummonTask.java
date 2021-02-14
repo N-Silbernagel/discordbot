@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
+import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
@@ -32,6 +33,9 @@ public class SummonTask extends AbstractMessageTask implements ExplainedMessageT
   private LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
   @Autowired
+  private MessageCreateEventListener messageCreateEventListener;
+
+  @Autowired
   private LeaveTask leaveTask;
 
   @Override
@@ -40,7 +44,7 @@ public class SummonTask extends AbstractMessageTask implements ExplainedMessageT
       this.leaveTask.execute();
     }
 
-    this.messageToTaskHandler.getMsgAuthor()
+    this.messageCreateEventListener.getMsgAuthor()
         .getVoiceState()
         .flatMap(VoiceState::getChannel)
         .flatMap(channel -> channel.join(spec -> spec.setProvider(lavaPlayerAudioProvider)))

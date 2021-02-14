@@ -17,8 +17,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 
 @Component
@@ -45,6 +47,9 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
 
   @Getter
   private TextChannel messageChannel;
+
+  @Getter
+  private Member msgAuthor;
 
   @Override
   public Class<MessageCreateEvent> getEventType() {
@@ -74,10 +79,17 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
       return;
     }
 
+    this.msgAuthor = this.message.getAuthorAsMember().block();
+
+    if (this.spamRegistry.isSpamProtectionEnabled() && this.spamRegistry.memberHasExceededThreshold(this.msgAuthor)) {
+      message.addReaction(ReactionEmoji.unicode("👮‍♂️")).subscribe();
+      return;
+    }
+
     List<AbstractMessageTask> tasks = messageToTaskHandler.getMessageTasks(this.message);
 
     if (tasks.size() > 0 && this.spamRegistry.isSpamProtectionEnabled()) {
-      this.spamRegistry.countMemberUp(this.messageToTaskHandler.getMsgAuthor());
+      this.spamRegistry.countMemberUp(this.getMsgAuthor());
     }
 
     tasks.forEach(task -> {

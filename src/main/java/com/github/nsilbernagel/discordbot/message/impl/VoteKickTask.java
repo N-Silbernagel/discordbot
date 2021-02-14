@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
+import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
@@ -20,6 +21,9 @@ public class VoteKickTask extends AbstractMessageTask implements ExplainedMessag
 
   @Autowired
   private VotingRegistry registry;
+
+  @Autowired
+  private MessageCreateEventListener messageCreateEventListener;
 
   @Override
   public void action() {
@@ -47,11 +51,11 @@ public class VoteKickTask extends AbstractMessageTask implements ExplainedMessag
         .getByMember(memberToKick, KickVoting.class)
         .orElse(this.registry.createKickVoting(memberToKick, this.getMessage()));
 
-    if (runningKickVoting.memberHasVotedAsOftenAsHeMay(this.messageToTaskHandler.getMsgAuthor())) {
+    if (runningKickVoting.memberHasVotedAsOftenAsHeMay(this.messageCreateEventListener.getMsgAuthor())) {
       throw new TaskException("Du darfst nicht noch einmal an dieser Abstimmung teilnehmen.");
     }
 
-    Vote voteByMsgAuthor = new Vote(this.messageToTaskHandler.getMsgAuthor(), this.getMessage().getTimestamp());
+    Vote voteByMsgAuthor = new Vote(this.messageCreateEventListener.getMsgAuthor(), this.getMessage().getTimestamp());
 
     boolean enoughVotes = false;
 
