@@ -28,6 +28,13 @@ public class VotingRegistry {
         .findFirst();
   }
 
+  public <T extends AbstractVoting> Optional<T> getByTrigger(Message trigger, Class<T> votingClass) {
+    return this.votings.stream()
+        .filter(voting -> voting.getClass().equals(votingClass) && voting.getTrigger().equals(trigger))
+        .map(voting -> votingClass.cast(voting))
+        .findFirst();
+  }
+
   public KickVoting createKickVoting(Member member, Message trigger) {
     KickVoting voting = new KickVoting(member, trigger);
     this.votings.add(voting);
