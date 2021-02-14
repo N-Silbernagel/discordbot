@@ -27,10 +27,15 @@ public class VoteKickPlusTask extends AbstractReactionTask {
     return reactionEmoji.equals(TRIGGER);
   }
 
+  public ReactionEmoji getTrigger() {
+    return TRIGGER;
+  }
+
   public void action() {
     // get kickvoting by trigger message
     Optional<KickVoting> kickVotingTriggeredByMessage = this.votingRegistry
         .getByTrigger(this.reactionAddEventListener.getMessage(), KickVoting.class);
+
     if (!kickVotingTriggeredByMessage.isPresent()) {
       return;
     }

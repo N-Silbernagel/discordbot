@@ -53,6 +53,10 @@ public class ReactionAddEventListener extends AbstractEventListener<ReactionAddE
 
   @Override
   public void execute(ReactionAddEvent event) {
+    if (!event.getMember().isPresent() || event.getMember().get().isBot()) {
+      return;
+    }
+
     this.message = event.getMessage().block();
     this.emoji = event.getEmoji();
 
