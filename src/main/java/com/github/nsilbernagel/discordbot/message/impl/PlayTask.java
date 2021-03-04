@@ -55,4 +55,8 @@ public class PlayTask extends AbstractMessageTask implements ExplainedMessageTas
   public String getExplaination() {
     return "Eine Audioquelle in die Warteschlange packen.";
   }
+
+  public void setAudioSourceString(String src){
+    this.audioSourceString = src;
+  }
 }
