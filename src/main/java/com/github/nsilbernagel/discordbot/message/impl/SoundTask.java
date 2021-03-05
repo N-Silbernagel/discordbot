@@ -56,7 +56,7 @@ public class SoundTask extends AbstractMessageTask implements ExplainedMessageTa
     if (soundName == null) {
       soundNode = awsmSounds.get(ThreadLocalRandom.current().nextInt(0, awsmSounds.size() + 1));
     } else {
-      soundNode = getUrlByName(soundName);
+      soundNode = getJsonByName(soundName);
     }
 
     playSound(soundNode);
@@ -91,7 +91,7 @@ public class SoundTask extends AbstractMessageTask implements ExplainedMessageTa
     }
   }
 
-  public JsonNode getUrlByName(String soundName) {
+  public JsonNode getJsonByName(String soundName) {
     JaroWinklerStrategy comparer = new JaroWinklerStrategy();
     Map<JsonNode, Double> res = new HashMap<>();
 
@@ -105,10 +105,10 @@ public class SoundTask extends AbstractMessageTask implements ExplainedMessageTa
     playTask.setAudioSourceString(soundNode.get("url").asText());
     playTask.execute();
 
-    String test = soundNode.get("tags").get(0).get("value").asText() + ": " + soundNode.get("label").asText();
+    String soundString = soundNode.get("tags").get(0).get("value").asText() + ": " + soundNode.get("label").asText();
 
     this.discordClient
-        .updatePresence(Presence.online(Activity.playing(test)))
+        .updatePresence(Presence.online(Activity.playing(soundString)))
         .subscribe();
   }
 }
