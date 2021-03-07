@@ -60,7 +60,6 @@ public class SoundTask extends AbstractMessageTask implements ExplainedMessageTa
     }
 
     playSound(soundNode);
-    
   }
 
   public String getKeyword() {
@@ -76,16 +75,16 @@ public class SoundTask extends AbstractMessageTask implements ExplainedMessageTa
     ObjectMapper mapper = new ObjectMapper();
     try {
       awsmSounds = mapper.readTree(
-                    WebClient.create("https://sounds-backend.awsm.rocks")
-                        .get()
-                        .uri("/api/sounds")
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("token", "ysOp8JjBAbFhMoDEWWRbMHBAYqEJOAopkFRQvHSogTIosB500tV3ZvjMaH8l1wUTosU3LwtQEzR8xZ7lcwwHsk0ymFtPgXHbDzQUuOFtRlVgnrZ9FqFgb9mq5x7Ifqe6")
-                        .exchange()
-                        .block()
-                        .bodyToMono(String.class)
-                        .block()
-                        );
+        WebClient.create("https://sounds-backend.awsm.rocks")
+            .get()
+            .uri("/api/sounds")
+            .accept(MediaType.APPLICATION_JSON)
+            .header("token", "ysOp8JjBAbFhMoDEWWRbMHBAYqEJOAopkFRQvHSogTIosB500tV3ZvjMaH8l1wUTosU3LwtQEzR8xZ7lcwwHsk0ymFtPgXHbDzQUuOFtRlVgnrZ9FqFgb9mq5x7Ifqe6")
+            .exchange()
+            .block()
+            .bodyToMono(String.class)
+            .block()
+      );
     } catch (Exception e) {
       awsmSounds = null;
     }
