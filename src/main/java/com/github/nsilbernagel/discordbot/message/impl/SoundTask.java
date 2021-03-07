@@ -1,46 +1,30 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
+import com.github.nsilbernagel.discordbot.audio.Sound;
+import com.github.nsilbernagel.discordbot.audio.SoundsSource;
+import com.github.nsilbernagel.discordbot.audio.awsmsounds.dto.AwsmSound;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.object.presence.Activity;
-import discord4j.core.object.presence.Presence;
-import net.ricecode.similarity.JaroWinklerStrategy;
 
 @Component
 public class SoundTask extends AbstractMessageTask implements ExplainedMessageTask {
-
   public static final String KEYWORD = "sound";
 
   @CommandParam(0)
-  private String soundName;
+  private Optional<String> soundQuery;
 
   @Autowired
   private PlayTask playTask;
 
   @Autowired
-  private GatewayDiscordClient discordClient;
-
-  private JsonNode soundNode;
-
-  private JsonNode awsmSounds;
+  private SoundsSource<AwsmSound> soundsSource;
 
   public boolean canHandle(String keyword) {
     return KEYWORD.equals(keyword);
@@ -49,17 +33,23 @@ public class SoundTask extends AbstractMessageTask implements ExplainedMessageTa
   @Override
   public void action() {
 
-    if (awsmSounds == null){
-      throw new TaskException("awesome sounds not found :(");
-    }
+    // TODO: Handle spaces, either use _ as space for input query,
+    // use soundToTaskHandler.getParams to get full name or
+    // add @List<> Annotation (like numeric)
 
-    if (soundName == null) {
-      soundNode = awsmSounds.get(ThreadLocalRandom.current().nextInt(0, awsmSounds.size() + 1));
+    Optional<? extends Sound> soundToPlay;
+
+    if (this.soundQuery.isEmpty()) {
+      soundToPlay = Optional.of(this.soundsSource.random());
     } else {
-      soundNode = getJsonByName(soundName);
+      soundToPlay = this.soundsSource.filter(this.soundQuery.get());
     }
 
-    playSound(soundNode);
+    if (soundToPlay.isEmpty()) {
+      throw new TaskException("Sound konnte nicht gefunden werden.");
+    }
+
+    playSound(soundToPlay.get());
   }
 
   public String getKeyword() {
@@ -70,44 +60,8 @@ public class SoundTask extends AbstractMessageTask implements ExplainedMessageTa
     return "Einen Sound abspielen";
   }
 
-  @PostConstruct
-  public void getAWSMsounds() {
-    ObjectMapper mapper = new ObjectMapper();
-    try {
-      awsmSounds = mapper.readTree(
-        WebClient.create("https://sounds-backend.awsm.rocks")
-            .get()
-            .uri("/api/sounds")
-            .accept(MediaType.APPLICATION_JSON)
-            .header("token", "ysOp8JjBAbFhMoDEWWRbMHBAYqEJOAopkFRQvHSogTIosB500tV3ZvjMaH8l1wUTosU3LwtQEzR8xZ7lcwwHsk0ymFtPgXHbDzQUuOFtRlVgnrZ9FqFgb9mq5x7Ifqe6")
-            .exchange()
-            .block()
-            .bodyToMono(String.class)
-            .block()
-      );
-    } catch (Exception e) {
-      awsmSounds = null;
-    }
-  }
-
-  public JsonNode getJsonByName(String soundName) {
-    JaroWinklerStrategy comparer = new JaroWinklerStrategy();
-    Map<JsonNode, Double> res = new HashMap<>();
-
-    for (JsonNode sound : awsmSounds) {
-      res.put(sound, comparer.score(soundName, sound.get("label").asText()));
-    }
-    return res.entrySet().stream().max(Comparator.comparing(Map.Entry::getValue)).get().getKey();
-  }
-
-  public void playSound(JsonNode soundNode) {
-    playTask.setAudioSourceString(soundNode.get("url").asText());
+  public void playSound(Sound sound) {
+    playTask.setAudioSourceString(sound.getSource());
     playTask.execute();
-
-    String soundString = soundNode.get("tags").get(0).get("value").asText() + ": " + soundNode.get("label").asText();
-
-    this.discordClient
-        .updatePresence(Presence.online(Activity.playing(soundString)))
-        .subscribe();
   }
 }
