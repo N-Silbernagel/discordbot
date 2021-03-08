@@ -1,5 +1,5 @@
 {
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.autobuild.enabled": true,
-  "java.format.settings.url": "check-style.xml"
+  "java.format.settings.url": "file:./check-style.xml"
 }

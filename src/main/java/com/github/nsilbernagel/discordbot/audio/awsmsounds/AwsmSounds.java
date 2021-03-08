@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.PostConstruct;
-
 import com.github.nsilbernagel.discordbot.audio.SoundsSource;
 import com.github.nsilbernagel.discordbot.audio.awsmsounds.dto.AwsmSound;
 
@@ -26,11 +25,16 @@ public class AwsmSounds extends SoundsSource<AwsmSound> {
   private Flux<AwsmSound> cache;
 
   public AwsmSounds() {
-    List<AwsmSound> soundsList = WebClient.create("https://sounds-backend.awsm.rocks").get().uri("/api/sounds")
+    List<AwsmSound> soundsList = WebClient.create("https://sounds-backend.awsm.rocks")
+        .get()
+        .uri("/api/sounds")
         .accept(MediaType.APPLICATION_JSON)
         .header("token",
             "ysOp8JjBAbFhMoDEWWRbMHBAYqEJOAopkFRQvHSogTIosB500tV3ZvjMaH8l1wUTosU3LwtQEzR8xZ7lcwwHsk0ymFtPgXHbDzQUuOFtRlVgnrZ9FqFgb9mq5x7Ifqe6")
-        .retrieve().toEntityList(AwsmSound.class).block().getBody();
+        .retrieve()
+        .toEntityList(AwsmSound.class)
+        .block()
+        .getBody();
 
     this.cache = Flux.fromIterable(soundsList).cache();
   }
