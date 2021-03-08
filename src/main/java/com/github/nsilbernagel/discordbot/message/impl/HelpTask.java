@@ -22,7 +22,7 @@ public class HelpTask extends AbstractMessageTask {
   @Autowired
   private List<ExplainedMessageTask> explainedMessageTasks;
 
-  @CommandParam(0)
+  @CommandParam(pos = 0)
   private String taskToExplainString;
 
   @Override

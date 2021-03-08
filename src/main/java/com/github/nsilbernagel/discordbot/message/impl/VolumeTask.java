@@ -20,7 +20,7 @@ public class VolumeTask extends AbstractMessageTask implements ExplainedMessageT
   @Autowired
   private LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
-  @CommandParam(0)
+  @CommandParam(pos = 0)
   @Numeric(value = "Bitte gib eine Zahl zwischen 0 und 100 an.", min = 0, max = 100)
   private Integer volumeParam;
 
