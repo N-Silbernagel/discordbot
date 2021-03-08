@@ -25,7 +25,7 @@ public class PlayTask extends AbstractMessageTask implements ExplainedMessageTas
   @Autowired
   private LavaResultHandler lavaResultHandler;
 
-  @CommandParam(0)
+  @CommandParam(pos = 0)
   @Required("Bitte gib einen Link zu einer Audioquelle an.")
   private String audioSourceString;
 
@@ -54,5 +54,9 @@ public class PlayTask extends AbstractMessageTask implements ExplainedMessageTas
 
   public String getExplaination() {
     return "Eine Audioquelle in die Warteschlange packen.";
+  }
+
+  public void setAudioSourceString(String src) {
+    this.audioSourceString = src;
   }
 }
