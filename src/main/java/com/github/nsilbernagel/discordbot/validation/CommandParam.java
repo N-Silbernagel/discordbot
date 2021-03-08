@@ -12,5 +12,13 @@ public @interface CommandParam {
    * the position of the command param in the chain of words given after a bot
    * command in a msg
    */
-  int value();
+  int pos();
+
+  /**
+   * TODO: allow for input of range for command param to be able to extend over
+   * spaces
+   * 
+   * @return
+   */
+  int range() default 1;
 }

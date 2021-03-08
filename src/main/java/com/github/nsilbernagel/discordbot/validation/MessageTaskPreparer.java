@@ -68,7 +68,7 @@ public class MessageTaskPreparer {
     // set the actual value of the field to that given to the command as a param
     commandParamField.setAccessible(true);
 
-    Integer commandParamIndex = commandParamField.getAnnotation(CommandParam.class).value();
+    Integer commandParamIndex = commandParamField.getAnnotation(CommandParam.class).pos();
 
     Object newFieldValue;
 
@@ -98,11 +98,13 @@ public class MessageTaskPreparer {
             .equals(fieldValidationAnnotation.annotationType()))
         .findFirst();
 
-    int commandIndex = commandParamField.getAnnotation(CommandParam.class).value();
+    int commandIndex = commandParamField.getAnnotation(CommandParam.class).pos();
     Optional<String> commandParamValue;
     if (messageTask.getMessageToTaskHandler().getCommandParameters().size() >= (commandIndex + 1)) {
-      commandParamValue = Optional.ofNullable(messageTask.getMessageToTaskHandler().getCommandParameters()
-          .get(commandIndex));
+      commandParamValue = Optional.ofNullable(
+          messageTask.getMessageToTaskHandler()
+              .getCommandParameters()
+              .get(commandIndex));
     } else {
       commandParamValue = Optional.empty();
     }

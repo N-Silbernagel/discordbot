@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class SoundTask extends AbstractMessageTask implements ExplainedMessageTask {
   public static final String KEYWORD = "sound";
 
-  @CommandParam(0)
+  @CommandParam(pos = 0)
   private Optional<String> soundQuery;
 
   @Autowired
