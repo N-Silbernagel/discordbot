@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.annotation.PostConstruct;
+
 import com.github.nsilbernagel.discordbot.audio.SoundsSource;
 import com.github.nsilbernagel.discordbot.audio.awsmsounds.dto.AwsmSound;
 
@@ -18,6 +20,8 @@ import reactor.core.publisher.Flux;
 @Component
 public class AwsmSounds extends SoundsSource<AwsmSound> {
   public static final double MIN_MATCH_SCORE = 0.75;
+
+  private JaroWinklerStrategy comparer;
 
   private Flux<AwsmSound> cache;
 
@@ -36,15 +40,13 @@ public class AwsmSounds extends SoundsSource<AwsmSound> {
   }
 
   public Optional<AwsmSound> filter(String query) {
-    JaroWinklerStrategy comparer = new JaroWinklerStrategy();
-
     AtomicReference<AwsmSound> matchingSound = new AtomicReference<AwsmSound>();
     AtomicReference<Double> matchScore = new AtomicReference<Double>(MIN_MATCH_SCORE);
     this.fetch().doOnEach((sound) -> {
       if (sound.get() == null) {
         return;
       }
-      double currentMatchScore = comparer.score(query, sound.get().getLabel());
+      double currentMatchScore = this.comparer.score(query, sound.get().getLabel());
       if (currentMatchScore < matchScore.get()) {
         return;
       }
@@ -59,5 +61,10 @@ public class AwsmSounds extends SoundsSource<AwsmSound> {
   public AwsmSound random() {
     List<AwsmSound> allSounds = this.fetch().collectList().block();
     return allSounds.get((new Random()).nextInt(allSounds.size()));
+  }
+
+  @PostConstruct
+  public void setUpComparer() {
+    this.comparer = new JaroWinklerStrategy();
   }
 }
