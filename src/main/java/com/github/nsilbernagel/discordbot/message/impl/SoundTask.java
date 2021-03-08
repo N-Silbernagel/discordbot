@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
@@ -17,8 +18,8 @@ import org.springframework.stereotype.Component;
 public class SoundTask extends AbstractMessageTask implements ExplainedMessageTask {
   public static final String KEYWORD = "sound";
 
-  @CommandParam(pos = 0)
-  private Optional<String> soundQuery;
+  @CommandParam(pos = 0, range = Integer.MAX_VALUE)
+  private List<String> soundQueryList;
 
   @Autowired
   private PlayTask playTask;
@@ -32,17 +33,14 @@ public class SoundTask extends AbstractMessageTask implements ExplainedMessageTa
 
   @Override
   public void action() {
-
-    // TODO: Handle spaces, either use _ as space for input query,
-    // use soundToTaskHandler.getParams to get full name or
-    // add @List<> Annotation (like numeric)
-
     Optional<? extends Sound> soundToPlay;
 
-    if (this.soundQuery.isEmpty()) {
+    String soundQuery = String.join(" ", this.soundQueryList);
+
+    if (soundQuery.isEmpty()) {
       soundToPlay = Optional.of(this.soundsSource.random());
     } else {
-      soundToPlay = this.soundsSource.filter(this.soundQuery.get());
+      soundToPlay = this.soundsSource.filter(soundQuery);
     }
 
     if (soundToPlay.isEmpty()) {

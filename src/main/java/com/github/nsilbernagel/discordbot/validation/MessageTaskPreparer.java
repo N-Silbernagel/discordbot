@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.validation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +56,7 @@ public class MessageTaskPreparer {
    *
    * @param commandParamField
    */
-  private void prepareCommandParamField(Field commandParamField) {
+  private void prepareCommandParamField(Field commandParamField) throws IllegalArgumentException {
     Arrays.stream(commandParamField.getAnnotations())
         .filter(fieldValidationAnnotation -> this.validationRules.stream()
             .filter(validationRule -> validationRule.getCorrespondingAnnotation().equals(
@@ -70,19 +71,40 @@ public class MessageTaskPreparer {
 
     Integer commandParamIndex = commandParamField.getAnnotation(CommandParam.class).pos();
 
-    Object newFieldValue;
+    // a command param can go over many, space seperated, params, which means it is
+    // going to be a list
+    int commandRange = this.getCommandParamRange(commandParamField.getAnnotation(CommandParam.class));
 
-    if (messageTask.getMessageToTaskHandler().getCommandParameters().size() > commandParamIndex) {
-      newFieldValue = messageTask.getMessageToTaskHandler().getCommandParameters()
-          .get(commandParamIndex);
+    if (commandRange == 1) {
+      this.setFieldValue(messageTask, commandParamField, this.getFieldValueFromCommandParam(commandParamIndex));
     } else {
-      newFieldValue = null;
+      List<Object> newFieldValue = new ArrayList<Object>();
+      for (int offset = 0; offset < commandRange; offset++) {
+        newFieldValue.add(this.getFieldValueFromCommandParam(commandParamIndex + offset));
+      }
+      this.setFieldValue(messageTask, commandParamField, newFieldValue);
     }
+  }
 
+  private void setFieldValue(AbstractMessageTask messageTask, Field commandParamField, Object value) {
     try {
-      commandParamField.set(messageTask, this.conversionService.convert(newFieldValue, commandParamField.getType()));
+      commandParamField.set(
+          messageTask,
+          this.conversionService.convert(
+              value,
+              commandParamField.getType()));
     } catch (IllegalAccessException e) {
       // don't need to handle this as we set it accressible beforehand
+    }
+  }
+
+  private Object getFieldValueFromCommandParam(int commandParamIndex) {
+    if (messageTask.getMessageToTaskHandler().getCommandParameters().size() > commandParamIndex) {
+      return messageTask.getMessageToTaskHandler()
+          .getCommandParameters()
+          .get(commandParamIndex);
+    } else {
+      return null;
     }
   }
 
@@ -92,25 +114,40 @@ public class MessageTaskPreparer {
    * @param commandParamField
    * @param fieldValidationAnnotation
    */
-  private void validateFieldAccordingToAnnotation(Field commandParamField, Annotation fieldValidationAnnotation) {
+  private void validateFieldAccordingToAnnotation(Field commandParamField, Annotation fieldValidationAnnotation)
+      throws MessageValidationException, IllegalArgumentException {
     Optional<AValidationRule<? extends Annotation>> validationRuleOptional = this.validationRules.stream()
         .filter(validationRule -> validationRule.getCorrespondingAnnotation()
             .equals(fieldValidationAnnotation.annotationType()))
         .findFirst();
 
     int commandIndex = commandParamField.getAnnotation(CommandParam.class).pos();
-    Optional<String> commandParamValue;
-    if (messageTask.getMessageToTaskHandler().getCommandParameters().size() >= (commandIndex + 1)) {
-      commandParamValue = Optional.ofNullable(
-          messageTask.getMessageToTaskHandler()
-              .getCommandParameters()
-              .get(commandIndex));
-    } else {
-      commandParamValue = Optional.empty();
-    }
+    // a command param can go over many, space seperated, params, which means it is
+    // going to be a list
+    int commandRange = this.getCommandParamRange(commandParamField.getAnnotation(CommandParam.class));
 
-    validationRuleOptional.get()
-        .validate(commandParamValue, commandParamField);
+    for (int offset = 0; offset < commandRange; offset++) {
+      Optional<String> commandParamValue;
+      if (messageTask.getMessageToTaskHandler().getCommandParameters().size() >= (commandIndex + offset + 1)) {
+        commandParamValue = Optional.ofNullable(
+            messageTask.getMessageToTaskHandler()
+                .getCommandParameters()
+                .get(commandIndex + offset));
+      } else {
+        commandParamValue = Optional.empty();
+      }
+
+      validationRuleOptional.get()
+          .validate(commandParamValue, commandParamField);
+    }
+  }
+
+  private int getCommandParamRange(CommandParam commandParamAnnotation) throws IllegalArgumentException {
+    int range = commandParamAnnotation.range();
+    if (range < 1) {
+      throw new IllegalArgumentException("Command Param range cannot be smaller than 1.");
+    }
+    return range;
   }
 
   @PostConstruct

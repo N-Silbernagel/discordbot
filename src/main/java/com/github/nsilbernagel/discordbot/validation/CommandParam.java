@@ -15,10 +15,8 @@ public @interface CommandParam {
   int pos();
 
   /**
-   * TODO: allow for input of range for command param to be able to extend over
-   * spaces
-   * 
-   * @return
+   * Take all comand param from pos to pos + the range. Interger.MAX_VALUE is
+   * recommended for infinity
    */
   int range() default 1;
 }
