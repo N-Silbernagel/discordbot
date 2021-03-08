@@ -51,6 +51,9 @@ public class LavaPlayerAudioProvider extends AudioProvider {
 
     // Create an AudioPlayer so Discord4J can receive audio data
     this.player = this.playerManager.createPlayer();
+
+    // always set volume to 50%
+    this.player.setVolume(50);
   }
 
   @PostConstruct
