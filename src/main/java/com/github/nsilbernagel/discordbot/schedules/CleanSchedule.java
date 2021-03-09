@@ -28,7 +28,8 @@ public class CleanSchedule {
   @PostConstruct
   private void fetchChannelToClean() {
     try {
-      this.channelToClean = (TextChannel) this.discordClient.getChannelById(this.channelIdString).block();
+      this.channelToClean = (TextChannel) this.discordClient.getChannelById(this.channelIdString)
+              .block();
     } catch (Throwable e) {
       throw new RuntimeException("Textchannel configured under prop app.discord.channels.exclusive could not be found.",
           e);
