@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
-import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
+import com.github.nsilbernagel.discordbot.listeners.EventListener;
 import com.github.nsilbernagel.discordbot.reaction.AbstractReactionTask;
 import com.github.nsilbernagel.discordbot.reaction.ReactionTaskException;
 import com.github.nsilbernagel.discordbot.reaction.ReactionToTaskHandler;
@@ -21,7 +21,7 @@ import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 
 @Component
-public class ReactionAddEventListener extends AbstractEventListener<ReactionAddEvent> {
+public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
   @Value("${app.discord.command-token:!}")
   private String commandToken;
 
@@ -53,7 +53,7 @@ public class ReactionAddEventListener extends AbstractEventListener<ReactionAddE
 
   @Override
   public void execute(ReactionAddEvent event) {
-    if (!event.getMember().isPresent() || event.getMember().get().isBot()) {
+    if (event.getMember().isEmpty() || event.getMember().get().isBot()) {
       return;
     }
 
@@ -82,7 +82,7 @@ public class ReactionAddEventListener extends AbstractEventListener<ReactionAddE
       try {
         task.action();
       } catch (ReactionTaskException taskException) {
-        // no error handling to reactiions for now, dont spam the text channel for
+        // no error handling to reactions for now, dont spam the text channel for
         // simple reactions
         // might need to add it for future applications
       }

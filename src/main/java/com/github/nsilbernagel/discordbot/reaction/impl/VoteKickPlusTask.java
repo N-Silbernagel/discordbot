@@ -36,7 +36,7 @@ public class VoteKickPlusTask extends AbstractReactionTask {
     Optional<KickVoting> kickVotingTriggeredByMessage = this.votingRegistry
         .getByTrigger(this.reactionAddEventListener.getMessage(), KickVoting.class);
 
-    if (!kickVotingTriggeredByMessage.isPresent()) {
+    if (kickVotingTriggeredByMessage.isEmpty()) {
       return;
     }
 

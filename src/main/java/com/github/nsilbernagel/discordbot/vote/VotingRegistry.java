@@ -24,7 +24,7 @@ public class VotingRegistry {
   private VoteKickPlusTask voteKickPlusTask;
 
   public VotingRegistry() {
-    this.votings = new ArrayList<Voting>();
+    this.votings = new ArrayList<>();
   }
 
   public <T extends Voting> Optional<T> getByMember(Member member, Class<T> votingClass) {
@@ -34,10 +34,10 @@ public class VotingRegistry {
         .findFirst();
   }
 
-  public <T extends AbstractVoting> Optional<T> getByTrigger(Message trigger, Class<T> votingClass) {
+  public <T extends Voting> Optional<T> getByTrigger(Message trigger, Class<T> votingClass) {
     return this.votings.stream()
         .filter(voting -> voting.getClass().equals(votingClass) && voting.getTrigger().equals(trigger))
-        .map(voting -> votingClass.cast(voting))
+        .map(votingClass::cast)
         .findFirst();
   }
 

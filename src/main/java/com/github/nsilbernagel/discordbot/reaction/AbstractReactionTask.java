@@ -9,7 +9,7 @@ import lombok.Getter;
 
 public abstract class AbstractReactionTask {
   @Getter
-  private List<Message> messages = new ArrayList<Message>();
+  private final List<Message> messages = new ArrayList<Message>();
 
   abstract public boolean canHandle(ReactionEmoji reactionEmoji);
 

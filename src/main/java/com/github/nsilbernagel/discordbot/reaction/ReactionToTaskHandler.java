@@ -14,7 +14,7 @@ public class ReactionToTaskHandler {
   private List<AbstractReactionTask> tasks;
 
   /**
-   * Get tasks that can handle a given keywork
+   * Get tasks that can handle a given keyword
    */
   private List<AbstractReactionTask> getTasksForReactionEmoji(ReactionEmoji reactionEmoji) {
     List<AbstractReactionTask> result = new ArrayList<>();
@@ -35,7 +35,7 @@ public class ReactionToTaskHandler {
     List<AbstractReactionTask> tasks = getTasksForReactionEmoji(reactionEmoji);
 
     if (tasks.isEmpty()) {
-      return new ArrayList<AbstractReactionTask>();
+      return new ArrayList<>();
     }
 
     return tasks;
