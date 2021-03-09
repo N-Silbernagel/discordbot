@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Required
-    extends AValidationRule<com.github.nsilbernagel.discordbot.validation.rules.annotations.Required> {
+    extends ValidationRule<com.github.nsilbernagel.discordbot.validation.rules.annotations.Required> {
 
   protected boolean validateParam() {
     return this.commandParam.isPresent();

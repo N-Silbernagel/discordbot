@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.vote.VotingRegistry;
@@ -15,7 +15,7 @@ import discord4j.core.object.entity.Member;
 import discord4j.rest.http.client.ClientException;
 
 @Component
-public class VoteKickTask extends AbstractMessageTask implements ExplainedMessageTask {
+public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
   public final static String KEYWORD = "votekick";
 
   @Autowired

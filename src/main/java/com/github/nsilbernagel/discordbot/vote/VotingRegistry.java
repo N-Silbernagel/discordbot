@@ -15,16 +15,16 @@ public class VotingRegistry {
 
   @Getter
   @Setter
-  private ArrayList<AbstractVoting> votings;
+  private ArrayList<Voting> votings;
 
   public VotingRegistry() {
-    this.votings = new ArrayList<AbstractVoting>();
+    this.votings = new ArrayList<Voting>();
   }
 
-  public <T extends AbstractVoting> Optional<T> getByMember(Member member, Class<T> votingClass) {
+  public <T extends Voting> Optional<T> getByMember(Member member, Class<T> votingClass) {
     return this.votings.stream()
         .filter(voting -> voting.getClass().equals(votingClass) && voting.getTargetMember().equals(member))
-        .map(voting -> votingClass.cast(voting))
+        .map(votingClass::cast)
         .findFirst();
   }
 

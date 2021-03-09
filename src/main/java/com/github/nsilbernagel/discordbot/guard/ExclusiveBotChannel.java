@@ -35,7 +35,7 @@ final public class ExclusiveBotChannel {
   private boolean exclusiveBotChannelConfigured;
 
   /**
-   * bootstrap exclusive bot channel gaurd from config values
+   * bootstrap exclusive bot channel guard from config values
    */
   @PostConstruct
   public void execute() {
@@ -59,9 +59,6 @@ final public class ExclusiveBotChannel {
   /**
    * Check if a given message was sent on the channel the bot is exclusively
    * active on
-   * 
-   * @param message
-   * @return
    */
   public boolean isOnExclusiveChannel(Message message) {
     if (!this.exclusiveBotChannelConfigured) {
@@ -82,7 +79,7 @@ final public class ExclusiveBotChannel {
   public void handleMessageOnOtherChannel(Message message) {
     // delete message
     message.delete().subscribe();
-    // tell user privatly to use exclusive channel
+    // tell user privately to use exclusive channel
     message.getAuthor()
         .get()
         .getPrivateChannel()

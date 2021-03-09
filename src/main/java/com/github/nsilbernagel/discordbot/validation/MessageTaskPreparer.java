@@ -6,13 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
-import com.github.nsilbernagel.discordbot.validation.rules.AValidationRule;
+import com.github.nsilbernagel.discordbot.validation.rules.ValidationRule;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -23,12 +22,12 @@ import org.springframework.stereotype.Component;
 public class MessageTaskPreparer {
 
   @Autowired
-  private List<AValidationRule<? extends Annotation>> validationRules;
+  private List<ValidationRule<? extends Annotation>> validationRules;
 
   @Autowired
   private MessageToTaskHandler messageToTaskHandler;
 
-  private AbstractMessageTask messageTask;
+  private MessageTask messageTask;
 
   private ConversionService conversionService;
 
@@ -36,36 +35,27 @@ public class MessageTaskPreparer {
    * Prepare a message task, validate and map the command parameters to the
    * corresponding fields in the message task
    *
-   * @param messageTask
+   * @param messageTask the message Task to do preparation for
    */
-  public void execute(AbstractMessageTask messageTask) {
+  public void execute(MessageTask messageTask) {
     this.messageTask = messageTask;
 
-    List<Field> messageTaskFields = Arrays.asList(messageTask.getClass().getDeclaredFields());
-
-    /**
-     * the message tasks fields annotated as CommandParam
-     */
-    List<Field> commandParamFields = messageTaskFields.stream()
+    // prepare the message tasks fields annotated as CommandParam
+    Arrays.stream(messageTask.getClass().getDeclaredFields())
         .filter(field -> field.isAnnotationPresent(CommandParam.class))
-        .collect(Collectors.toList());
-
-    commandParamFields.forEach(commandParamField -> {
-      this.prepareCommandParamField(commandParamField);
-    });
+        .forEach(this::prepareCommandParamField);
   }
 
   /**
    * validate and map one command param fields
    *
-   * @param commandParamField
+   * @param commandParamField the field annotated with command param to prepare
    */
   private void prepareCommandParamField(Field commandParamField) throws IllegalArgumentException {
     Arrays.stream(commandParamField.getAnnotations())
         .filter(fieldValidationAnnotation -> this.validationRules.stream()
-            .filter(validationRule -> validationRule.getCorrespondingAnnotation().equals(
-                fieldValidationAnnotation.annotationType()))
-            .findFirst().isPresent())
+            .anyMatch(validationRule -> validationRule.getCorrespondingAnnotation().equals(
+                fieldValidationAnnotation.annotationType())))
         .forEach(fieldValidationAnnotation -> {
           this.validateFieldAccordingToAnnotation(commandParamField, fieldValidationAnnotation);
         });
@@ -73,9 +63,9 @@ public class MessageTaskPreparer {
     // set the actual value of the field to that given to the command as a param
     commandParamField.setAccessible(true);
 
-    Integer commandParamIndex = commandParamField.getAnnotation(CommandParam.class).pos();
+    int commandParamIndex = commandParamField.getAnnotation(CommandParam.class).pos();
 
-    // a command param can go over many, space seperated, params, which means it is
+    // a command param can go over many, space separated, params, which means it is
     // going to be a list
     int commandRange = this.getCommandParamRange(commandParamField.getAnnotation(CommandParam.class));
 
@@ -90,7 +80,7 @@ public class MessageTaskPreparer {
     }
   }
 
-  private void setFieldValue(AbstractMessageTask messageTask, Field commandParamField, Object value) {
+  private void setFieldValue(MessageTask messageTask, Field commandParamField, Object value) {
     try {
       commandParamField.set(
           messageTask,
@@ -98,7 +88,7 @@ public class MessageTaskPreparer {
               value,
               commandParamField.getType()));
     } catch (IllegalAccessException e) {
-      // don't need to handle this as we set it accressible beforehand
+      // don't need to handle this as we set it accessible beforehand
     }
   }
 
@@ -112,20 +102,20 @@ public class MessageTaskPreparer {
   }
 
   /**
-   * validate a command param field according to its validatin rule annotations
+   * validate a command param field according to its validation rule annotations
    *
-   * @param commandParamField
-   * @param fieldValidationAnnotation
+   * @param commandParamField the field annotated with commandParam
+   * @param fieldValidationAnnotation the validation annotation to validate the command param against
    */
   private void validateFieldAccordingToAnnotation(Field commandParamField, Annotation fieldValidationAnnotation)
       throws MessageValidationException, IllegalArgumentException {
-    Optional<AValidationRule<? extends Annotation>> validationRuleOptional = this.validationRules.stream()
+    Optional<ValidationRule<? extends Annotation>> validationRuleOptional = this.validationRules.stream()
         .filter(validationRule -> validationRule.getCorrespondingAnnotation()
             .equals(fieldValidationAnnotation.annotationType()))
         .findFirst();
 
     int commandIndex = commandParamField.getAnnotation(CommandParam.class).pos();
-    // a command param can go over many, space seperated, params, which means it is
+    // a command param can go over many, space separated, params, which means it is
     // going to be a list
     int commandRange = this.getCommandParamRange(commandParamField.getAnnotation(CommandParam.class));
 
@@ -137,6 +127,10 @@ public class MessageTaskPreparer {
                 .get(commandIndex + offset));
       } else {
         commandParamValue = Optional.empty();
+      }
+
+      if(validationRuleOptional.isEmpty()) {
+        return;
       }
 
       validationRuleOptional.get()

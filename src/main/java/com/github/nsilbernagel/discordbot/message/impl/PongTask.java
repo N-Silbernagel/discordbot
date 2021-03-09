@@ -1,13 +1,13 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PongTask extends AbstractMessageTask {
+public class PongTask extends MessageTask {
   public final static String KEYWORD = "ping";
 
   @Autowired
@@ -15,9 +15,7 @@ public class PongTask extends AbstractMessageTask {
 
   @Override
   public void action() {
-    this.messageCreateEventListener.getMessageChannel()
-        .createMessage("pong")
-        .block();
+    this.answerMessage("pong");
   }
 
   public boolean canHandle(String keyword) {

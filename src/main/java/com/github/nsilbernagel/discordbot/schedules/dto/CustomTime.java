@@ -6,9 +6,9 @@ import lombok.Getter;
 
 public class CustomTime {
   @Getter
-  private int hour;
+  private final int hour;
   @Getter
-  private int minute;
+  private final int minute;
 
   public CustomTime() {
     this.hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);

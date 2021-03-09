@@ -3,7 +3,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SoundTask extends AbstractMessageTask implements ExplainedMessageTask {
+public class SoundTask extends MessageTask implements ExplainedMessageTask {
   public static final String KEYWORD = "sound";
 
   @CommandParam(pos = 0, range = Integer.MAX_VALUE)
