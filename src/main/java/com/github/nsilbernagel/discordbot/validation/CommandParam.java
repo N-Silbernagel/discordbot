@@ -12,5 +12,11 @@ public @interface CommandParam {
    * the position of the command param in the chain of words given after a bot
    * command in a msg
    */
-  int value();
+  int pos();
+
+  /**
+   * Take all command param from pos to pos + the range. Integer.MAX_VALUE is
+   * recommended for infinity
+   */
+  int range() default 1;
 }

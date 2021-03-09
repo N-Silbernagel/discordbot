@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class SpamRegistry {
-  private Map<Member, Integer> memberMessageCountMap = new HashMap<Member, Integer>();
+  private final Map<Member, Integer> memberMessageCountMap = new HashMap<Member, Integer>();
 
   @Value("${app.guard.spam.commands.allowed:3}")
   private Integer commandsPerInterval;
@@ -31,8 +31,8 @@ public class SpamRegistry {
   /**
    * Count up the users messages counter or register him if not present yet
    *
-   * @param user
-   *               the user who created the message
+   * @param member
+   *               the member who created the message
    * @return the new number of user messages
    */
   public Integer countMemberUp(Member member) {
@@ -62,7 +62,7 @@ public class SpamRegistry {
   public Integer reduceMemberCount(Member member) {
     Optional<Integer> countForMember = Optional.ofNullable(this.memberMessageCountMap.get(member));
 
-    if (!countForMember.isPresent()) {
+    if (countForMember.isEmpty()) {
       return 0;
     }
 
@@ -92,8 +92,7 @@ public class SpamRegistry {
   /**
    * Return if the member in question has exceeded his max bot commands
    *
-   * @param memberInQuestion
-   * @return wether the user has exceeded the commands thershold
+   * @return wether the user has exceeded the commands threshold
    */
   public boolean memberHasExceededThreshold(Member memberInQuestion) {
     Optional<Integer> countForMember = Optional.ofNullable(this.memberMessageCountMap.get(memberInQuestion));

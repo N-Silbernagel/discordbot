@@ -3,7 +3,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerException;
 import com.github.nsilbernagel.discordbot.audio.LavaResultHandler;
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PlayTask extends AbstractMessageTask implements ExplainedMessageTask {
+public class PlayTask extends MessageTask implements ExplainedMessageTask {
   public final static String KEYWORD = "play";
 
   @Autowired
@@ -25,7 +25,7 @@ public class PlayTask extends AbstractMessageTask implements ExplainedMessageTas
   @Autowired
   private LavaResultHandler lavaResultHandler;
 
-  @CommandParam(0)
+  @CommandParam(pos = 0)
   @Required("Bitte gib einen Link zu einer Audioquelle an.")
   private String audioSourceString;
 
@@ -36,7 +36,7 @@ public class PlayTask extends AbstractMessageTask implements ExplainedMessageTas
   @Override
   public void action() {
 
-    if (!summonTask.getVoiceConnection().isPresent()) {
+    if (summonTask.getVoiceConnection().isEmpty()) {
       summonTask.execute();
     }
 
@@ -54,5 +54,9 @@ public class PlayTask extends AbstractMessageTask implements ExplainedMessageTas
 
   public String getExplaination() {
     return "Eine Audioquelle in die Warteschlange packen.";
+  }
+
+  public void setAudioSourceString(String src) {
+    this.audioSourceString = src;
   }
 }

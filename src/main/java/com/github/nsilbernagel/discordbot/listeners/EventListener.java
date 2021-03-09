@@ -7,7 +7,7 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.Event;
 
 @Component
-public abstract class AbstractEventListener<T extends Event> {
+public abstract class EventListener<T extends Event> {
   @Autowired
   private GatewayDiscordClient discordClient;
 
@@ -18,8 +18,6 @@ public abstract class AbstractEventListener<T extends Event> {
 
   /**
    * The action to perform when the target event was fired
-   *
-   * @param event
    */
   abstract public void execute(T event);
 

@@ -2,7 +2,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.voice.VoiceConnection;
 
 @Component
-public class LeaveTask extends AbstractMessageTask implements ExplainedMessageTask {
+public class LeaveTask extends MessageTask implements ExplainedMessageTask {
 
   public final static String KEYWORD = "leave";
 
@@ -27,7 +27,7 @@ public class LeaveTask extends AbstractMessageTask implements ExplainedMessageTa
   public void action() {
     Optional<VoiceConnection> existingVoiceConnection = summonTask.getVoiceConnection();
 
-    if (!existingVoiceConnection.isPresent()) {
+    if (existingVoiceConnection.isEmpty()) {
       this.getMessage().addReaction(ReactionEmoji.unicode("❌")).block();
       return;
     }

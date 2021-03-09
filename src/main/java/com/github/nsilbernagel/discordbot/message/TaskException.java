@@ -31,7 +31,7 @@ public class TaskException extends RuntimeException {
 
   /**
    * Log the actual error. Only to stderr for now. Might want to implement a file
-   * errror logging or something similar
+   * error logging or something similar
    */
   private void log() {
     this.actualException.printStackTrace();

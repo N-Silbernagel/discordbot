@@ -2,15 +2,16 @@ package com.github.nsilbernagel.discordbot.validation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
-import com.github.nsilbernagel.discordbot.validation.rules.AValidationRule;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
+import com.github.nsilbernagel.discordbot.validation.rules.ValidationRule;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -21,9 +22,12 @@ import org.springframework.stereotype.Component;
 public class MessageTaskPreparer {
 
   @Autowired
-  private List<AValidationRule<? extends Annotation>> validationRules;
+  private List<ValidationRule<? extends Annotation>> validationRules;
 
-  private AbstractMessageTask messageTask;
+  @Autowired
+  private MessageToTaskHandler messageToTaskHandler;
+
+  private MessageTask messageTask;
 
   private ConversionService conversionService;
 
@@ -31,36 +35,27 @@ public class MessageTaskPreparer {
    * Prepare a message task, validate and map the command parameters to the
    * corresponding fields in the message task
    *
-   * @param messageTask
+   * @param messageTask the message Task to do preparation for
    */
-  public void execute(AbstractMessageTask messageTask) {
+  public void execute(MessageTask messageTask) {
     this.messageTask = messageTask;
 
-    List<Field> messageTaskFields = Arrays.asList(messageTask.getClass().getDeclaredFields());
-
-    /**
-     * the message tasks fields annotated as CommandParam
-     */
-    List<Field> commandParamFields = messageTaskFields.stream()
+    // prepare the message tasks fields annotated as CommandParam
+    Arrays.stream(messageTask.getClass().getDeclaredFields())
         .filter(field -> field.isAnnotationPresent(CommandParam.class))
-        .collect(Collectors.toList());
-
-    commandParamFields.forEach(commandParamField -> {
-      this.prepareCommandParamField(commandParamField);
-    });
+        .forEach(this::prepareCommandParamField);
   }
 
   /**
    * validate and map one command param fields
    *
-   * @param commandParamField
+   * @param commandParamField the field annotated with command param to prepare
    */
-  private void prepareCommandParamField(Field commandParamField) {
+  private void prepareCommandParamField(Field commandParamField) throws IllegalArgumentException {
     Arrays.stream(commandParamField.getAnnotations())
         .filter(fieldValidationAnnotation -> this.validationRules.stream()
-            .filter(validationRule -> validationRule.getCorrespondingAnnotation().equals(
-                fieldValidationAnnotation.annotationType()))
-            .findFirst().isPresent())
+            .anyMatch(validationRule -> validationRule.getCorrespondingAnnotation().equals(
+                fieldValidationAnnotation.annotationType())))
         .forEach(fieldValidationAnnotation -> {
           this.validateFieldAccordingToAnnotation(commandParamField, fieldValidationAnnotation);
         });
@@ -68,47 +63,98 @@ public class MessageTaskPreparer {
     // set the actual value of the field to that given to the command as a param
     commandParamField.setAccessible(true);
 
-    Integer commandParamIndex = commandParamField.getAnnotation(CommandParam.class).value();
+    int commandParamIndex = commandParamField.getAnnotation(CommandParam.class).pos();
 
-    Object newFieldValue;
+    // a command param can go over many, space separated, params, which means it is
+    // going to be a list
+    int commandRange = this.getCommandParamRange(commandParamField.getAnnotation(CommandParam.class));
 
-    if (messageTask.getMessageToTaskHandler().getCommandParameters().size() > commandParamIndex) {
-      newFieldValue = messageTask.getMessageToTaskHandler().getCommandParameters()
+    if (commandRange == 1) {
+      this.setFieldValue(messageTask, commandParamField, this.getFieldValueFromCommandParam(commandParamIndex));
+    } else {
+      List<Object> newFieldValue = new ArrayList<Object>(commandRange);
+      for (int offset = 0; offset < commandRange; offset++) {
+        newFieldValue.add(this.getFieldValueFromCommandParam(commandParamIndex + offset));
+      }
+      this.setFieldValue(messageTask, commandParamField, newFieldValue);
+    }
+  }
+
+  private void setFieldValue(MessageTask messageTask, Field commandParamField, Object value) {
+    try {
+      commandParamField.set(
+          messageTask,
+          this.conversionService.convert(
+              value,
+              commandParamField.getType()));
+    } catch (IllegalAccessException e) {
+      // don't need to handle this as we set it accessible beforehand
+    }
+  }
+
+  private Object getFieldValueFromCommandParam(int commandParamIndex) {
+    if (this.allCommandParams().size() > commandParamIndex) {
+      return this.allCommandParams()
           .get(commandParamIndex);
     } else {
-      newFieldValue = null;
-    }
-
-    try {
-      commandParamField.set(messageTask, this.conversionService.convert(newFieldValue, commandParamField.getType()));
-    } catch (IllegalAccessException e) {
-      // don't need to handle this as we set it accressible beforehand
+      return null;
     }
   }
 
   /**
-   * validate a command param field according to its validatin rule annotations
+   * validate a command param field according to its validation rule annotations
    *
-   * @param commandParamField
-   * @param fieldValidationAnnotation
+   * @param commandParamField the field annotated with commandParam
+   * @param fieldValidationAnnotation the validation annotation to validate the command param against
    */
-  private void validateFieldAccordingToAnnotation(Field commandParamField, Annotation fieldValidationAnnotation) {
-    Optional<AValidationRule<? extends Annotation>> validationRuleOptional = this.validationRules.stream()
+  private void validateFieldAccordingToAnnotation(Field commandParamField, Annotation fieldValidationAnnotation)
+      throws MessageValidationException, IllegalArgumentException {
+    Optional<ValidationRule<? extends Annotation>> validationRuleOptional = this.validationRules.stream()
         .filter(validationRule -> validationRule.getCorrespondingAnnotation()
             .equals(fieldValidationAnnotation.annotationType()))
         .findFirst();
 
-    int commandIndex = commandParamField.getAnnotation(CommandParam.class).value();
-    Optional<String> commandParamValue;
-    if (messageTask.getMessageToTaskHandler().getCommandParameters().size() >= (commandIndex + 1)) {
-      commandParamValue = Optional.ofNullable(messageTask.getMessageToTaskHandler().getCommandParameters()
-          .get(commandIndex));
-    } else {
-      commandParamValue = Optional.empty();
+    int commandIndex = commandParamField.getAnnotation(CommandParam.class).pos();
+    // a command param can go over many, space separated, params, which means it is
+    // going to be a list
+    int commandRange = this.getCommandParamRange(commandParamField.getAnnotation(CommandParam.class));
+
+    for (int offset = 0; offset < commandRange; offset++) {
+      Optional<String> commandParamValue;
+      if (this.allCommandParams().size() >= (commandIndex + offset + 1)) {
+        commandParamValue = Optional.ofNullable(
+            this.allCommandParams()
+                .get(commandIndex + offset));
+      } else {
+        commandParamValue = Optional.empty();
+      }
+
+      if(validationRuleOptional.isEmpty()) {
+        return;
+      }
+
+      validationRuleOptional.get()
+          .validate(commandParamValue, commandParamField);
+    }
+  }
+
+  private int getCommandParamRange(CommandParam commandParamAnnotation) throws IllegalArgumentException {
+    int range = commandParamAnnotation.range();
+    if (range < 1) {
+      throw new IllegalArgumentException("Command Param range cannot be smaller than 1.");
     }
 
-    validationRuleOptional.get()
-        .validate(commandParamValue, commandParamField);
+    // reduce the range to only be as big as the number of command params at max
+    // as we are using Int.MAX_VALUE for infinity and generating an arraylist of
+    // that size
+    // anything else will result in outOfMemory exception D:
+    range = Math.min(range, this.allCommandParams().size());
+
+    return range;
+  }
+
+  private List<String> allCommandParams() {
+    return this.messageToTaskHandler.getCommandParameters();
   }
 
   @PostConstruct

@@ -10,7 +10,7 @@ import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
 
-abstract public class AbstractMessageTask {
+abstract public class MessageTask {
   @Autowired
   @Getter
   protected MessageToTaskHandler messageToTaskHandler;
@@ -24,8 +24,6 @@ abstract public class AbstractMessageTask {
 
   /**
    * Answer the message with a given text on the same channel
-   *
-   * @param answerText
    */
   public Mono<Message> answerMessage(String answerText) {
     return this.messageCreateEventListener.getMessageChannel()

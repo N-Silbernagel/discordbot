@@ -19,7 +19,7 @@ public class MessageToTaskHandler {
   private String commandToken;
 
   @Autowired
-  private List<AbstractMessageTask> tasks;
+  private List<MessageTask> tasks;
 
   @Getter
   private Message message;
@@ -31,11 +31,11 @@ public class MessageToTaskHandler {
   private List<String> commandParameters;
 
   /**
-   * Get tasks that can handle a given keywork
+   * Get tasks that can handle a given keyword
    */
-  private List<AbstractMessageTask> getTasksForKeyword() {
-    List<AbstractMessageTask> result = new ArrayList<>();
-    for (AbstractMessageTask task : tasks) {
+  private List<MessageTask> getTasksForKeyword() {
+    List<MessageTask> result = new ArrayList<>();
+    for (MessageTask task : tasks) {
       if (task.canHandle(this.command)) {
         result.add(task);
       }
@@ -47,7 +47,7 @@ public class MessageToTaskHandler {
   /*
    * Get the right task implementation depending on the keyword that was used.
    */
-  public List<AbstractMessageTask> getMessageTasks(Message message) {
+  public List<MessageTask> getMessageTasks(Message message) {
     this.message = message;
 
     String messageContent = message.getContent().replaceFirst(commandToken, "");
@@ -60,13 +60,13 @@ public class MessageToTaskHandler {
       this.commandParameters = new ArrayList<String>();
     }
 
-    List<AbstractMessageTask> tasks = getTasksForKeyword();
+    List<MessageTask> tasks = getTasksForKeyword();
 
     if (tasks.isEmpty()) {
       // react to members message with question mark emoji to show that the command
       // was not found
       message.addReaction(ReactionEmoji.unicode("❓")).block();
-      return new ArrayList<AbstractMessageTask>();
+      return new ArrayList<MessageTask>();
     }
 
     return tasks;

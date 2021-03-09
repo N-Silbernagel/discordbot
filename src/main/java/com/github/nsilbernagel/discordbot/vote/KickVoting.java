@@ -5,7 +5,7 @@ import com.github.nsilbernagel.discordbot.message.TaskException;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 
-public class KickVoting extends AbstractVoting {
+public class KickVoting extends Voting {
   final public static int requiredVoiceChannelMembers = 3;
 
   public KickVoting(Member memberToKick, Message trigger) {
@@ -16,8 +16,8 @@ public class KickVoting extends AbstractVoting {
 
   /**
    * Calculate the number of votes needed to kick someone from a voice channel
-   * more than half of the memeber in the voice channel should vote and a
-   * resonable number of people should be inside of it
+   * more than half of the member in the voice channel should vote and a
+   * reasonable number of people should be inside of it
    *
    * @param memberToKick
    * @return

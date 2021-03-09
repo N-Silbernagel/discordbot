@@ -55,6 +55,10 @@ public class LavaTrackScheduler extends AudioEventAdapter {
   public void nextTrack() {
     AudioTrack nextTrack = queue.poll();
 
+    if(nextTrack == null) {
+      this.setPresenceOnline();
+    }
+
     this.lavaPlayerAudioProvider.getPlayer()
         .startTrack(nextTrack, false);
   }

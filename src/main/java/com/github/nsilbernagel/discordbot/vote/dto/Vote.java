@@ -7,9 +7,9 @@ import lombok.Getter;
 
 public class Vote {
   @Getter
-  private Member voter;
+  private final Member voter;
   @Getter
-  private Instant time;
+  private final Instant time;
 
   public Vote(Member member, Instant time) {
     this.voter = member;
