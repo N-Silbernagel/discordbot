@@ -55,15 +55,7 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
       throw new TaskException("Du darfst nicht noch einmal an dieser Abstimmung teilnehmen.");
     }
 
-    Vote voteByMsgAuthor = new Vote(this.messageCreateEventListener.getMsgAuthor(), this.getMessage().getTimestamp());
-
-    boolean enoughVotes = false;
-
-    try {
-      enoughVotes = runningKickVoting.addVote(voteByMsgAuthor);
-    } catch (ClientException error) {
-      throw new TaskException(memberToKick.getNickname().get() + " kann nicht gekickt werden.");
-    }
+    boolean enoughVotes = runningKickVoting.addVote(this.messageCreateEventListener.getMsgAuthor(), this.getMessage().getTimestamp());
 
     if (!enoughVotes) {
       this.answerMessage("Noch " + runningKickVoting.remainingVotes() + " Stimmen bis "

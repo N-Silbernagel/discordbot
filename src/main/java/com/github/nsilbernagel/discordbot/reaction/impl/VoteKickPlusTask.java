@@ -41,8 +41,9 @@ public class VoteKickPlusTask extends AbstractReactionTask {
     }
 
     // add vote to kickvoting
-    kickVotingTriggeredByMessage.get().addVote(new Vote(
-        this.reactionAddEventListener.getMessage().getAuthorAsMember().block(),
-        this.reactionAddEventListener.getMessage().getTimestamp()));
+    kickVotingTriggeredByMessage.get().addVote(
+            this.reactionAddEventListener.getMessage().getAuthorAsMember().block(),
+            this.reactionAddEventListener.getMessage().getTimestamp()
+    );
   }
 }

@@ -1,6 +1,7 @@
 package com.github.nsilbernagel.discordbot.vote;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,6 +60,15 @@ public abstract class Voting {
     }
     this.onEnoughVotes();
     return true;
+  }
+
+  /**
+   * @see addVote(Vote)
+   */
+  public boolean addVote(Member memberWhoVoted, Instant timestamp) {
+    Vote voteByMember = new Vote(memberWhoVoted, timestamp);
+
+    return this.addVote(voteByMember);
   }
 
   public void removeVote(Vote vote) {
