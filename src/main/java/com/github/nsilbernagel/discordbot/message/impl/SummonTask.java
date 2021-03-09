@@ -28,7 +28,7 @@ public class SummonTask extends MessageTask implements ExplainedMessageTask {
   private Optional<VoiceConnection> voiceConnection = Optional.empty();
 
   public boolean canHandle(String keyword) {
-    return KEYWORD.equals(keyword) || KEYWORD.equals("join");
+    return keyword.equals(KEYWORD) || keyword.equals("join");
   }
 
   @Autowired
