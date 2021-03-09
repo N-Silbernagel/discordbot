@@ -6,14 +6,14 @@ import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.vote.VotingRegistry;
 import com.github.nsilbernagel.discordbot.vote.KickVoting;
-import com.github.nsilbernagel.discordbot.vote.dto.Vote;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
-import discord4j.rest.http.client.ClientException;
+
+import java.util.Optional;
 
 @Component
 public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
@@ -34,7 +34,7 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
         })
         .block();
 
-    Member memberToKick = null;
+    Member memberToKick;
 
     try {
       memberToKick = this.getMessage()
@@ -47,23 +47,17 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
       throw new TaskException("Bitte gib einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
     }
 
-    KickVoting runningKickVoting = this.registry
-        .getByMember(memberToKick, KickVoting.class)
-        .orElse(this.registry.createKickVoting(memberToKick, this.getMessage()));
+    Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick, KickVoting.class);
 
-    if (runningKickVoting.memberHasVotedAsOftenAsHeMay(this.messageCreateEventListener.getMsgAuthor())) {
-      throw new TaskException("Du darfst nicht noch einmal an dieser Abstimmung teilnehmen.");
+    if(runningKickVoting.isPresent()){
+      throw new TaskException("Es läuft bereits eine Abstimmung zum kicken von " + runningKickVoting.get().getTargetMember().getDisplayName());
     }
 
-    boolean enoughVotes = runningKickVoting.addVote(this.messageCreateEventListener.getMsgAuthor(), this.getMessage().getTimestamp());
-
-    if (!enoughVotes) {
-      this.answerMessage("Noch " + runningKickVoting.remainingVotes() + " Stimmen bis "
-          + memberToKick.getDisplayName() + " rausgeworfen wird.").block();
-    } else {
-      this.registry.getVotings().remove(runningKickVoting);
-      this.answerMessage(memberToKick.getDisplayName() + " gekickt.").block();
-    }
+    KickVoting newKickVoting = this.registry.createKickVoting(memberToKick, this.getMessage());
+    newKickVoting.addVote(
+            this.messageCreateEventListener.getMsgAuthor(),
+            this.getMessage().getTimestamp()
+    );
   }
 
   public boolean canHandle(String keyword) {

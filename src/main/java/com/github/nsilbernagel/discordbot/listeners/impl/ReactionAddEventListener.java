@@ -5,7 +5,7 @@ import java.util.List;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.listeners.EventListener;
-import com.github.nsilbernagel.discordbot.reaction.AbstractReactionTask;
+import com.github.nsilbernagel.discordbot.reaction.ReactionTask;
 import com.github.nsilbernagel.discordbot.reaction.ReactionTaskException;
 import com.github.nsilbernagel.discordbot.reaction.ReactionToTaskHandler;
 
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.event.domain.message.ReactionAddEvent;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
@@ -41,7 +40,7 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
   private TextChannel messageChannel;
 
   @Getter
-  private Member msgAuthor;
+  private ReactionAddEvent reactionAddEvent;
 
   @Getter
   private ReactionEmoji emoji;
@@ -56,6 +55,8 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
     if (event.getMember().isEmpty() || event.getMember().get().isBot()) {
       return;
     }
+
+    this.reactionAddEvent = event;
 
     this.message = event.getMessage().block();
     this.emoji = event.getEmoji();
@@ -76,7 +77,7 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
       return;
     }
 
-    List<AbstractReactionTask> tasks = this.reactionToTaskHandler.getReactionTasks(this.emoji);
+    List<ReactionTask> tasks = this.reactionToTaskHandler.getReactionTasks(this.emoji);
 
     tasks.forEach(task -> {
       try {

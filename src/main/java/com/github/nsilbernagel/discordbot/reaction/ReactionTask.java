@@ -7,7 +7,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 
-public abstract class AbstractReactionTask {
+public abstract class ReactionTask {
   @Getter
   private final List<Message> messages = new ArrayList<Message>();
 

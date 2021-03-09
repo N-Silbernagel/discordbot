@@ -11,14 +11,14 @@ import discord4j.core.object.reaction.ReactionEmoji;
 @Component
 public class ReactionToTaskHandler {
   @Autowired
-  private List<AbstractReactionTask> tasks;
+  private List<ReactionTask> tasks;
 
   /**
    * Get tasks that can handle a given keyword
    */
-  private List<AbstractReactionTask> getTasksForReactionEmoji(ReactionEmoji reactionEmoji) {
-    List<AbstractReactionTask> result = new ArrayList<>();
-    for (AbstractReactionTask task : tasks) {
+  private List<ReactionTask> getTasksForReactionEmoji(ReactionEmoji reactionEmoji) {
+    List<ReactionTask> result = new ArrayList<>();
+    for (ReactionTask task : tasks) {
       if (task.canHandle(reactionEmoji)) {
         result.add(task);
       }
@@ -30,9 +30,9 @@ public class ReactionToTaskHandler {
   /*
    * Get the right task implementation depending on the keyword that was used.
    */
-  public List<AbstractReactionTask> getReactionTasks(ReactionEmoji reactionEmoji) {
+  public List<ReactionTask> getReactionTasks(ReactionEmoji reactionEmoji) {
 
-    List<AbstractReactionTask> tasks = getTasksForReactionEmoji(reactionEmoji);
+    List<ReactionTask> tasks = getTasksForReactionEmoji(reactionEmoji);
 
     if (tasks.isEmpty()) {
       return new ArrayList<>();
