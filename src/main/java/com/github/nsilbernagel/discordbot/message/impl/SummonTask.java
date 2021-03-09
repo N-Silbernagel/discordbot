@@ -1,10 +1,12 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import java.util.Optional;
+import java.util.concurrent.TimeoutException;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
+import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,6 +44,9 @@ public class SummonTask extends AbstractMessageTask implements ExplainedMessageT
 
     this.messageToTaskHandler.getMsgAuthor()
         .getVoiceState()
+        .doOnError(TimeoutException.class, (error) -> {
+          throw new TaskException("Leider ist ein Fehler aufgetreten", error);
+        })
         .flatMap(VoiceState::getChannel)
         .flatMap(channel -> channel.join(spec -> spec.setProvider(lavaPlayerAudioProvider)))
         .flatMap(voiceConnection -> {
