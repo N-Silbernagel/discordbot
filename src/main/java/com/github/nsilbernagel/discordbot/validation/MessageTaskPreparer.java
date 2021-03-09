@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 import com.github.nsilbernagel.discordbot.validation.rules.AValidationRule;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class MessageTaskPreparer {
 
   @Autowired
   private List<AValidationRule<? extends Annotation>> validationRules;
+
+  @Autowired
+  private MessageToTaskHandler messageToTaskHandler;
 
   private AbstractMessageTask messageTask;
 
@@ -78,7 +82,7 @@ public class MessageTaskPreparer {
     if (commandRange == 1) {
       this.setFieldValue(messageTask, commandParamField, this.getFieldValueFromCommandParam(commandParamIndex));
     } else {
-      List<Object> newFieldValue = new ArrayList<Object>();
+      List<Object> newFieldValue = new ArrayList<Object>(commandRange);
       for (int offset = 0; offset < commandRange; offset++) {
         newFieldValue.add(this.getFieldValueFromCommandParam(commandParamIndex + offset));
       }
@@ -99,9 +103,8 @@ public class MessageTaskPreparer {
   }
 
   private Object getFieldValueFromCommandParam(int commandParamIndex) {
-    if (messageTask.getMessageToTaskHandler().getCommandParameters().size() > commandParamIndex) {
-      return messageTask.getMessageToTaskHandler()
-          .getCommandParameters()
+    if (this.allCommandParams().size() > commandParamIndex) {
+      return this.allCommandParams()
           .get(commandParamIndex);
     } else {
       return null;
@@ -128,10 +131,9 @@ public class MessageTaskPreparer {
 
     for (int offset = 0; offset < commandRange; offset++) {
       Optional<String> commandParamValue;
-      if (messageTask.getMessageToTaskHandler().getCommandParameters().size() >= (commandIndex + offset + 1)) {
+      if (this.allCommandParams().size() >= (commandIndex + offset + 1)) {
         commandParamValue = Optional.ofNullable(
-            messageTask.getMessageToTaskHandler()
-                .getCommandParameters()
+            this.allCommandParams()
                 .get(commandIndex + offset));
       } else {
         commandParamValue = Optional.empty();
@@ -147,7 +149,18 @@ public class MessageTaskPreparer {
     if (range < 1) {
       throw new IllegalArgumentException("Command Param range cannot be smaller than 1.");
     }
+
+    // reduce the range to only be as big as the number of command params at max
+    // as we are using Int.MAX_VALUE for infinity and generating an arraylist of
+    // that size
+    // anything else will result in outOfMemory exception D:
+    range = Math.min(range, this.allCommandParams().size());
+
     return range;
+  }
+
+  private List<String> allCommandParams() {
+    return this.messageToTaskHandler.getCommandParameters();
   }
 
   @PostConstruct
