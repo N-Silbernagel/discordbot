@@ -1,13 +1,10 @@
 package com.github.nsilbernagel.discordbot.message;
 
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,9 +21,6 @@ public class MessageToTaskHandler {
   @Autowired
   private List<MessageTask> tasks;
 
-  @Autowired
-  private SpamRegistry spamRegistry;
-
   @Getter
   private Message message;
 
@@ -35,9 +29,6 @@ public class MessageToTaskHandler {
 
   @Getter
   private List<String> commandParameters;
-
-  @Getter
-  private Member msgAuthor;
 
   /**
    * Get tasks that can handle a given keyword
@@ -58,13 +49,6 @@ public class MessageToTaskHandler {
    */
   public List<MessageTask> getMessageTasks(Message message) {
     this.message = message;
-
-    this.msgAuthor = this.message.getAuthorAsMember().block();
-
-    if (this.spamRegistry.isSpamProtectionEnabled() && this.spamRegistry.memberHasExceededThreshold(this.msgAuthor)) {
-      message.addReaction(ReactionEmoji.unicode("👮‍♂️")).subscribe();
-      return new ArrayList<MessageTask>();
-    }
 
     String messageContent = message.getContent().replaceFirst(commandToken, "");
     List<String> messageParts = Arrays.asList(messageContent.split(" "));

@@ -4,6 +4,9 @@ import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.channel.VoiceChannel;
+import reactor.core.publisher.Flux;
+
 
 public class KickVoting extends Voting {
   final public static int requiredVoiceChannelMembers = 3;
@@ -12,26 +15,22 @@ public class KickVoting extends Voting {
     super(calculateVotesRequired(memberToKick), trigger);
 
     this.targetMember = memberToKick;
+    this.createMessageWithNumberOfRemainingVotes();
   }
 
   /**
    * Calculate the number of votes needed to kick someone from a voice channel
    * more than half of the member in the voice channel should vote and a
    * reasonable number of people should be inside of it
-   *
-   * @param memberToKick
-   * @return
    */
-  private static int calculateVotesRequired(Member memberToKick) {
-    int membersInVoiceChannel = memberToKick.getVoiceState()
+  private static long calculateVotesRequired(Member memberToKick) {
+    long membersInVoiceChannel = memberToKick.getVoiceState()
         .blockOptional()
         .orElseThrow(() -> new TaskException(memberToKick.getUsername() + " ist nicht in einem voice Channel"))
         .getChannel()
-        .block()
-        .getVoiceStates()
-        .collectList()
-        .block()
-        .size();
+        .map(VoiceChannel::getVoiceStates)
+        .flatMap(Flux::count)
+        .block();
 
     if (membersInVoiceChannel < requiredVoiceChannelMembers) {
       throw new TaskException("Im Voice Channel von " + memberToKick.getUsername() + " müssen mehr als "

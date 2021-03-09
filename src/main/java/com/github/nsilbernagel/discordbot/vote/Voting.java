@@ -1,6 +1,7 @@
 package com.github.nsilbernagel.discordbot.vote;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,8 +12,12 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import lombok.Getter;
 import lombok.Setter;
+import reactor.core.publisher.Mono;
 
 public abstract class Voting {
+  @Getter
+  private Message remainingVotesMessage;
+
   @Getter
   /** the member the voting is targeting */
   protected Member targetMember;
@@ -50,15 +55,22 @@ public abstract class Voting {
   /**
    * add a vote to the voting
    *
-   * @return wether action was executed or not
+   * @return if votes were sufficient
    */
   public boolean addVote(Vote vote) {
     this.votes.add(vote);
+    this.renewMessageWithNumberOfRemainingVotes().block();
     if (this.votes.size() < this.votesNeeded) {
       return false;
     }
     this.onEnoughVotes();
     return true;
+  }
+
+  public boolean addVote(Member memberWhoVoted, Instant timestamp) {
+    Vote voteByMember = new Vote(memberWhoVoted, timestamp);
+
+    return this.addVote(voteByMember);
   }
 
   public void removeVote(Vote vote) {
@@ -70,7 +82,7 @@ public abstract class Voting {
   }
 
   public long remainingVotes() {
-    return this.votesNeeded - this.votes.size();
+    return this.votesNeeded - this.votes.size() - 1;
   }
 
   public boolean memberHasVotedAsOftenAsHeMay(Member member) {
@@ -86,4 +98,26 @@ public abstract class Voting {
    * Action to be executed when the voting was successful
    */
   abstract protected void onEnoughVotes();
+
+  protected void createMessageWithNumberOfRemainingVotes() {
+    this.remainingVotesMessage = this.getTrigger()
+            .getChannel()
+            .flatMap((channel) -> channel.createMessage(this.generateRemainingVotesMessage()))
+            .block();
+  }
+
+  public Mono<Message> renewMessageWithNumberOfRemainingVotes() {
+    return this.remainingVotesMessage.edit(messageEditSpec -> messageEditSpec.setContent(this.generateRemainingVotesMessage()));
+  }
+
+  /**
+   * Generate a message that has info about how many users need to vote to kick the user
+   */
+  private String generateRemainingVotesMessage() {
+    return new StringBuilder("```\n")
+            .append("Noch ").append(this.remainingVotes()).append(" Stimmen bis ")
+            .append(this.getTargetMember().getDisplayName()).append(" gekickt wird.")
+            .append("```")
+            .toString();
+  }
 }

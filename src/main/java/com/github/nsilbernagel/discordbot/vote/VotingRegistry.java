@@ -3,6 +3,9 @@ package com.github.nsilbernagel.discordbot.vote;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.github.nsilbernagel.discordbot.reaction.impl.VoteKickPlusTask;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.object.entity.Member;
@@ -17,8 +20,11 @@ public class VotingRegistry {
   @Setter
   private ArrayList<Voting> votings;
 
+  @Autowired
+  private VoteKickPlusTask voteKickPlusTask;
+
   public VotingRegistry() {
-    this.votings = new ArrayList<Voting>();
+    this.votings = new ArrayList<>();
   }
 
   public <T extends Voting> Optional<T> getByMember(Member member, Class<T> votingClass) {
@@ -28,9 +34,17 @@ public class VotingRegistry {
         .findFirst();
   }
 
+  public <T extends Voting> Optional<T> getByTrigger(Message trigger, Class<T> votingClass) {
+    return this.votings.stream()
+        .filter(voting -> voting.getClass().equals(votingClass) && voting.getTrigger().equals(trigger))
+        .map(votingClass::cast)
+        .findFirst();
+  }
+
   public KickVoting createKickVoting(Member member, Message trigger) {
     KickVoting voting = new KickVoting(member, trigger);
     this.votings.add(voting);
+    this.voteKickPlusTask.addMessage(trigger);
     return voting;
   }
 }

@@ -5,6 +5,7 @@ import java.util.concurrent.TimeoutException;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
+import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
@@ -27,11 +28,14 @@ public class SummonTask extends MessageTask implements ExplainedMessageTask {
   private Optional<VoiceConnection> voiceConnection = Optional.empty();
 
   public boolean canHandle(String keyword) {
-    return KEYWORD.equals(keyword) || KEYWORD.equals("join");
+    return keyword.equals(KEYWORD) || keyword.equals("join");
   }
 
   @Autowired
   private LavaPlayerAudioProvider lavaPlayerAudioProvider;
+
+  @Autowired
+  private MessageCreateEventListener messageCreateEventListener;
 
   @Autowired
   private LeaveTask leaveTask;
@@ -42,7 +46,7 @@ public class SummonTask extends MessageTask implements ExplainedMessageTask {
       this.leaveTask.execute();
     }
 
-    this.messageToTaskHandler.getMsgAuthor()
+    this.messageCreateEventListener.getMsgAuthor()
         .getVoiceState()
         .doOnError(TimeoutException.class, (error) -> {
           throw new TaskException("Leider ist ein Fehler aufgetreten", error);
