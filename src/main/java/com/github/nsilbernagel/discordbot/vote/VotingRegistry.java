@@ -24,7 +24,7 @@ public class VotingRegistry {
   public <T extends AbstractVoting> Optional<T> getByMember(Member member, Class<T> votingClass) {
     return this.votings.stream()
         .filter(voting -> voting.getClass().equals(votingClass) && voting.getTargetMember().equals(member))
-        .map(voting -> votingClass.cast(voting))
+        .map(votingClass::cast)
         .findFirst();
   }
 

@@ -18,8 +18,6 @@ public abstract class AbstractEventListener<T extends Event> {
 
   /**
    * The action to perform when the target event was fired
-   *
-   * @param event
    */
   abstract public void execute(T event);
 

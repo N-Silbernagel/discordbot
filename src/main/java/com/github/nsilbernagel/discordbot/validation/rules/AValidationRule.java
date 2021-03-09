@@ -11,7 +11,7 @@ public abstract class AValidationRule<A extends Annotation> {
   protected Field commandField;
 
   /**
-   * Get the Annotation belonging to the validatino Rule
+   * Get the Annotation belonging to the validation Rule
    *
    * @return the annotation
    */

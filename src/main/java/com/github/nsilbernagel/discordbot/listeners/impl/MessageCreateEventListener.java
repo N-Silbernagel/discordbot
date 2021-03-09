@@ -41,8 +41,6 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
   @Autowired
   private MessageTaskPreparer messageTaskPreparer;
 
-  private Message message;
-
   @Getter
   private TextChannel messageChannel;
 
@@ -53,9 +51,9 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
 
   @Override
   public void execute(MessageCreateEvent event) {
-    this.message = event.getMessage();
+    Message message = event.getMessage();
     try {
-      this.messageChannel = (TextChannel) this.message.getChannel().block();
+      this.messageChannel = (TextChannel) message.getChannel().block();
     } catch (ClassCastException e) {
       // probably using a private channel which we dont support yet
       return;
@@ -65,7 +63,7 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
       return;
     }
 
-    if (!this.message.getContent().startsWith(commandToken)) {
+    if (!message.getContent().startsWith(commandToken)) {
       return;
     }
 
@@ -74,7 +72,7 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
       return;
     }
 
-    List<AbstractMessageTask> tasks = messageToTaskHandler.getMessageTasks(this.message);
+    List<AbstractMessageTask> tasks = messageToTaskHandler.getMessageTasks(message);
 
     if (tasks.size() > 0 && this.spamRegistry.isSpamProtectionEnabled()) {
       this.spamRegistry.countMemberUp(this.messageToTaskHandler.getMsgAuthor());

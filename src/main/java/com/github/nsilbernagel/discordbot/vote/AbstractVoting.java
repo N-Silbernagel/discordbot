@@ -83,9 +83,7 @@ public abstract class AbstractVoting {
   }
 
   /**
-   * Action to be executed when the voting was successfull
-   *
-   * @return success
+   * Action to be executed when the voting was successful
    */
   abstract protected void onEnoughVotes();
 }

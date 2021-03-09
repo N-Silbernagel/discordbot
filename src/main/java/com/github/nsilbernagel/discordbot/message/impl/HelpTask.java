@@ -37,7 +37,7 @@ public class HelpTask extends AbstractMessageTask {
         .filter(explainedMessageTask -> explainedMessageTask.getKeyword().equals(taskToExplainString))
         .findFirst();
 
-    if (!taskToExplain.isPresent()) {
+    if (taskToExplain.isEmpty()) {
       throw new TaskException("Den Befehl gibt es nicht.");
     }
 
@@ -45,11 +45,11 @@ public class HelpTask extends AbstractMessageTask {
   }
 
   private String generateHelpMarkdown() {
-    String helpMarkdownString = "```\n";
+    StringBuilder helpMarkdownString = new StringBuilder("```\n");
     for (ExplainedMessageTask explainedMessageTask : explainedMessageTasks) {
-      helpMarkdownString += explainedMessageTask.getKeyword() + ": " + explainedMessageTask.getExplaination() + "\n";
+      helpMarkdownString.append(explainedMessageTask.getKeyword()).append(": ").append(explainedMessageTask.getExplaination()).append("\n");
     }
-    helpMarkdownString += "```";
-    return helpMarkdownString;
+    helpMarkdownString.append("```");
+    return helpMarkdownString.toString();
   }
 }

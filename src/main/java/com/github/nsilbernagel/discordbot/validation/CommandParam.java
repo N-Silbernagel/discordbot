@@ -15,7 +15,7 @@ public @interface CommandParam {
   int pos();
 
   /**
-   * Take all comand param from pos to pos + the range. Interger.MAX_VALUE is
+   * Take all command param from pos to pos + the range. Integer.MAX_VALUE is
    * recommended for infinity
    */
   int range() default 1;

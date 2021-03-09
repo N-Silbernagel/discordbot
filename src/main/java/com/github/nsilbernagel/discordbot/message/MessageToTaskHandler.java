@@ -40,7 +40,7 @@ public class MessageToTaskHandler {
   private Member msgAuthor;
 
   /**
-   * Get tasks that can handle a given keywork
+   * Get tasks that can handle a given keyword
    */
   private List<AbstractMessageTask> getTasksForKeyword() {
     List<AbstractMessageTask> result = new ArrayList<>();

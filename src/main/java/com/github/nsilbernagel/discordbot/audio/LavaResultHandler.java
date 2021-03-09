@@ -23,7 +23,6 @@ public final class LavaResultHandler implements AudioLoadResultHandler {
   @Override
   public void playlistLoaded(final AudioPlaylist playlist) {
     playlist.getTracks()
-        .stream()
         .forEach(track -> this.lavaTrackScheduler.queue(track));
   }
 

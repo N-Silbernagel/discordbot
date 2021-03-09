@@ -15,9 +15,7 @@ public class PongTask extends AbstractMessageTask {
 
   @Override
   public void action() {
-    this.messageCreateEventListener.getMessageChannel()
-        .createMessage("pong")
-        .block();
+    this.answerMessage("pong");
   }
 
   public boolean canHandle(String keyword) {

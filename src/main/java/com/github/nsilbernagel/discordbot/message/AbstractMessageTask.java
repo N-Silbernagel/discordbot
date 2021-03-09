@@ -24,8 +24,6 @@ abstract public class AbstractMessageTask {
 
   /**
    * Answer the message with a given text on the same channel
-   *
-   * @param answerText
    */
   public Mono<Message> answerMessage(String answerText) {
     return this.messageCreateEventListener.getMessageChannel()

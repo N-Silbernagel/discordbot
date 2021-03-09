@@ -27,7 +27,7 @@ public class LeaveTask extends AbstractMessageTask implements ExplainedMessageTa
   public void action() {
     Optional<VoiceConnection> existingVoiceConnection = summonTask.getVoiceConnection();
 
-    if (!existingVoiceConnection.isPresent()) {
+    if (existingVoiceConnection.isEmpty()) {
       this.getMessage().addReaction(ReactionEmoji.unicode("❌")).block();
       return;
     }

@@ -36,7 +36,7 @@ public class PlayTask extends AbstractMessageTask implements ExplainedMessageTas
   @Override
   public void action() {
 
-    if (!summonTask.getVoiceConnection().isPresent()) {
+    if (summonTask.getVoiceConnection().isEmpty()) {
       summonTask.execute();
     }
 
