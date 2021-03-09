@@ -1,14 +1,14 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PauseTask extends AbstractMessageTask implements ExplainedMessageTask {
+public class PauseTask extends MessageTask implements ExplainedMessageTask {
 
   public final static String KEYWORD = "pause";
 

@@ -12,7 +12,7 @@ import discord4j.core.object.entity.Message;
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class AbstractVoting {
+public abstract class Voting {
   @Getter
   /** the member the voting is targeting */
   protected Member targetMember;
@@ -36,12 +36,12 @@ public abstract class AbstractVoting {
   /** the message because of which the voting was started */
   private Message trigger;
 
-  public AbstractVoting(long votesNeeded, Message trigger) {
+  public Voting(long votesNeeded, Message trigger) {
     this.votesNeeded = votesNeeded;
     this.trigger = trigger;
   }
 
-  public AbstractVoting(long votesNeeded, Message trigger, Duration ttl) {
+  public Voting(long votesNeeded, Message trigger, Duration ttl) {
     this.votesNeeded = votesNeeded;
     this.trigger = trigger;
     this.ttl = ttl;

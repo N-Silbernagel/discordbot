@@ -5,7 +5,7 @@ import com.github.nsilbernagel.discordbot.message.TaskException;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 
-public class KickVoting extends AbstractVoting {
+public class KickVoting extends Voting {
   final public static int requiredVoiceChannelMembers = 3;
 
   public KickVoting(Member memberToKick, Message trigger) {

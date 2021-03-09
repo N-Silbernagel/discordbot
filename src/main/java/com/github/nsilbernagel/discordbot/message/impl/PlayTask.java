@@ -3,7 +3,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerException;
 import com.github.nsilbernagel.discordbot.audio.LavaResultHandler;
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PlayTask extends AbstractMessageTask implements ExplainedMessageTask {
+public class PlayTask extends MessageTask implements ExplainedMessageTask {
   public final static String KEYWORD = "play";
 
   @Autowired

@@ -2,7 +2,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
 import com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric;
 import com.github.nsilbernagel.discordbot.validation.rules.annotations.Required;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 @NeedsPermission(Permission.ADMINISTRATOR)
-public class BulkDeleteTask extends AbstractMessageTask {
+public class BulkDeleteTask extends MessageTask {
 
   public final static String KEYWORD = "delete";
 

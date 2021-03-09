@@ -5,8 +5,8 @@ import java.util.List;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
-import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.listeners.EventListener;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.validation.MessageTaskPreparer;
@@ -22,7 +22,7 @@ import discord4j.core.object.entity.channel.TextChannel;
 import lombok.Getter;
 
 @Component
-public class MessageCreateEventListener extends AbstractEventListener<MessageCreateEvent> {
+public class MessageCreateEventListener extends EventListener<MessageCreateEvent> {
   @Value("${app.discord.command-token:!}")
   private String commandToken;
 
@@ -72,7 +72,7 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
       return;
     }
 
-    List<AbstractMessageTask> tasks = messageToTaskHandler.getMessageTasks(message);
+    List<MessageTask> tasks = messageToTaskHandler.getMessageTasks(message);
 
     if (tasks.size() > 0 && this.spamRegistry.isSpamProtectionEnabled()) {
       this.spamRegistry.countMemberUp(this.messageToTaskHandler.getMsgAuthor());
@@ -91,7 +91,7 @@ public class MessageCreateEventListener extends AbstractEventListener<MessageCre
     });
   }
 
-  private void prepareAndExecuteTask(AbstractMessageTask task) throws TaskException {
+  private void prepareAndExecuteTask(MessageTask task) throws TaskException {
     try {
       this.messageTaskPreparer.execute(task);
     } catch (MessageValidationException e) {

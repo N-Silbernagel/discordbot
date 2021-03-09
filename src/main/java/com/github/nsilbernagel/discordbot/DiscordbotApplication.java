@@ -2,7 +2,7 @@ package com.github.nsilbernagel.discordbot;
 
 import java.util.List;
 
-import com.github.nsilbernagel.discordbot.listeners.AbstractEventListener;
+import com.github.nsilbernagel.discordbot.listeners.EventListener;
 import com.github.nsilbernagel.discordbot.schedules.ChannelNameClock;
 import com.github.nsilbernagel.discordbot.schedules.CleanSchedule;
 
@@ -29,12 +29,12 @@ public class DiscordbotApplication implements CommandLineRunner {
   private GatewayDiscordClient discordClient;
 
   @Autowired
-  private List<AbstractEventListener<?>> eventListeners;
+  private List<EventListener<?>> eventListeners;
 
   @Override
   public void run(String... args) throws Exception {
     // register event listeners on all classes extending the
-    // AbstractEventListener class
+    // EventListener class
     eventListeners.forEach((eventListener) -> eventListener.register());
 
     this.discordClient.onDisconnect().block();

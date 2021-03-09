@@ -10,7 +10,7 @@ import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
 
-abstract public class AbstractMessageTask {
+abstract public class MessageTask {
   @Autowired
   @Getter
   protected MessageToTaskHandler messageToTaskHandler;

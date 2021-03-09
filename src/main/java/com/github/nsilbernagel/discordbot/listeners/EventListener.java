@@ -7,7 +7,7 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.Event;
 
 @Component
-public abstract class AbstractEventListener<T extends Event> {
+public abstract class EventListener<T extends Event> {
   @Autowired
   private GatewayDiscordClient discordClient;
 

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Numeric
-    extends AValidationRule<com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric> {
+    extends ValidationRule<com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric> {
 
   protected boolean validateParam() {
     if (this.commandParam.isEmpty()) {

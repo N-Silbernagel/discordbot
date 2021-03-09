@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.validation.MessageValidationException;
 
-public abstract class AValidationRule<A extends Annotation> {
+public abstract class ValidationRule<A extends Annotation> {
   protected Optional<String> commandParam;
   protected Field commandField;
 

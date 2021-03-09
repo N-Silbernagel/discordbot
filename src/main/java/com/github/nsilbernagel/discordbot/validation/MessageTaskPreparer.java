@@ -6,13 +6,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
-import com.github.nsilbernagel.discordbot.validation.rules.AValidationRule;
+import com.github.nsilbernagel.discordbot.validation.rules.ValidationRule;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -23,12 +22,12 @@ import org.springframework.stereotype.Component;
 public class MessageTaskPreparer {
 
   @Autowired
-  private List<AValidationRule<? extends Annotation>> validationRules;
+  private List<ValidationRule<? extends Annotation>> validationRules;
 
   @Autowired
   private MessageToTaskHandler messageToTaskHandler;
 
-  private AbstractMessageTask messageTask;
+  private MessageTask messageTask;
 
   private ConversionService conversionService;
 
@@ -38,7 +37,7 @@ public class MessageTaskPreparer {
    *
    * @param messageTask the message Task to do preparation for
    */
-  public void execute(AbstractMessageTask messageTask) {
+  public void execute(MessageTask messageTask) {
     this.messageTask = messageTask;
 
     // prepare the message tasks fields annotated as CommandParam
@@ -81,7 +80,7 @@ public class MessageTaskPreparer {
     }
   }
 
-  private void setFieldValue(AbstractMessageTask messageTask, Field commandParamField, Object value) {
+  private void setFieldValue(MessageTask messageTask, Field commandParamField, Object value) {
     try {
       commandParamField.set(
           messageTask,
@@ -110,7 +109,7 @@ public class MessageTaskPreparer {
    */
   private void validateFieldAccordingToAnnotation(Field commandParamField, Annotation fieldValidationAnnotation)
       throws MessageValidationException, IllegalArgumentException {
-    Optional<AValidationRule<? extends Annotation>> validationRuleOptional = this.validationRules.stream()
+    Optional<ValidationRule<? extends Annotation>> validationRuleOptional = this.validationRules.stream()
         .filter(validationRule -> validationRule.getCorrespondingAnnotation()
             .equals(fieldValidationAnnotation.annotationType()))
         .findFirst();

@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
-public class RandomRedditPostTask extends AbstractMessageTask implements ExplainedMessageTask {
+public class RandomRedditPostTask extends MessageTask implements ExplainedMessageTask {
 
   public static final String KEYWORD = "reddit";
 

@@ -3,7 +3,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 import java.util.List;
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HelpTask extends AbstractMessageTask {
+public class HelpTask extends MessageTask {
   public final static String KEYWORD = "help";
 
   public boolean canHandle(String keyword) {

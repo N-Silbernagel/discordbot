@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.message.AbstractMessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.HtmlUtils;
 
 @Component
-public class InsultTask extends AbstractMessageTask implements ExplainedMessageTask {
+public class InsultTask extends MessageTask implements ExplainedMessageTask {
 
   public final static String KEYWORD = "insult";
 
