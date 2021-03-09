@@ -44,15 +44,11 @@ public class MessageTaskPreparer {
     List<Field> messageTaskFields = Arrays.asList(messageTask.getClass().getDeclaredFields());
 
     /**
-     * the message tasks fields annotated as CommandParam
+     * prepare the message tasks fields annotated as CommandParam
      */
-    List<Field> commandParamFields = messageTaskFields.stream()
+    messageTaskFields.stream()
         .filter(field -> field.isAnnotationPresent(CommandParam.class))
-        .collect(Collectors.toList());
-
-    commandParamFields.forEach(commandParamField -> {
-      this.prepareCommandParamField(commandParamField);
-    });
+        .forEach(this::prepareCommandParamField);
   }
 
   /**
