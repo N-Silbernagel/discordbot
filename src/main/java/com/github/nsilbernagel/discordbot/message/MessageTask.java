@@ -63,8 +63,7 @@ abstract public class MessageTask {
   /**
    * Check if a task can do anything with a given command keyword
    *
-   * @param keyword
-   *                  the keyword to check
+   * @param keyword the keyword to check
    * @return can handle keyword
    */
   abstract public boolean canHandle(String keyword);

@@ -33,9 +33,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
   }
 
   /**
-   *
-   * @param track
-   *                to queue
+   * @param track to queue
    * @return queue success
    */
   public boolean queue(AudioTrack track) {
@@ -55,7 +53,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
   public void nextTrack() {
     AudioTrack nextTrack = queue.poll();
 
-    if(nextTrack == null) {
+    if (nextTrack == null) {
       this.setPresenceOnline();
     }
 

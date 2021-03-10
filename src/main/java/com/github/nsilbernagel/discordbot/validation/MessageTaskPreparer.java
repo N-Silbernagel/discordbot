@@ -104,7 +104,7 @@ public class MessageTaskPreparer {
   /**
    * validate a command param field according to its validation rule annotations
    *
-   * @param commandParamField the field annotated with commandParam
+   * @param commandParamField         the field annotated with commandParam
    * @param fieldValidationAnnotation the validation annotation to validate the command param against
    */
   private void validateFieldAccordingToAnnotation(Field commandParamField, Annotation fieldValidationAnnotation)
@@ -129,7 +129,7 @@ public class MessageTaskPreparer {
         commandParamValue = Optional.empty();
       }
 
-      if(validationRuleOptional.isEmpty()) {
+      if (validationRuleOptional.isEmpty()) {
         return;
       }
 

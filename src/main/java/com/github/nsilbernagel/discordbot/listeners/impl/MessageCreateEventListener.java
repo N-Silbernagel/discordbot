@@ -106,8 +106,8 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   protected void onCheckedException(TaskException exception) {
     if (exception.hasMessage()) {
       this.getMessageChannel()
-        .createMessage(exception.getMessage())
-        .block();
+          .createMessage(exception.getMessage())
+          .block();
     }
   }
 

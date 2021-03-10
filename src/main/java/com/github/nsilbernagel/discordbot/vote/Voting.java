@@ -18,8 +18,8 @@ public abstract class Voting {
   @Getter
   private Message remainingVotesMessage;
 
-  @Getter
   /** the member the voting is targeting */
+  @Getter
   protected Member targetMember;
 
   @Getter
@@ -33,12 +33,12 @@ public abstract class Voting {
   @Setter
   private int votesPerUser = 1;
 
-  @Getter
   /** time until voting gets deleted */
+  @Getter
   private Duration ttl = Duration.ofMinutes(10);
 
-  @Getter
   /** the message because of which the voting was started */
+  @Getter
   private Message trigger;
 
   public Voting(long votesNeeded, Message trigger) {
@@ -101,9 +101,9 @@ public abstract class Voting {
 
   protected void createMessageWithNumberOfRemainingVotes() {
     this.remainingVotesMessage = this.getTrigger()
-            .getChannel()
-            .flatMap((channel) -> channel.createMessage(this.generateRemainingVotesMessage()))
-            .block();
+        .getChannel()
+        .flatMap((channel) -> channel.createMessage(this.generateRemainingVotesMessage()))
+        .block();
   }
 
   public Mono<Message> renewMessageWithNumberOfRemainingVotes() {
@@ -115,9 +115,9 @@ public abstract class Voting {
    */
   private String generateRemainingVotesMessage() {
     return new StringBuilder("```\n")
-            .append("Noch ").append(this.remainingVotes()).append(" Stimmen bis ")
-            .append(this.getTargetMember().getDisplayName()).append(" gekickt wird.")
-            .append("```")
-            .toString();
+        .append("Noch ").append(this.remainingVotes()).append(" Stimmen bis ")
+        .append(this.getTargetMember().getDisplayName()).append(" gekickt wird.")
+        .append("```")
+        .toString();
   }
 }

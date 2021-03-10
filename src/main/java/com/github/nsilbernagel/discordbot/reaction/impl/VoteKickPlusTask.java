@@ -46,17 +46,18 @@ public class VoteKickPlusTask extends ReactionTask {
     }
 
     boolean enoughVotes = kickVotingTriggeredByMessage.get().addVote(
-            this.reactionAddEventListener.getReactionAddEvent().getMember().get(),
-            Instant.now()
+        this.reactionAddEventListener.getReactionAddEvent()
+            .getMember().get(),
+        Instant.now()
     );
 
     if (!enoughVotes) {
       kickVotingTriggeredByMessage.get().renewMessageWithNumberOfRemainingVotes()
-        .block();
+          .block();
     } else {
       kickVotingTriggeredByMessage.get().getRemainingVotesMessage()
-        .delete()
-        .block();
+          .delete()
+          .block();
     }
   }
 }

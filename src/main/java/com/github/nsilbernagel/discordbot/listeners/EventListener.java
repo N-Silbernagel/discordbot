@@ -14,7 +14,7 @@ import java.util.Arrays;
 public abstract class EventListener<E extends Event> {
   @Autowired
   private GatewayDiscordClient discordClient;
-  
+
   @Autowired
   private Environment env;
 
@@ -30,6 +30,7 @@ public abstract class EventListener<E extends Event> {
 
   /**
    * Handle task exceptions in the case of one being thrown in the execute method
+   *
    * @param checkedException the thrown exception to handle
    */
   abstract protected void onCheckedException(TaskException checkedException);
@@ -37,6 +38,7 @@ public abstract class EventListener<E extends Event> {
   /**
    * Do something in the case of an unchecked exception being thrown in the execute method
    * These exceptions will be caught in prod
+   *
    * @param uncheckedException the thrown exception to handle
    */
   abstract protected void onUncheckedException(Exception uncheckedException);
@@ -48,7 +50,7 @@ public abstract class EventListener<E extends Event> {
       this.onCheckedException(checkedException);
     } catch (Exception uncheckedException) {
       this.onUncheckedException(uncheckedException);
-      if(Arrays.stream(this.env.getActiveProfiles()).anyMatch(activeProfile -> activeProfile.equalsIgnoreCase("prod"))) {
+      if (Arrays.stream(this.env.getActiveProfiles()).anyMatch(activeProfile -> activeProfile.equalsIgnoreCase("prod"))) {
         // if we are in a prod environment, we don't want the app to crash, just print the stack trace to console silently
         uncheckedException.printStackTrace();
         return;
