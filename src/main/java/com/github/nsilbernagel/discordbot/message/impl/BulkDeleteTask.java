@@ -30,7 +30,7 @@ public class BulkDeleteTask extends MessageTask {
 
   @CommandParam(pos = 0)
   @Required("Bitte gib eine Zahl an.")
-  @Numeric(value = "Bitte gib eine Zahl zwischen 1 und 10 an.", min = 1, max = 10)
+  @Numeric(value = "Bitte gib eine Zahl zwischen 1 und 10 an.", min = 1, max = 100)
   private long numberOfMessagesToDelete;
 
   public boolean canHandle(String keyword) {
