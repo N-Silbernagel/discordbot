@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot.reaction.impl;
 import java.time.Instant;
 import java.util.Optional;
 
+import com.github.nsilbernagel.discordbot.communication.Emoji;
 import com.github.nsilbernagel.discordbot.listeners.impl.ReactionAddEventListener;
 import com.github.nsilbernagel.discordbot.reaction.ReactionTask;
 import com.github.nsilbernagel.discordbot.vote.KickVoting;
@@ -15,7 +16,7 @@ import discord4j.core.object.reaction.ReactionEmoji;
 
 @Component
 public class VoteKickPlusTask extends ReactionTask {
-  final public ReactionEmoji TRIGGER = ReactionEmoji.unicode("✅");
+  final public ReactionEmoji TRIGGER = Emoji.CHECK.getUnicodeEmoji();
 
   @Autowired
   private VotingRegistry votingRegistry;

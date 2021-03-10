@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.listeners.impl;
 
 import java.util.List;
 
+import com.github.nsilbernagel.discordbot.communication.Emoji;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
@@ -20,7 +21,6 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
-import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 
 @Component
@@ -82,7 +82,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
     this.msgAuthor = this.message.getAuthorAsMember().block();
 
     if (this.spamRegistry.isSpamProtectionEnabled() && this.spamRegistry.memberHasExceededThreshold(this.msgAuthor)) {
-      this.message.addReaction(ReactionEmoji.unicode("👮‍♂️")).subscribe();
+      Emoji.GUARD.reactOn(this.message).subscribe();
       return;
     }
 
@@ -112,6 +112,6 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   }
 
   protected void onUncheckedException(Exception uncheckedException) {
-    this.message.addReaction(ReactionEmoji.unicode("🐛")).block();
+    Emoji.BUG.reactOn(this.message).subscribe();
   }
 }

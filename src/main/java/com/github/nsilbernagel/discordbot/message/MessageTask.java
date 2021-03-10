@@ -1,12 +1,12 @@
 package com.github.nsilbernagel.discordbot.message;
 
+import com.github.nsilbernagel.discordbot.communication.Emoji;
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
 
@@ -49,9 +49,7 @@ abstract public class MessageTask {
         .block());
 
     if (authorHasRequiredPermission.isPresent() && authorHasRequiredPermission.get()) {
-      this.getMessage()
-          .addReaction(ReactionEmoji.unicode("👮‍♂️"))
-          .block();
+      Emoji.GUARD.reactOn(this.getMessage()).block();
     } else {
       this.action();
     }

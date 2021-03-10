@@ -2,14 +2,13 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.communication.Communicator;
+import com.github.nsilbernagel.discordbot.communication.Emoji;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.voice.VoiceConnection;
 
 @Component
@@ -24,15 +23,12 @@ public class LeaveTask extends MessageTask implements ExplainedMessageTask {
   @Autowired
   private SummonTask summonTask;
 
-  @Autowired
-  private Communicator communicator;
-
   @Override
   public void action() {
     Optional<VoiceConnection> existingVoiceConnection = summonTask.getVoiceConnection();
 
     if (existingVoiceConnection.isEmpty()) {
-      this.communicator.react(this.getMessage(), Communicator.EMOJI_CROSS).block();
+      Emoji.CROSS.reactOn(this.getMessage()).block();
       return;
     }
 
