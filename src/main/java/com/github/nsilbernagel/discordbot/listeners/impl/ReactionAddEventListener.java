@@ -5,8 +5,8 @@ import java.util.List;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.listeners.EventListener;
+import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.reaction.ReactionTask;
-import com.github.nsilbernagel.discordbot.reaction.ReactionTaskException;
 import com.github.nsilbernagel.discordbot.reaction.ReactionToTaskHandler;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,14 +79,16 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
 
     List<ReactionTask> tasks = this.reactionToTaskHandler.getReactionTasks(this.emoji);
 
-    tasks.forEach(task -> {
-      try {
-        task.action();
-      } catch (ReactionTaskException taskException) {
-        // no error handling to reactions for now, dont spam the text channel for
-        // simple reactions
-        // might need to add it for future applications
-      }
-    });
+    tasks.forEach(ReactionTask::action);
+  }
+
+  protected void onCheckedException(TaskException exception) {
+    // no error handling to reactions for now, dont spam the text channel for
+    // simple reactions
+    // might need to add it for future applications
+  }
+
+  protected void onUncheckedException(Exception uncheckedException) {
+    this.message.addReaction(ReactionEmoji.unicode("🐛"));
   }
 }

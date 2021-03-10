@@ -10,6 +10,8 @@ import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
+
 abstract public class MessageTask {
   @Autowired
   @Getter
@@ -41,12 +43,12 @@ abstract public class MessageTask {
       return;
     }
 
-    boolean authorHasRequiredPermission = this.messageCreateEventListener.getMsgAuthor()
+    Optional<Boolean> authorHasRequiredPermission = Optional.ofNullable(this.messageCreateEventListener.getMsgAuthor()
         .getBasePermissions()
         .flatMap(permissions -> Mono.just(permissions.contains(needsPermissionAnnotation.value())))
-        .block();
+        .block());
 
-    if (!authorHasRequiredPermission) {
+    if (authorHasRequiredPermission.isPresent() && authorHasRequiredPermission.get()) {
       this.getMessage()
           .addReaction(ReactionEmoji.unicode("👮‍♂️"))
           .block();
