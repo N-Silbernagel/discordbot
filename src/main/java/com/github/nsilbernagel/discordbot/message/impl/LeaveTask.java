@@ -2,13 +2,13 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import java.util.Optional;
 
+import com.github.nsilbernagel.discordbot.communication.Emoji;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.voice.VoiceConnection;
 
 @Component
@@ -28,7 +28,7 @@ public class LeaveTask extends MessageTask implements ExplainedMessageTask {
     Optional<VoiceConnection> existingVoiceConnection = summonTask.getVoiceConnection();
 
     if (existingVoiceConnection.isEmpty()) {
-      this.getMessage().addReaction(ReactionEmoji.unicode("❌")).block();
+      Emoji.CROSS.reactOn(this.getMessage()).block();
       return;
     }
 

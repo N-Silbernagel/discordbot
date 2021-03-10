@@ -18,8 +18,7 @@ public class ChannelBlacklist {
    * Check if bot should answer on the message's channel as per the
    * app.discord.channels.blacklist property
    *
-   * @param channelInQuestion
-   *                            the channel of the current message
+   * @param channelInQuestion the channel of the current message
    */
   public boolean canAnswerOnChannel(Channel channelInQuestion) {
     return Arrays.stream(this.channelBlacklist)

@@ -46,18 +46,19 @@ public class SummonTask extends MessageTask implements ExplainedMessageTask {
       this.leaveTask.execute();
     }
 
-    this.messageCreateEventListener.getMsgAuthor()
+    this.voiceConnection = Optional.ofNullable(this.messageCreateEventListener.getMsgAuthor()
         .getVoiceState()
         .doOnError(TimeoutException.class, (error) -> {
           throw new TaskException("Leider ist ein Fehler aufgetreten", error);
         })
         .flatMap(VoiceState::getChannel)
         .flatMap(channel -> channel.join(spec -> spec.setProvider(lavaPlayerAudioProvider)))
-        .flatMap(voiceConnection -> {
-          this.voiceConnection = Optional.of(voiceConnection);
-          return Mono.empty();
-        })
-        .block();
+        .block());
+
+    // user is not in a voice channel ->
+    if(this.voiceConnection.isEmpty()) {
+      throw new TaskException("Bitte join einem Channel, damit ich hinterher kann.");
+    }
   }
 
   public String getKeyword() {

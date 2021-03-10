@@ -71,10 +71,9 @@ final public class ExclusiveBotChannel {
   /**
    * Handle a message written on a Textchannel that is not the bots exclusive
    * channel
-   * 
-   * @param message
-   *                  the message that was sent on the text channel that is not
-   *                  the bot's exclusive one
+   *
+   * @param message the message that was sent on the text channel that is not
+   *                the bot's exclusive one
    */
   public void handleMessageOnOtherChannel(Message message) {
     // delete message

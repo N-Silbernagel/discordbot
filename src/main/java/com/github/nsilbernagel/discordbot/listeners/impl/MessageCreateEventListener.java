@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.listeners.impl;
 
 import java.util.List;
 
+import com.github.nsilbernagel.discordbot.communication.Emoji;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
@@ -20,7 +21,6 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
-import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 
 @Component
@@ -49,16 +49,17 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   @Getter
   private Member msgAuthor;
 
-  @Override
+  @Getter
+  private Message message;
+
   public Class<MessageCreateEvent> getEventType() {
     return MessageCreateEvent.class;
   }
 
-  @Override
   public void execute(MessageCreateEvent event) {
-    Message message = event.getMessage();
+    this.message = event.getMessage();
     try {
-      this.messageChannel = (TextChannel) message.getChannel().block();
+      this.messageChannel = (TextChannel) this.message.getChannel().block();
     } catch (ClassCastException e) {
       // probably using a private channel which we dont support yet
       return;
@@ -68,20 +69,20 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
       return;
     }
 
-    if (!message.getContent().startsWith(commandToken)) {
+    if (!this.message.getContent().startsWith(commandToken)) {
       return;
     }
 
-    if (!this.exclusiveBotChannel.isOnExclusiveChannel(message)) {
-      this.exclusiveBotChannel.handleMessageOnOtherChannel(message);
+    if (!this.exclusiveBotChannel.isOnExclusiveChannel(this.message)) {
+      this.exclusiveBotChannel.handleMessageOnOtherChannel(this.message);
       return;
     }
 
-    List<MessageTask> tasks = messageToTaskHandler.getMessageTasks(message);
-    this.msgAuthor = message.getAuthorAsMember().block();
+    List<MessageTask> tasks = messageToTaskHandler.getMessageTasks(this.message);
+    this.msgAuthor = this.message.getAuthorAsMember().block();
 
     if (this.spamRegistry.isSpamProtectionEnabled() && this.spamRegistry.memberHasExceededThreshold(this.msgAuthor)) {
-      message.addReaction(ReactionEmoji.unicode("👮‍♂️")).subscribe();
+      Emoji.GUARD.reactOn(this.message).subscribe();
       return;
     }
 
@@ -89,17 +90,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
       this.spamRegistry.countMemberUp(this.getMsgAuthor());
     }
 
-    tasks.forEach(task -> {
-      try {
-        this.prepareAndExecuteTask(task);
-      } catch (TaskException taskLogicError) {
-        if (taskLogicError.hasMessage()) {
-          this.getMessageChannel()
-              .createMessage(taskLogicError.getMessage())
-              .block();
-        }
-      }
-    });
+    tasks.forEach(this::prepareAndExecuteTask);
   }
 
   private void prepareAndExecuteTask(MessageTask task) throws TaskException {
@@ -110,5 +101,17 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
     }
 
     task.execute();
+  }
+
+  protected void onCheckedException(TaskException exception) {
+    if (exception.hasMessage()) {
+      this.getMessageChannel()
+          .createMessage(exception.getMessage())
+          .block();
+    }
+  }
+
+  protected void onUncheckedException(Exception uncheckedException) {
+    Emoji.BUG.reactOn(this.message).subscribe();
   }
 }

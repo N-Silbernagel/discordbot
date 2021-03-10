@@ -25,6 +25,10 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
   @Autowired
   private MessageCreateEventListener messageCreateEventListener;
 
+  /**
+   * Crate a Kickvoting
+   * @see KickVoting
+   */
   @Override
   public void action() {
     Guild guild = this.getMessage()
@@ -49,14 +53,14 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
 
     Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick, KickVoting.class);
 
-    if(runningKickVoting.isPresent()){
+    if (runningKickVoting.isPresent()) {
       throw new TaskException("Es läuft bereits eine Abstimmung zum kicken von " + runningKickVoting.get().getTargetMember().getDisplayName());
     }
 
     KickVoting newKickVoting = this.registry.createKickVoting(memberToKick, this.getMessage());
     newKickVoting.addVote(
-            this.messageCreateEventListener.getMsgAuthor(),
-            this.getMessage().getTimestamp()
+        this.messageCreateEventListener.getMsgAuthor(),
+        this.getMessage().getTimestamp()
     );
   }
 

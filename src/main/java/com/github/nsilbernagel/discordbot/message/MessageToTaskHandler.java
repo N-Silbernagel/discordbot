@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.message;
 
+import com.github.nsilbernagel.discordbot.communication.Emoji;
 import discord4j.core.object.entity.Message;
 
 import java.util.ArrayList;
@@ -9,7 +10,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 
 @Component
@@ -65,8 +65,8 @@ public class MessageToTaskHandler {
     if (tasks.isEmpty()) {
       // react to members message with question mark emoji to show that the command
       // was not found
-      message.addReaction(ReactionEmoji.unicode("❓")).block();
-      return new ArrayList<MessageTask>();
+      Emoji.QUESTION_MARK.reactOn(message).block();
+      return new ArrayList<>();
     }
 
     return tasks;

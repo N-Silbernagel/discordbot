@@ -1,14 +1,16 @@
 package com.github.nsilbernagel.discordbot.message;
 
+import com.github.nsilbernagel.discordbot.communication.Emoji;
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 abstract public class MessageTask {
   @Autowired
@@ -41,17 +43,15 @@ abstract public class MessageTask {
       return;
     }
 
-    boolean authorHasRequiredPermission = this.messageCreateEventListener.getMsgAuthor()
+    Optional<Boolean> authorHasRequiredPermission = Optional.ofNullable(this.messageCreateEventListener.getMsgAuthor()
         .getBasePermissions()
         .flatMap(permissions -> Mono.just(permissions.contains(needsPermissionAnnotation.value())))
-        .block();
+        .block());
 
-    if (!authorHasRequiredPermission) {
-      this.getMessage()
-          .addReaction(ReactionEmoji.unicode("👮‍♂️"))
-          .block();
-    } else {
+    if (authorHasRequiredPermission.isPresent() && authorHasRequiredPermission.get()) {
       this.action();
+    } else {
+      Emoji.GUARD.reactOn(this.getMessage()).block();
     }
   }
 
@@ -63,8 +63,7 @@ abstract public class MessageTask {
   /**
    * Check if a task can do anything with a given command keyword
    *
-   * @param keyword
-   *                  the keyword to check
+   * @param keyword the keyword to check
    * @return can handle keyword
    */
   abstract public boolean canHandle(String keyword);

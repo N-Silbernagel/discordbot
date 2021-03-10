@@ -31,8 +31,7 @@ public class SpamRegistry {
   /**
    * Count up the users messages counter or register him if not present yet
    *
-   * @param member
-   *               the member who created the message
+   * @param member the member who created the message
    * @return the new number of user messages
    */
   public Integer countMemberUp(Member member) {
@@ -56,7 +55,6 @@ public class SpamRegistry {
   /**
    * Reduce the spam count of a member
    *
-   * @param member
    * @return new spam count
    */
   public Integer reduceMemberCount(Member member) {
@@ -80,8 +78,6 @@ public class SpamRegistry {
 
   /**
    * Schedule the reduction of a members spam count
-   *
-   * @param member
    */
   private void scheduleReduction(Member member) {
     Mono.delay(Duration.ofMillis(this.reductionInterval))
@@ -92,15 +88,11 @@ public class SpamRegistry {
   /**
    * Return if the member in question has exceeded his max bot commands
    *
-   * @return wether the user has exceeded the commands threshold
+   * @return if the user has exceeded the commands threshold
    */
   public boolean memberHasExceededThreshold(Member memberInQuestion) {
     Optional<Integer> countForMember = Optional.ofNullable(this.memberMessageCountMap.get(memberInQuestion));
 
-    if (!countForMember.isPresent()) {
-      return false;
-    }
-
-    return countForMember.get() >= this.commandsPerInterval;
+    return countForMember.filter(commandsByMemberInInterval -> commandsByMemberInInterval >= this.commandsPerInterval).isPresent();
   }
 }

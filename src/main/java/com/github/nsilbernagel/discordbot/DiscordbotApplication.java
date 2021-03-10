@@ -35,7 +35,7 @@ public class DiscordbotApplication implements CommandLineRunner {
   public void run(String... args) throws Exception {
     // register event listeners on all classes extending the
     // EventListener class
-    eventListeners.forEach((eventListener) -> eventListener.register());
+    eventListeners.forEach(EventListener::register);
 
     this.discordClient.onDisconnect().block();
   }
