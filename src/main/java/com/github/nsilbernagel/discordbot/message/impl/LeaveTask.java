@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.message.impl;
 
 import java.util.Optional;
 
+import com.github.nsilbernagel.discordbot.communication.Communicator;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
@@ -23,12 +24,15 @@ public class LeaveTask extends MessageTask implements ExplainedMessageTask {
   @Autowired
   private SummonTask summonTask;
 
+  @Autowired
+  private Communicator communicator;
+
   @Override
   public void action() {
     Optional<VoiceConnection> existingVoiceConnection = summonTask.getVoiceConnection();
 
     if (existingVoiceConnection.isEmpty()) {
-      this.getMessage().addReaction(ReactionEmoji.unicode("❌")).block();
+      this.communicator.react(this.getMessage(), Communicator.EMOJI_CROSS).block();
       return;
     }
 
