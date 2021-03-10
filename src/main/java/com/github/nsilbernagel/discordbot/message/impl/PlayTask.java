@@ -40,12 +40,7 @@ public class PlayTask extends MessageTask implements ExplainedMessageTask {
       summonTask.execute();
     }
 
-    try {
-      lavaPlayerAudioProvider.getPlayerManager()
-          .loadItem(this.audioSourceString, this.lavaResultHandler);
-    } catch (LavaPlayerException e) {
-      throw new TaskException(e.getMessage());
-    }
+    this.loadAudioSource(this.audioSourceString);
   }
 
   public String getKeyword() {
@@ -54,6 +49,11 @@ public class PlayTask extends MessageTask implements ExplainedMessageTask {
 
   public String getExplaination() {
     return "Eine Audioquelle in die Warteschlange packen.";
+  }
+
+  public void loadAudioSource(String audioSource) throws LavaPlayerException {
+    lavaPlayerAudioProvider.getPlayerManager()
+      .loadItem(audioSource, this.lavaResultHandler);
   }
 
   public void setAudioSourceString(String src) {
