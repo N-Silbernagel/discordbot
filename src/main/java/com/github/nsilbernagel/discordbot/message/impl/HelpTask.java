@@ -8,6 +8,7 @@ import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
 
+import com.github.nsilbernagel.discordbot.validation.rules.annotations.Required;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,18 +24,19 @@ public class HelpTask extends MessageTask {
   private List<ExplainedMessageTask> explainedMessageTasks;
 
   @CommandParam(pos = 0)
-  private String taskToExplainString;
+  private Optional<String> taskToExplainQuery;
 
   @Override
   public void action() {
 
-    if (this.taskToExplainString == null) {
+    // explain all task if none is given
+    if (this.taskToExplainQuery.isEmpty()) {
       this.answerMessage(this.generateHelpMarkdown()).block();
       return;
     }
 
     Optional<ExplainedMessageTask> taskToExplain = explainedMessageTasks.stream()
-        .filter(explainedMessageTask -> explainedMessageTask.getKeyword().equals(taskToExplainString))
+        .filter(explainedMessageTask -> explainedMessageTask.getKeyword().equals(this.taskToExplainQuery.get()))
         .findFirst();
 
     if (taskToExplain.isEmpty()) {

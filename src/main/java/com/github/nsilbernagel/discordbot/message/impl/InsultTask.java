@@ -37,6 +37,6 @@ public class InsultTask extends MessageTask implements ExplainedMessageTask {
   }
 
   public String getExplaination() {
-    return "Eine Nutzer beleidigen.";
+    return "Einen Nutzer beleidigen.";
   }
 }
