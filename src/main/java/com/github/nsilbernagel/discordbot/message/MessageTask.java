@@ -49,9 +49,9 @@ abstract public class MessageTask {
         .block());
 
     if (authorHasRequiredPermission.isPresent() && authorHasRequiredPermission.get()) {
-      Emoji.GUARD.reactOn(this.getMessage()).block();
-    } else {
       this.action();
+    } else {
+      Emoji.GUARD.reactOn(this.getMessage()).block();
     }
   }
 
