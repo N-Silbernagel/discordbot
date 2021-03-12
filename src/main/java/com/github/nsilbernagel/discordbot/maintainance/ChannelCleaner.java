@@ -1,14 +1,16 @@
 package com.github.nsilbernagel.discordbot.maintainance;
 
-import java.time.Instant;
+import discord4j.common.util.Snowflake;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.channel.TextChannel;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import discord4j.common.util.Snowflake;
-import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
+
+import java.time.Instant;
+
 
 @Component
 public class ChannelCleaner {
@@ -17,23 +19,19 @@ public class ChannelCleaner {
   private String commandToken;
 
   public void execute(TextChannel channel) {
-    channel.getMessagesBefore(Snowflake.of(Instant.now()))
+    Flux<Message> messagesToDelete = channel.getMessagesBefore(Snowflake.of(Instant.now()))
         .take(50)
-        .flatMap(message -> this.deleteIfFromBotOrCommand(message))
-        .then()
-        .block();
+        .filter(this::checkIfFromBotOrCommand);
+
+    channel.bulkDeleteMessages(messagesToDelete)
+        .blockLast();
   }
 
-  private Mono<Void> deleteIfFromBotOrCommand(Message message) {
-    if (!message.getAuthor().isPresent()) {
-      return Mono.empty();
+  private Boolean checkIfFromBotOrCommand(Message message) {
+    if (message.getAuthor().isEmpty()) {
+      return false;
     }
 
-    if (!message.getAuthor().get().isBot() && !message.getContent().startsWith(this.commandToken)) {
-      return Mono.empty();
-    }
-
-    return message.delete();
+    return message.getAuthor().get().isBot() || message.getContent().startsWith(this.commandToken);
   }
-
 }
