@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
+import reactor.core.CoreSubscriber;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -16,24 +18,22 @@ public class ChannelCleaner {
   @Value("${app.discord.command-token:!}")
   private String commandToken;
 
+  Flux<Message> messagesToDelete;
+
   public void execute(TextChannel channel) {
-    channel.getMessagesBefore(Snowflake.of(Instant.now()))
+    Flux<Message> messagesToDelete = channel.getMessagesBefore(Snowflake.of(Instant.now()))
         .take(50)
-        .flatMap(message -> this.deleteIfFromBotOrCommand(message))
-        .then()
-        .block();
+        .filter(this::checkIfFromBotOrCommand);
+
+    channel.bulkDeleteMessages(messagesToDelete)
+        .blockLast();
   }
 
-  private Mono<Void> deleteIfFromBotOrCommand(Message message) {
-    if (!message.getAuthor().isPresent()) {
-      return Mono.empty();
+  private Boolean checkIfFromBotOrCommand(Message message){
+    if (message.getAuthor().isEmpty()) {
+      return false;
     }
 
-    if (!message.getAuthor().get().isBot() && !message.getContent().startsWith(this.commandToken)) {
-      return Mono.empty();
-    }
-
-    return message.delete();
+    return message.getAuthor().get().isBot() || message.getContent().startsWith(this.commandToken);
   }
-
 }
