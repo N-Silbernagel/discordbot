@@ -82,7 +82,7 @@ public abstract class Voting {
   }
 
   public long remainingVotes() {
-    return this.votesNeeded - this.votes.size() - 1;
+    return this.votesNeeded - this.votes.size();
   }
 
   public boolean memberHasVotedAsOftenAsHeMay(Member member) {
