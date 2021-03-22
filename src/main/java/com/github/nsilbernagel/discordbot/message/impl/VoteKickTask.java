@@ -39,10 +39,9 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
   public void action() {
     Guild guild = this.getMessage()
         .getGuild()
-        .doOnError(error -> {
-          throw new TaskException(error);
-        })
         .block();
+
+    assert guild != null;
 
     Optional<Member> memberToKick = Optional.ofNullable(
         this.getMessage()
@@ -62,7 +61,8 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
       throw new TaskException("Es läuft bereits eine Abstimmung zum kicken von " + runningKickVoting.get().getTargetMember().getDisplayName());
     }
 
-    KickVoting newKickVoting = this.registry.createKickVoting(memberToKick.get(), this.getMessage());
+    KickVoting newKickVoting = new KickVoting(memberToKick.get(), this.getMessage());
+    this.registry.addVoting(newKickVoting);
     this.voteKickPlusTask.addMessage(this.getMessage());
 
     newKickVoting.addVote(

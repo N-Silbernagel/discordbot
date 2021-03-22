@@ -8,17 +8,20 @@ import org.springframework.stereotype.Component;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import lombok.Getter;
-import lombok.Setter;
 
 @Component
 public class VotingRegistry {
 
+
   @Getter
-  @Setter
   private ArrayList<Voting> votings;
 
   public VotingRegistry() {
     this.votings = new ArrayList<>();
+  }
+
+  public void addVoting(Voting newVoting) {
+    this.votings.add(newVoting);
   }
 
   public <T extends Voting> Optional<T> getByMember(Member member, Class<T> votingClass) {
@@ -33,11 +36,5 @@ public class VotingRegistry {
         .filter(voting -> voting.getClass().equals(votingClass) && voting.getTrigger().equals(trigger))
         .map(votingClass::cast)
         .findFirst();
-  }
-
-  public KickVoting createKickVoting(Member member, Message trigger) {
-    KickVoting voting = new KickVoting(member, trigger);
-    this.votings.add(voting);
-    return voting;
   }
 }
