@@ -4,10 +4,10 @@ import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListe
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
+import com.github.nsilbernagel.discordbot.reaction.impl.VoteKickPlusTask;
 import com.github.nsilbernagel.discordbot.vote.VotingRegistry;
 import com.github.nsilbernagel.discordbot.vote.KickVoting;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.object.entity.Guild;
@@ -19,11 +19,17 @@ import java.util.Optional;
 public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
   public final static String KEYWORD = "votekick";
 
-  @Autowired
-  private VotingRegistry registry;
+  private final VotingRegistry registry;
 
-  @Autowired
-  private MessageCreateEventListener messageCreateEventListener;
+  private final MessageCreateEventListener messageCreateEventListener;
+
+  private final VoteKickPlusTask voteKickPlusTask;
+
+  public VoteKickTask(VotingRegistry registry, MessageCreateEventListener messageCreateEventListener, VoteKickPlusTask voteKickPlusTask) {
+    this.registry = registry;
+    this.messageCreateEventListener = messageCreateEventListener;
+    this.voteKickPlusTask = voteKickPlusTask;
+  }
 
   /**
    * Crate a Kickvoting
@@ -38,26 +44,27 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
         })
         .block();
 
-    Member memberToKick;
+    Optional<Member> memberToKick = Optional.ofNullable(
+        this.getMessage()
+        .getUserMentions()
+        .filter((userMention) -> !userMention.isBot())
+        .flatMap(user -> user.asMember(guild.getId()))
+        .blockFirst()
+    );
 
-    try {
-      memberToKick = this.getMessage()
-          .getUserMentions()
-          .filter((userMention) -> !userMention.isBot())
-          .blockFirst()
-          .asMember(guild.getId())
-          .block();
-    } catch (Throwable error) {
+    if (memberToKick.isEmpty()) {
       throw new TaskException("Bitte gib einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
     }
 
-    Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick, KickVoting.class);
+    Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick.get(), KickVoting.class);
 
     if (runningKickVoting.isPresent()) {
       throw new TaskException("Es läuft bereits eine Abstimmung zum kicken von " + runningKickVoting.get().getTargetMember().getDisplayName());
     }
 
-    KickVoting newKickVoting = this.registry.createKickVoting(memberToKick, this.getMessage());
+    KickVoting newKickVoting = this.registry.createKickVoting(memberToKick.get(), this.getMessage());
+    this.voteKickPlusTask.addMessage(this.getMessage());
+
     newKickVoting.addVote(
         this.messageCreateEventListener.getMsgAuthor(),
         this.getMessage().getTimestamp()
