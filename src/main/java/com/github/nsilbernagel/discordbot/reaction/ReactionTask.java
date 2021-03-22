@@ -17,9 +17,12 @@ public abstract class ReactionTask {
 
   abstract public void action();
 
-  public boolean addMessage(Message message) {
+  /**
+   * Add a message that can be reacted on
+   */
+  public void addMessage(Message message) {
     message.addReaction(this.getTrigger()).subscribe();
-    return this.messages.add(message);
+    this.messages.add(message);
   }
 
   public void execute(Message message) {

@@ -23,8 +23,8 @@ public class KickVoting extends Voting {
    * more than half of the member in the voice channel should vote and a
    * reasonable number of people should be inside of it
    */
-  private static long calculateVotesRequired(Member memberToKick) {
-    long membersInVoiceChannel = memberToKick.getVoiceState()
+  private static long calculateVotesRequired(Member memberToKick) throws AssertionError {
+    Long membersInVoiceChannel = memberToKick.getVoiceState()
         .blockOptional()
         .orElseThrow(() -> new TaskException(memberToKick.getUsername() + " ist nicht in einem voice Channel"))
         .getChannel()
@@ -32,12 +32,14 @@ public class KickVoting extends Voting {
         .flatMap(Flux::count)
         .block();
 
+    assert membersInVoiceChannel != null;
+
     if (membersInVoiceChannel < requiredVoiceChannelMembers) {
       throw new TaskException("Im Voice Channel von " + memberToKick.getUsername() + " müssen mehr als "
           + requiredVoiceChannelMembers + " Nutzer sein.");
     }
 
-    return (int) Math.floor(membersInVoiceChannel / 2) + 1;
+    return (int) Math.floor((double) membersInVoiceChannel / 2) + 1;
   }
 
   @Override

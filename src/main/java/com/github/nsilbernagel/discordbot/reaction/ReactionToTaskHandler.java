@@ -10,8 +10,11 @@ import discord4j.core.object.reaction.ReactionEmoji;
 
 @Component
 public class ReactionToTaskHandler {
-  @Autowired
-  private List<ReactionTask> tasks;
+  private final List<ReactionTask> tasks;
+
+  public ReactionToTaskHandler(List<ReactionTask> tasks) {
+    this.tasks = tasks;
+  }
 
   /**
    * Get tasks that can handle a given keyword

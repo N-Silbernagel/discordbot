@@ -13,7 +13,6 @@ import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
 import com.github.nsilbernagel.discordbot.validation.rules.ValidationRule;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.stereotype.Component;
@@ -21,15 +20,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessageTaskPreparer {
 
-  @Autowired
-  private List<ValidationRule<? extends Annotation>> validationRules;
+  private final List<ValidationRule<? extends Annotation>> validationRules;
 
-  @Autowired
-  private MessageToTaskHandler messageToTaskHandler;
+  private final MessageToTaskHandler messageToTaskHandler;
 
   private MessageTask messageTask;
 
   private ConversionService conversionService;
+
+  public MessageTaskPreparer(List<ValidationRule<? extends Annotation>> validationRules, MessageToTaskHandler messageToTaskHandler) {
+    this.validationRules = validationRules;
+    this.messageToTaskHandler = messageToTaskHandler;
+  }
 
   /**
    * Prepare a message task, validate and map the command parameters to the
@@ -72,7 +74,7 @@ public class MessageTaskPreparer {
     if (commandRange == 1) {
       this.setFieldValue(messageTask, commandParamField, this.getFieldValueFromCommandParam(commandParamIndex));
     } else {
-      List<Object> newFieldValue = new ArrayList<Object>(commandRange);
+      List<Object> newFieldValue = new ArrayList<>(commandRange);
       for (int offset = 0; offset < commandRange; offset++) {
         newFieldValue.add(this.getFieldValueFromCommandParam(commandParamIndex + offset));
       }

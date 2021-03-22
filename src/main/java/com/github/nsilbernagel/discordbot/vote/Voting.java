@@ -27,7 +27,7 @@ public abstract class Voting {
   private long votesNeeded;
 
   @Getter
-  private List<Vote> votes = new ArrayList<Vote>();
+  private final List<Vote> votes = new ArrayList<>();
 
   @Getter
   @Setter
@@ -39,7 +39,7 @@ public abstract class Voting {
 
   /** the message because of which the voting was started */
   @Getter
-  private Message trigger;
+  private final Message trigger;
 
   public Voting(long votesNeeded, Message trigger) {
     this.votesNeeded = votesNeeded;
@@ -82,7 +82,7 @@ public abstract class Voting {
   }
 
   public long remainingVotes() {
-    return this.votesNeeded - this.votes.size() - 1;
+    return this.votesNeeded - this.votes.size();
   }
 
   public boolean memberHasVotedAsOftenAsHeMay(Member member) {
@@ -114,10 +114,9 @@ public abstract class Voting {
    * Generate a message that has info about how many users need to vote to kick the user
    */
   private String generateRemainingVotesMessage() {
-    return new StringBuilder("```\n")
-        .append("Noch ").append(this.remainingVotes()).append(" Stimmen bis ")
-        .append(this.getTargetMember().getDisplayName()).append(" gekickt wird.")
-        .append("```")
-        .toString();
+    return "```\n" +
+        "Noch " + this.remainingVotes() + " Stimmen bis " +
+        this.getTargetMember().getDisplayName() + " gekickt wird." +
+        "```";
   }
 }
