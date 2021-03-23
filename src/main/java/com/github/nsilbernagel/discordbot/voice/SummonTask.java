@@ -9,7 +9,6 @@ import com.github.nsilbernagel.discordbot.message.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
-import discord4j.core.object.entity.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,19 +39,11 @@ public class SummonTask extends MessageTask implements ExplainedMessageTask {
   @Autowired
   private LeaveTask leaveTask;
 
-  /**
-   * The Member to follow
-   */
-  @Getter
-  private Member following;
-
   @Override
   public void action() {
     if (this.voiceConnection.isPresent()) {
       this.leaveTask.execute();
     }
-
-    this.following = this.messageCreateEventListener.getMsgAuthor();
 
     this.voiceConnection = Optional.ofNullable(this.messageCreateEventListener.getMsgAuthor()
         .getVoiceState()
