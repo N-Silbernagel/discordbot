@@ -23,7 +23,7 @@ public class AwsmSounds extends SoundsSource<AwsmSound> {
 
   private JaroWinklerStrategy comparer;
 
-  private Flux<AwsmSound> cache;
+  private final Flux<AwsmSound> cache;
 
   public AwsmSounds() {
     List<AwsmSound> soundsList = WebClient.create("https://sounds-backend.awsm.rocks")

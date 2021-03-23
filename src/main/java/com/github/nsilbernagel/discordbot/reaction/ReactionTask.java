@@ -9,7 +9,7 @@ import lombok.Getter;
 
 public abstract class ReactionTask {
   @Getter
-  private final List<Message> messages = new ArrayList<Message>();
+  private final List<Message> messages = new ArrayList<>();
 
   abstract public boolean canHandle(ReactionEmoji reactionEmoji);
 
@@ -23,6 +23,13 @@ public abstract class ReactionTask {
   public void addMessage(Message message) {
     message.addReaction(this.getTrigger()).subscribe();
     this.messages.add(message);
+  }
+
+  /**
+   * remove a message from the list of reactable messages
+   */
+  public void removeMessage(Message message) {
+    this.messages.remove(message);
   }
 
   public void execute(Message message) {

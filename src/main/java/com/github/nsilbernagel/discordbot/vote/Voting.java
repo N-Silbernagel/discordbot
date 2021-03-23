@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.nsilbernagel.discordbot.BeanUtil;
 import com.github.nsilbernagel.discordbot.vote.dto.Vote;
 
 import discord4j.core.object.entity.Member;
@@ -63,7 +64,7 @@ public abstract class Voting {
     if (this.votes.size() < this.votesNeeded) {
       return false;
     }
-    this.onEnoughVotes();
+    this.enoughVotes();
     return true;
   }
 
@@ -92,6 +93,12 @@ public abstract class Voting {
         .collect(Collectors.toList());
 
     return votesByMember.size() >= this.votesPerUser;
+  }
+
+  private void enoughVotes() {
+    this.onEnoughVotes();
+    // emit event to let everybody know the voting has finished
+    BeanUtil.getSpringContext().publishEvent(new VotingFinishedEvent(this, this));
   }
 
   /**
