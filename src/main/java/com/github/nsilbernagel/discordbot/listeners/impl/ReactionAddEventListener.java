@@ -10,8 +10,6 @@ import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.reaction.ReactionTask;
 import com.github.nsilbernagel.discordbot.reaction.ReactionToTaskHandler;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -22,14 +20,10 @@ import lombok.Getter;
 
 @Component
 public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
-  @Autowired
-  private ReactionToTaskHandler reactionToTaskHandler;
 
-  @Autowired
-  private ChannelBlacklist channelBlacklist;
-
-  @Autowired
-  private ExclusiveBotChannel exclusiveBotChannel;
+  private final ReactionToTaskHandler reactionToTaskHandler;
+  private final ChannelBlacklist channelBlacklist;
+  private final ExclusiveBotChannel exclusiveBotChannel;
 
   @Getter
   private Message message;
@@ -42,6 +36,12 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
 
   @Getter
   private ReactionEmoji emoji;
+
+  public ReactionAddEventListener(ReactionToTaskHandler reactionToTaskHandler, ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel) {
+    this.reactionToTaskHandler = reactionToTaskHandler;
+    this.channelBlacklist = channelBlacklist;
+    this.exclusiveBotChannel = exclusiveBotChannel;
+  }
 
   @Override
   public Class<ReactionAddEvent> getEventType() {
