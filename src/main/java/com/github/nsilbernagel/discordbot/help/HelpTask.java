@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.message.impl;
+package com.github.nsilbernagel.discordbot.help;
 
 import java.util.List;
 import java.util.Optional;

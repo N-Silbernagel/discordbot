@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.message.impl;
+package com.github.nsilbernagel.discordbot.vote;
 
 import com.github.nsilbernagel.discordbot.message.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.MessageTask;

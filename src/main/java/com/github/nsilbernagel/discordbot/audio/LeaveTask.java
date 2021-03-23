@@ -1,8 +1,8 @@
-package com.github.nsilbernagel.discordbot.message.impl;
+package com.github.nsilbernagel.discordbot.audio;
 
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.communication.Emoji;
+import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 

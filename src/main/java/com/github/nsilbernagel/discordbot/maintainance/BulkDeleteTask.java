@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.message.impl;
+package com.github.nsilbernagel.discordbot.maintainance;
 
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.message.MessageCreateEventListener;

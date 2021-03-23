@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.communication;
+package com.github.nsilbernagel.discordbot.reaction;
 
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.reaction.ReactionEmoji;

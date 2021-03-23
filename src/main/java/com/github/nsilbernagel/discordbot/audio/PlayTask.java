@@ -1,11 +1,7 @@
-package com.github.nsilbernagel.discordbot.message.impl;
+package com.github.nsilbernagel.discordbot.audio;
 
-import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
-import com.github.nsilbernagel.discordbot.audio.LavaPlayerException;
-import com.github.nsilbernagel.discordbot.audio.LavaResultHandler;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
-import com.github.nsilbernagel.discordbot.message.TaskException;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
 import com.github.nsilbernagel.discordbot.validation.rules.annotations.Required;
 

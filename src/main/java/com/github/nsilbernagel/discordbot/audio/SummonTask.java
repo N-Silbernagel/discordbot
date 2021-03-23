@@ -1,9 +1,10 @@
-package com.github.nsilbernagel.discordbot.message.impl;
+package com.github.nsilbernagel.discordbot.audio;
 
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
+import com.github.nsilbernagel.discordbot.audio.LeaveTask;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;

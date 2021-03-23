@@ -2,7 +2,7 @@ package com.github.nsilbernagel.discordbot;
 
 // import com.github.nsilbernagel.discordbot.message.IMessageTask;
 // import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
-// import com.github.nsilbernagel.discordbot.message.impl.PongTask;
+// import com.github.nsilbernagel.discordbot.unnecessary.PongTask;
 // import discord4j.core.object.entity.Message;
 // import org.junit.jupiter.api.Test;
 // import org.mockito.Mockito;

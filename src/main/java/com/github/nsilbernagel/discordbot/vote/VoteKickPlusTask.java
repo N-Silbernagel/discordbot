@@ -3,11 +3,9 @@ package com.github.nsilbernagel.discordbot.vote;
 import java.time.Instant;
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.communication.Emoji;
+import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.reaction.ReactionAddEventListener;
 import com.github.nsilbernagel.discordbot.reaction.ReactionTask;
-import com.github.nsilbernagel.discordbot.vote.KickVoting;
-import com.github.nsilbernagel.discordbot.vote.VotingRegistry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
