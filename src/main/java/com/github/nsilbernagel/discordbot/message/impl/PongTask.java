@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
-import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
+import com.github.nsilbernagel.discordbot.message.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;

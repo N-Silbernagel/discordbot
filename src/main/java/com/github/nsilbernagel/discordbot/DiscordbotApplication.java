@@ -2,7 +2,7 @@ package com.github.nsilbernagel.discordbot;
 
 import java.util.List;
 
-import com.github.nsilbernagel.discordbot.listeners.EventListener;
+import com.github.nsilbernagel.discordbot.listener.EventListener;
 import com.github.nsilbernagel.discordbot.schedules.ChannelNameClock;
 import com.github.nsilbernagel.discordbot.schedules.CleanSchedule;
 

@@ -1,23 +1,18 @@
 package com.github.nsilbernagel.discordbot.message.impl;
 
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
-import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
+import com.github.nsilbernagel.discordbot.message.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
 import com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric;
 import com.github.nsilbernagel.discordbot.validation.rules.annotations.Required;
 
-import discord4j.common.util.Snowflake;
 import discord4j.core.object.entity.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import discord4j.rest.util.Permission;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @NeedsPermission(Permission.ADMINISTRATOR)

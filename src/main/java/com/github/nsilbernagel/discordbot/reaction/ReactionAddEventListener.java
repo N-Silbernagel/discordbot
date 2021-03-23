@@ -1,14 +1,12 @@
-package com.github.nsilbernagel.discordbot.listeners.impl;
+package com.github.nsilbernagel.discordbot.reaction;
 
 import java.util.List;
 
 import com.github.nsilbernagel.discordbot.communication.Emoji;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
-import com.github.nsilbernagel.discordbot.listeners.EventListener;
+import com.github.nsilbernagel.discordbot.listener.EventListener;
 import com.github.nsilbernagel.discordbot.message.TaskException;
-import com.github.nsilbernagel.discordbot.reaction.ReactionTask;
-import com.github.nsilbernagel.discordbot.reaction.ReactionToTaskHandler;
 
 import org.springframework.stereotype.Component;
 

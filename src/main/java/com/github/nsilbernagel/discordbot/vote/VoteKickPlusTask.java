@@ -1,10 +1,10 @@
-package com.github.nsilbernagel.discordbot.reaction.impl;
+package com.github.nsilbernagel.discordbot.vote;
 
 import java.time.Instant;
 import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.communication.Emoji;
-import com.github.nsilbernagel.discordbot.listeners.impl.ReactionAddEventListener;
+import com.github.nsilbernagel.discordbot.reaction.ReactionAddEventListener;
 import com.github.nsilbernagel.discordbot.reaction.ReactionTask;
 import com.github.nsilbernagel.discordbot.vote.KickVoting;
 import com.github.nsilbernagel.discordbot.vote.VotingRegistry;
