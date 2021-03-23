@@ -20,7 +20,7 @@ import lombok.Getter;
 @Component
 final public class ExclusiveBotChannel {
   /**
-   * An ID of a text channel that the bot should soley act on
+   * An ID of a text channel that the bot should solely act on
    */
   @Value("${app.discord.channels.exclusive:}")
   private String exclusiveBotChannelIdString;

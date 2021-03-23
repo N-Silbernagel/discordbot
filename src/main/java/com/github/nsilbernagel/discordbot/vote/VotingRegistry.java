@@ -17,7 +17,7 @@ public class VotingRegistry {
 
 
   @Getter
-  private ArrayList<Voting> votings;
+  private final ArrayList<Voting> votings;
 
   @Autowired
   private VoteKickPlusTask voteKickPlusTask;
