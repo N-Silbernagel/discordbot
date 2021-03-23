@@ -1,7 +1,6 @@
 package com.github.nsilbernagel.discordbot.voice;
 
 import java.util.Optional;
-import java.util.concurrent.TimeoutException;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
@@ -45,14 +44,13 @@ public class SummonTask extends MessageTask implements ExplainedMessageTask {
       this.leaveTask.execute();
     }
 
-    this.voiceConnection = Optional.ofNullable(this.messageCreateEventListener.getMsgAuthor()
-        .getVoiceState()
-        .doOnError(TimeoutException.class, (error) -> {
-          throw new TaskException("Leider ist ein Fehler aufgetreten", error);
-        })
-        .flatMap(VoiceState::getChannel)
-        .flatMap(channel -> channel.join(spec -> spec.setProvider(lavaPlayerAudioProvider)))
-        .block());
+    this.voiceConnection = Optional.ofNullable(
+        this.messageCreateEventListener.getMsgAuthor()
+            .getVoiceState()
+            .flatMap(VoiceState::getChannel)
+            .flatMap(channel -> channel.join(spec -> spec.setProvider(lavaPlayerAudioProvider)))
+            .block()
+        );
 
     // user is not in a voice channel ->
     if(this.voiceConnection.isEmpty()) {
