@@ -9,6 +9,7 @@ import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.object.VoiceState;
@@ -21,22 +22,25 @@ public class SummonTask extends MessageTask implements ExplainedMessageTask {
 
   public final static String KEYWORD = "summon";
 
+  private final LavaPlayerAudioProvider lavaPlayerAudioProvider;
+
+  private final MessageCreateEventListener messageCreateEventListener;
+
+  private final LeaveTask leaveTask;
+
   @Getter
   @Setter
   private Optional<VoiceConnection> voiceConnection = Optional.empty();
 
+  public SummonTask(LavaPlayerAudioProvider lavaPlayerAudioProvider, MessageCreateEventListener messageCreateEventListener, @Lazy LeaveTask leaveTask) {
+    this.lavaPlayerAudioProvider = lavaPlayerAudioProvider;
+    this.messageCreateEventListener = messageCreateEventListener;
+    this.leaveTask = leaveTask;
+  }
+
   public boolean canHandle(String keyword) {
     return keyword.equals(KEYWORD) || keyword.equals("join");
   }
-
-  @Autowired
-  private LavaPlayerAudioProvider lavaPlayerAudioProvider;
-
-  @Autowired
-  private MessageCreateEventListener messageCreateEventListener;
-
-  @Autowired
-  private LeaveTask leaveTask;
 
   @Override
   public void action() {
