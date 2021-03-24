@@ -4,9 +4,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.github.nsilbernagel.discordbot.BeanUtil;
 import com.github.nsilbernagel.discordbot.vote.dto.Vote;
 
 import discord4j.core.object.entity.Member;
@@ -42,6 +43,9 @@ public abstract class Voting {
   @Getter
   private final Message trigger;
 
+  @Setter
+  private Consumer<Voting> enoughVotesCallBack;
+
   public Voting(long votesNeeded, Message trigger) {
     this.votesNeeded = votesNeeded;
     this.trigger = trigger;
@@ -61,11 +65,15 @@ public abstract class Voting {
   public boolean addVote(Vote vote) {
     this.votes.add(vote);
     this.renewMessageWithNumberOfRemainingVotes().block();
-    if (this.votes.size() < this.votesNeeded) {
-      return false;
+    if (this.votes.size() >= this.votesNeeded) {
+      this.onEnoughVotes();
+
+      if(this.enoughVotesCallBack != null){
+        this.enoughVotesCallBack.accept(this);
+      }
+      return true;
     }
-    this.enoughVotes();
-    return true;
+    return false;
   }
 
   public boolean addVote(Member memberWhoVoted, Instant timestamp) {
@@ -93,12 +101,6 @@ public abstract class Voting {
         .collect(Collectors.toList());
 
     return votesByMember.size() >= this.votesPerUser;
-  }
-
-  private void enoughVotes() {
-    this.onEnoughVotes();
-    // emit event to let everybody know the voting has finished
-    BeanUtil.getSpringContext().publishEvent(new VotingFinishedEvent(this, this));
   }
 
   /**

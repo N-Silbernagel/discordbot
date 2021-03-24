@@ -7,6 +7,8 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import reactor.core.publisher.Flux;
 
+import java.util.function.Function;
+
 
 public class KickVoting extends Voting {
   final public static int requiredVoiceChannelMembers = 3;
