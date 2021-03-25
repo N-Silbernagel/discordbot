@@ -1,10 +1,11 @@
-package com.github.nsilbernagel.discordbot.message.impl;
+package com.github.nsilbernagel.discordbot.vote;
 
-import com.github.nsilbernagel.discordbot.listeners.impl.MessageCreateEventListener;
+import com.github.nsilbernagel.discordbot.BeanUtil;
+import com.github.nsilbernagel.discordbot.message.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
-import com.github.nsilbernagel.discordbot.reaction.impl.VoteKickPlusTask;
+import com.github.nsilbernagel.discordbot.vote.VoteKickPlusTask;
 import com.github.nsilbernagel.discordbot.vote.VotingRegistry;
 import com.github.nsilbernagel.discordbot.vote.KickVoting;
 
@@ -62,6 +63,9 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
     }
 
     KickVoting newKickVoting = new KickVoting(memberToKick.get(), this.getMessage());
+    newKickVoting.setEnoughVotesCallBack((kickVoting) -> {
+      BeanUtil.getSpringContext().publishEvent(new VotingFinishedEvent(this, kickVoting));
+    });
     this.registry.addVoting(newKickVoting);
     this.voteKickPlusTask.addMessage(this.getMessage());
 

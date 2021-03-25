@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.listeners;
+package com.github.nsilbernagel.discordbot.listener;
 
 import com.github.nsilbernagel.discordbot.message.TaskException;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,15 +1,12 @@
-package com.github.nsilbernagel.discordbot.listeners.impl;
+package com.github.nsilbernagel.discordbot.message;
 
 import java.util.List;
 
-import com.github.nsilbernagel.discordbot.communication.Emoji;
+import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
-import com.github.nsilbernagel.discordbot.listeners.EventListener;
-import com.github.nsilbernagel.discordbot.message.MessageTask;
-import com.github.nsilbernagel.discordbot.message.MessageToTaskHandler;
-import com.github.nsilbernagel.discordbot.message.TaskException;
+import com.github.nsilbernagel.discordbot.listener.EventListener;
 import com.github.nsilbernagel.discordbot.validation.MessageTaskPreparer;
 import com.github.nsilbernagel.discordbot.validation.MessageValidationException;
 

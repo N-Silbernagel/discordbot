@@ -3,7 +3,6 @@ package com.github.nsilbernagel.discordbot.vote;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.reaction.impl.VoteKickPlusTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;

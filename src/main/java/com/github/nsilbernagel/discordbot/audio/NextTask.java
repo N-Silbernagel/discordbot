@@ -1,6 +1,6 @@
-package com.github.nsilbernagel.discordbot.message.impl;
+package com.github.nsilbernagel.discordbot.audio;
 
-import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
+import com.github.nsilbernagel.discordbot.audio.LavaTrackScheduler;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ResumeTask extends MessageTask implements ExplainedMessageTask {
+public class NextTask extends MessageTask implements ExplainedMessageTask {
 
-  public final static String KEYWORD = "resume";
+  public final static String KEYWORD = "next";
 
   @Autowired
-  private LavaPlayerAudioProvider lavaPlayerAudioProvider;
+  private LavaTrackScheduler lavaTrackScheduler;
 
   public boolean canHandle(String keyword) {
     return KEYWORD.equals(keyword);
@@ -21,7 +21,7 @@ public class ResumeTask extends MessageTask implements ExplainedMessageTask {
 
   @Override
   public void action() {
-    this.lavaPlayerAudioProvider.getPlayer().setPaused(false);
+    this.lavaTrackScheduler.nextTrack();
   }
 
   public String getKeyword() {
@@ -29,6 +29,6 @@ public class ResumeTask extends MessageTask implements ExplainedMessageTask {
   }
 
   public String getExplaination() {
-    return "Musik abspielen fortsetzen.";
+    return "Das nächste Lied abspielen.";
   }
 }

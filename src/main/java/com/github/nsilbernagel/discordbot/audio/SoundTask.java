@@ -1,8 +1,9 @@
-package com.github.nsilbernagel.discordbot.message.impl;
+package com.github.nsilbernagel.discordbot.audio;
 
 import java.util.List;
 import java.util.Optional;
 
+import com.github.nsilbernagel.discordbot.audio.PlayTask;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;

@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.message;
 
-import com.github.nsilbernagel.discordbot.communication.Emoji;
+import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import discord4j.core.object.entity.Message;
 
 import java.util.ArrayList;
