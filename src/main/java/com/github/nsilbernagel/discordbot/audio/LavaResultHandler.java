@@ -10,9 +10,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public final class LavaResultHandler implements AudioLoadResultHandler {
+  /**
+   * Threshold for how many items of a playlist may be queued
+   */
+  public static final int playlistThreshold = 5;
 
-  @Autowired
-  private LavaTrackScheduler lavaTrackScheduler;
+  private final LavaTrackScheduler lavaTrackScheduler;
+
+  public LavaResultHandler(LavaTrackScheduler lavaTrackScheduler) {
+    this.lavaTrackScheduler = lavaTrackScheduler;
+  }
 
   @Override
   public void trackLoaded(final AudioTrack track) {
@@ -24,8 +31,8 @@ public final class LavaResultHandler implements AudioLoadResultHandler {
   public void playlistLoaded(final AudioPlaylist playlist) {
     playlist.getTracks()
         .stream()
-        .limit(5)
-        .forEach(track -> this.lavaTrackScheduler.queue(track));
+        .limit(playlistThreshold)
+        .forEach(this.lavaTrackScheduler::queue);
   }
 
   @Override
