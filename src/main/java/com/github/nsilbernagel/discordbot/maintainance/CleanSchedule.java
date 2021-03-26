@@ -1,8 +1,6 @@
-package com.github.nsilbernagel.discordbot.schedules;
+package com.github.nsilbernagel.discordbot.maintainance;
 
 import javax.annotation.PostConstruct;
-
-import com.github.nsilbernagel.discordbot.maintainance.ChannelCleaner;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 public class PongTask extends MessageTask {
   public final static String KEYWORD = "ping";
 
-  @Autowired
-  private MessageCreateEventListener messageCreateEventListener;
-
   @Override
   public void action() {
     this.answerMessage("pong");
