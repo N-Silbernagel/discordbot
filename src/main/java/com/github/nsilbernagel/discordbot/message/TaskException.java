@@ -9,6 +9,10 @@ public class TaskException extends RuntimeException {
 
   private Throwable actualException;
 
+  public TaskException() {
+    super();
+  }
+
   public TaskException(String errorMessage) {
     super(errorMessage);
   }
