@@ -3,7 +3,7 @@ package com.github.nsilbernagel.discordbot;
 import java.util.List;
 
 import com.github.nsilbernagel.discordbot.listener.EventListener;
-import com.github.nsilbernagel.discordbot.schedules.ChannelNameClock;
+import com.github.nsilbernagel.discordbot.other.ChannelNameClock;
 import com.github.nsilbernagel.discordbot.maintainance.CleanSchedule;
 
 import discord4j.core.DiscordClient;

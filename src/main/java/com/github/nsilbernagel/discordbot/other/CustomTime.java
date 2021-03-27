@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.schedules.dto;
+package com.github.nsilbernagel.discordbot.other;
 
 import java.util.Calendar;
 
