@@ -45,8 +45,8 @@ public class AwsmSounds extends SoundsSource<AwsmSound> {
   }
 
   public Optional<AwsmSound> filter(String query) {
-    AtomicReference<AwsmSound> matchingSound = new AtomicReference<AwsmSound>();
-    AtomicReference<Double> matchScore = new AtomicReference<Double>(MIN_MATCH_SCORE);
+    AtomicReference<AwsmSound> matchingSound = new AtomicReference<>();
+    AtomicReference<Double> matchScore = new AtomicReference<>(MIN_MATCH_SCORE);
     this.fetch().doOnEach((sound) -> {
       if (sound.get() == null) {
         return;

@@ -19,9 +19,6 @@ public class VoteKickPlusTask extends ReactionTask {
   @Autowired
   private VotingRegistry votingRegistry;
 
-  @Autowired
-  private ReactionAddEventListener reactionAddEventListener;
-
   public boolean canHandle(ReactionEmoji reactionEmoji) {
     return reactionEmoji.equals(TRIGGER);
   }
@@ -33,20 +30,18 @@ public class VoteKickPlusTask extends ReactionTask {
   public void action() {
     // get kickvoting by trigger message
     Optional<KickVoting> kickVotingTriggeredByMessage = this.votingRegistry
-        .getByTrigger(this.reactionAddEventListener.getMessage(), KickVoting.class);
+        .getByTrigger(this.currentMessage(), KickVoting.class);
 
     if (kickVotingTriggeredByMessage.isEmpty()) {
       return;
     }
 
-    if (kickVotingTriggeredByMessage.get().memberHasVotedAsOftenAsHeMay(this.reactionAddEventListener.getReactionAddEvent().getMember().get())) {
+    if (kickVotingTriggeredByMessage.get().memberHasVotedAsOftenAsHeMay(this.currentAuthor())) {
       return;
     }
 
     kickVotingTriggeredByMessage.get().addVote(
-        this.reactionAddEventListener.getReactionAddEvent()
-            .getMember()
-            .get(),
+        this.currentAuthor(),
         Instant.now()
     );
   }

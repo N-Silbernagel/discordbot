@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class SpamRegistry {
-  private final Map<Member, Integer> memberMessageCountMap = new HashMap<Member, Integer>();
+  private final Map<Member, Integer> memberMessageCountMap = new HashMap<>();
 
   @Value("${app.guard.spam.commands.allowed:3}")
   private Integer commandsPerInterval;
@@ -26,7 +26,7 @@ public class SpamRegistry {
 
   @Getter
   @Value("${app.guard.spam.enabled:false}")
-  private boolean spamProtectionEnabled;
+  private boolean enabled;
 
   /**
    * Count up the users messages counter or register him if not present yet
@@ -34,8 +34,10 @@ public class SpamRegistry {
    * @param member the member who created the message
    * @return the new number of user messages
    */
-  public Integer countMemberUp(Member member) {
+  public Integer countMemberUp(Member member) throws AssertionError {
     PermissionSet membersPermissions = member.getBasePermissions().block();
+
+    assert membersPermissions != null;
 
     if (membersPermissions.contains(Permission.ADMINISTRATOR)) {
       return 0;

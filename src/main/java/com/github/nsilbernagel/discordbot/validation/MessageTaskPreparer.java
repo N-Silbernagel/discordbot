@@ -24,8 +24,6 @@ public class MessageTaskPreparer {
 
   private final MessageToTaskHandler messageToTaskHandler;
 
-  private MessageTask messageTask;
-
   private ConversionService conversionService;
 
   public MessageTaskPreparer(List<ValidationRule<? extends Annotation>> validationRules, MessageToTaskHandler messageToTaskHandler) {
@@ -40,12 +38,10 @@ public class MessageTaskPreparer {
    * @param messageTask the message Task to do preparation for
    */
   public void execute(MessageTask messageTask) {
-    this.messageTask = messageTask;
-
     // prepare the message tasks fields annotated as CommandParam
     Arrays.stream(messageTask.getClass().getDeclaredFields())
         .filter(field -> field.isAnnotationPresent(CommandParam.class))
-        .forEach(this::prepareCommandParamField);
+        .forEach((field) -> this.prepareCommandParamField(field, messageTask));
   }
 
   /**
@@ -53,7 +49,7 @@ public class MessageTaskPreparer {
    *
    * @param commandParamField the field annotated with command param to prepare
    */
-  private void prepareCommandParamField(Field commandParamField) throws IllegalArgumentException {
+  private void prepareCommandParamField(Field commandParamField, MessageTask messageTask) throws IllegalArgumentException {
     Arrays.stream(commandParamField.getAnnotations())
         .filter(fieldValidationAnnotation -> this.validationRules.stream()
             .anyMatch(validationRule -> validationRule.getCorrespondingAnnotation().equals(

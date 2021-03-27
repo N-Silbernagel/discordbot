@@ -57,7 +57,7 @@ public class MessageToTaskHandler {
     if (messageParts.size() > 1) {
       this.commandParameters = messageParts.subList(1, messageParts.size());
     } else {
-      this.commandParameters = new ArrayList<String>();
+      this.commandParameters = new ArrayList<>();
     }
 
     List<MessageTask> tasks = getTasksForKeyword();

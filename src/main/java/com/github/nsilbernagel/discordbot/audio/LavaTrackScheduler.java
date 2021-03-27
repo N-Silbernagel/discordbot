@@ -29,7 +29,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
   private final BlockingQueue<AudioTrack> queue;
 
   public LavaTrackScheduler() {
-    this.queue = new LinkedBlockingDeque<AudioTrack>();
+    this.queue = new LinkedBlockingDeque<>();
   }
 
   /**

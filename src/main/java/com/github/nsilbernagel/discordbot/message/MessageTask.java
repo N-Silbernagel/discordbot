@@ -3,38 +3,52 @@ package com.github.nsilbernagel.discordbot.message;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.channel.TextChannel;
 
 import discord4j.core.object.entity.Message;
-import lombok.Getter;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
 abstract public class MessageTask {
-  @Autowired
-  @Getter
-  protected MessageToTaskHandler messageToTaskHandler;
-
-  @Autowired
-  private MessageCreateEventListener messageCreateEventListener;
-
-  protected Message getMessage() {
-    return this.messageToTaskHandler.getMessage();
-  }
+  protected final ThreadLocal<TaskRequest> msgTaskRequest = new ThreadLocal<>();
 
   /**
    * Answer the message with a given text on the same channel
    */
   public Mono<Message> answerMessage(String answerText) {
-    return this.messageCreateEventListener.getMessageChannel()
+    return this.msgTaskRequest.get()
+        .getChannel()
         .createMessage(answerText);
+  }
+
+  /**
+   * Get the message that initiated the message task
+   */
+  protected Message currentMessage() {
+    return this.msgTaskRequest.get().getMessage();
+  }
+
+  /**
+   * Get the channel that the current task was initiated on
+   */
+  protected TextChannel currentChannel() {
+    return this.msgTaskRequest.get().getChannel();
+  }
+
+  /**
+   * Get the author that initiated the message task
+   */
+  protected Member currentAuthor() {
+    return this.msgTaskRequest.get().getAuthor();
   }
 
   /**
    * Execute the message task action considering the needed permissions
    */
-  public void execute() {
+  public void execute(TaskRequest taskRequest) {
+    this.msgTaskRequest.set(taskRequest);
     NeedsPermission needsPermissionAnnotation = this.getClass().getAnnotation(NeedsPermission.class);
 
     if (needsPermissionAnnotation == null) {
@@ -42,7 +56,7 @@ abstract public class MessageTask {
       return;
     }
 
-    Optional<Boolean> authorHasRequiredPermission = Optional.ofNullable(this.messageCreateEventListener.getMsgAuthor()
+    Optional<Boolean> authorHasRequiredPermission = Optional.ofNullable(this.msgTaskRequest.get().getAuthor()
         .getBasePermissions()
         .flatMap(permissions -> Mono.just(permissions.contains(needsPermissionAnnotation.value())))
         .block());
@@ -50,7 +64,7 @@ abstract public class MessageTask {
     if (authorHasRequiredPermission.isPresent() && authorHasRequiredPermission.get()) {
       this.action();
     } else {
-      Emoji.GUARD.reactOn(this.getMessage()).block();
+      Emoji.GUARD.reactOn(this.msgTaskRequest.get().getMessage()).block();
     }
   }
 

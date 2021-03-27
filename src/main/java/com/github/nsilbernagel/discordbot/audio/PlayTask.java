@@ -34,7 +34,7 @@ public class PlayTask extends MessageTask implements ExplainedMessageTask {
   public void action() {
 
     if (summonTask.getVoiceConnection().isEmpty()) {
-      summonTask.execute();
+      summonTask.execute(this.msgTaskRequest.get());
     }
 
     this.loadAudioSource(this.audioSourceString);

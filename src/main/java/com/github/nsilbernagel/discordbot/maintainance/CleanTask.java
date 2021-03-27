@@ -1,8 +1,6 @@
 package com.github.nsilbernagel.discordbot.maintainance;
 
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
-import com.github.nsilbernagel.discordbot.message.MessageCreateEventListener;
-import com.github.nsilbernagel.discordbot.maintainance.ChannelCleaner;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +17,6 @@ public class CleanTask extends MessageTask {
   @Autowired
   private ChannelCleaner channelCleaner;
 
-  @Autowired
-  private MessageCreateEventListener messageCreateEventListener;
-
   public boolean canHandle(String keyword) {
     return KEYWORD.equals(keyword);
   }
@@ -29,7 +24,7 @@ public class CleanTask extends MessageTask {
   @Override
   public void action() {
     this.channelCleaner
-        .execute(this.messageCreateEventListener.getMessageChannel());
+        .execute(this.currentChannel());
   }
 
 }

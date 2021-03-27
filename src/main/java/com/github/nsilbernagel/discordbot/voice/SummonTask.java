@@ -4,11 +4,9 @@ import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
-import com.github.nsilbernagel.discordbot.message.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -24,17 +22,14 @@ public class SummonTask extends MessageTask implements ExplainedMessageTask {
 
   private final LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
-  private final MessageCreateEventListener messageCreateEventListener;
-
   private final LeaveTask leaveTask;
 
   @Getter
   @Setter
   private Optional<VoiceConnection> voiceConnection = Optional.empty();
 
-  public SummonTask(LavaPlayerAudioProvider lavaPlayerAudioProvider, MessageCreateEventListener messageCreateEventListener, @Lazy LeaveTask leaveTask) {
+  public SummonTask(LavaPlayerAudioProvider lavaPlayerAudioProvider, @Lazy LeaveTask leaveTask) {
     this.lavaPlayerAudioProvider = lavaPlayerAudioProvider;
-    this.messageCreateEventListener = messageCreateEventListener;
     this.leaveTask = leaveTask;
   }
 
@@ -45,11 +40,11 @@ public class SummonTask extends MessageTask implements ExplainedMessageTask {
   @Override
   public void action() {
     if (this.voiceConnection.isPresent()) {
-      this.leaveTask.execute();
+      this.leaveTask.execute(this.msgTaskRequest.get());
     }
 
     this.voiceConnection = Optional.ofNullable(
-        this.messageCreateEventListener.getMsgAuthor()
+        this.currentAuthor()
             .getVoiceState()
             .flatMap(VoiceState::getChannel)
             .flatMap(channel -> channel.join(spec -> spec.setProvider(lavaPlayerAudioProvider)))
