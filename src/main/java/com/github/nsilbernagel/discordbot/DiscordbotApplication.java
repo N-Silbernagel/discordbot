@@ -32,7 +32,7 @@ public class DiscordbotApplication implements CommandLineRunner {
   private List<EventListener<?>> eventListeners;
 
   @Override
-  public void run(String... args) throws Exception {
+  public void run(String... args) {
     // register event listeners on all classes extending the
     // EventListener class
     eventListeners.forEach(EventListener::register);

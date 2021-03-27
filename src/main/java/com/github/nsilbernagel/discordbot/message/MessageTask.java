@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 import java.util.Optional;
 
 abstract public class MessageTask {
-  protected ThreadLocal<MsgTaskRequest> msgTaskRequest = new ThreadLocal<>();
+  protected final ThreadLocal<MsgTaskRequest> msgTaskRequest = new ThreadLocal<>();
 
   /**
    * Answer the message with a given text on the same channel

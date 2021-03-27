@@ -3,7 +3,6 @@ package com.github.nsilbernagel.discordbot.reaction;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.object.reaction.ReactionEmoji;
