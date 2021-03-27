@@ -1,4 +1,6 @@
-package com.github.nsilbernagel.discordbot.message;
+package com.github.nsilbernagel.discordbot.task;
+
+import com.github.nsilbernagel.discordbot.task.TaskException;
 
 public class FalseInputException extends TaskException {
   static final long serialVersionUID = 1L;

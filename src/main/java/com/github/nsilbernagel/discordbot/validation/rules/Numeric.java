@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.validation.rules;
 
-import com.github.nsilbernagel.discordbot.message.TaskException;
+import com.github.nsilbernagel.discordbot.task.TaskException;
 import com.github.nsilbernagel.discordbot.validation.MessageValidationException;
 
 import org.springframework.stereotype.Component;

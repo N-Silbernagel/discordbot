@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.nsilbernagel.discordbot.message.TaskRequest;
+import com.github.nsilbernagel.discordbot.task.Task;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 
-public abstract class ReactionTask {
+public abstract class ReactionTask extends Task {
   @Getter
   private final List<Message> messages = new ArrayList<>();
 

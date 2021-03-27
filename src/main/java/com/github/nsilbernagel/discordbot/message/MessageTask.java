@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot.message;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 
+import com.github.nsilbernagel.discordbot.task.Task;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.TextChannel;
 
@@ -11,7 +12,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
-abstract public class MessageTask {
+abstract public class MessageTask extends Task {
   protected final ThreadLocal<TaskRequest> msgTaskRequest = new ThreadLocal<>();
 
   /**

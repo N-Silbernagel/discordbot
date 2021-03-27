@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.message;
+package com.github.nsilbernagel.discordbot.task;
 
 /**
  * An exception to be thrown when some logic inside a task handler fails. These
@@ -8,6 +8,10 @@ public class TaskException extends RuntimeException {
   final static long serialVersionUID = 3L;
 
   private Throwable actualException;
+
+  public TaskException() {
+    super();
+  }
 
   public TaskException(String errorMessage) {
     super(errorMessage);

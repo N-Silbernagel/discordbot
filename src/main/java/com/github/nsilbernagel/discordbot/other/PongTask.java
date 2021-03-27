@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.unnecessary;
+package com.github.nsilbernagel.discordbot.other;
 
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 

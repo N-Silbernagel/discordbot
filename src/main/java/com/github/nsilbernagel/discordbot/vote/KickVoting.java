@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.vote;
 
-import com.github.nsilbernagel.discordbot.message.TaskException;
+import com.github.nsilbernagel.discordbot.task.TaskException;
 
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;

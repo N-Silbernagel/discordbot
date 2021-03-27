@@ -5,10 +5,10 @@ import java.util.List;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.listener.EventListener;
-import com.github.nsilbernagel.discordbot.message.TaskException;
+import com.github.nsilbernagel.discordbot.task.MemberMissingOrBotException;
+import com.github.nsilbernagel.discordbot.task.TaskException;
 
 import com.github.nsilbernagel.discordbot.message.TaskRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -19,17 +19,20 @@ import lombok.Getter;
 @Component
 public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
 
-  @Autowired
-  private ReactionToTaskHandler reactionToTaskHandler;
-  @Autowired
-  private ChannelBlacklist channelBlacklist;
-  @Autowired
-  private ExclusiveBotChannel exclusiveBotChannel;
+  private final ReactionToTaskHandler reactionToTaskHandler;
+  private final ChannelBlacklist channelBlacklist;
+  private final ExclusiveBotChannel exclusiveBotChannel;
 
   @Getter
   private ReactionEmoji emoji;
 
   private final ThreadLocal<TaskRequest> taskRequest = new ThreadLocal<>();
+
+  public ReactionAddEventListener(ReactionToTaskHandler reactionToTaskHandler, ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel) {
+    this.reactionToTaskHandler = reactionToTaskHandler;
+    this.channelBlacklist = channelBlacklist;
+    this.exclusiveBotChannel = exclusiveBotChannel;
+  }
 
   @Override
   public Class<ReactionAddEvent> getEventType() {
@@ -39,7 +42,7 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
   @Override
   public void execute(ReactionAddEvent event) {
     if (event.getMember().isEmpty() || event.getMember().get().isBot()) {
-      return;
+      throw new MemberMissingOrBotException();
     }
 
     try {
