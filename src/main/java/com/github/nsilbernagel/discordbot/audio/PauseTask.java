@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.audio;
 
-import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 

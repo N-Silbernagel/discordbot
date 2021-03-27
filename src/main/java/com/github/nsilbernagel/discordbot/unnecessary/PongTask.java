@@ -1,9 +1,7 @@
 package com.github.nsilbernagel.discordbot.unnecessary;
 
-import com.github.nsilbernagel.discordbot.message.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,7 +10,13 @@ public class PongTask extends MessageTask {
 
   @Override
   public void action() {
-    this.answerMessage("pong");
+    try {
+      Thread.sleep(5000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    this.answerMessage("pong" + this.currentMessage().getContent())
+        .subscribe();
   }
 
   public boolean canHandle(String keyword) {

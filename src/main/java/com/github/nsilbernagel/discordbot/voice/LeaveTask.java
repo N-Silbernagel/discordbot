@@ -6,7 +6,6 @@ import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
-import com.github.nsilbernagel.discordbot.voice.SummonTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +28,7 @@ public class LeaveTask extends MessageTask implements ExplainedMessageTask {
     Optional<VoiceConnection> existingVoiceConnection = summonTask.getVoiceConnection();
 
     if (existingVoiceConnection.isEmpty()) {
-      Emoji.CROSS.reactOn(this.getMessage()).block();
+      Emoji.CROSS.reactOn(this.currentMessage()).block();
       return;
     }
 

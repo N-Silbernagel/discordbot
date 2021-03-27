@@ -15,10 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
-import lombok.Getter;
 
 @Component
 public class MessageCreateEventListener extends EventListener<MessageCreateEvent> {
@@ -40,51 +38,52 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   @Autowired
   private MessageTaskPreparer messageTaskPreparer;
 
-  @Getter
-  private TextChannel messageChannel;
-
-  @Getter
-  private Member msgAuthor;
-
-  @Getter
-  private Message message;
+  private final ThreadLocal<MsgTaskRequest> localMsgTaskRequest = new ThreadLocal<>();
 
   public Class<MessageCreateEvent> getEventType() {
     return MessageCreateEvent.class;
   }
 
   public void execute(MessageCreateEvent event) {
-    this.message = event.getMessage();
+    Message message = event.getMessage();
+    MsgTaskRequest msgTaskRequest;
     try {
-      this.messageChannel = (TextChannel) this.message.getChannel().block();
+      msgTaskRequest = new MsgTaskRequest(
+          message,
+          (TextChannel) message.getChannel().block(),
+          message.getAuthorAsMember().block()
+      );
     } catch (ClassCastException e) {
       // probably using a private channel which we dont support yet
       return;
     }
 
-    if (!this.channelBlacklist.canAnswerOnChannel(this.messageChannel)) {
+    this.localMsgTaskRequest.set(msgTaskRequest);
+
+    if (!this.channelBlacklist.canAnswerOnChannel(msgTaskRequest.getChannel())) {
       return;
     }
 
-    if (!this.message.getContent().startsWith(commandToken)) {
+    if (!msgTaskRequest.getMessage().getContent().startsWith(commandToken)) {
       return;
     }
 
-    if (!this.exclusiveBotChannel.isOnExclusiveChannel(this.message)) {
-      this.exclusiveBotChannel.handleMessageOnOtherChannel(this.message);
+    if (!this.exclusiveBotChannel.isOnExclusiveChannel(message)) {
+      this.exclusiveBotChannel.handleMessageOnOtherChannel(message);
       return;
     }
 
-    List<MessageTask> tasks = messageToTaskHandler.getMessageTasks(this.message);
-    this.msgAuthor = this.message.getAuthorAsMember().block();
+    List<MessageTask> tasks = messageToTaskHandler.getMessageTasks(message);
 
-    if (this.spamRegistry.isSpamProtectionEnabled() && this.spamRegistry.memberHasExceededThreshold(this.msgAuthor)) {
-      Emoji.GUARD.reactOn(this.message).subscribe();
-      return;
-    }
+    if(this.spamRegistry.isEnabled()){
+      if (this.spamRegistry.memberHasExceededThreshold(msgTaskRequest.getAuthor())) {
+        Emoji.GUARD.reactOn(message).subscribe();
+        return;
+      }
 
-    if (tasks.size() > 0 && this.spamRegistry.isSpamProtectionEnabled()) {
-      this.spamRegistry.countMemberUp(this.getMsgAuthor());
+      if (tasks.size() > 0) {
+        this.spamRegistry.countMemberUp(msgTaskRequest.getAuthor());
+      }
     }
 
     tasks.forEach(this::prepareAndExecuteTask);
@@ -97,18 +96,22 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
       throw new TaskException(e.getMessage(), e);
     }
 
-    task.execute();
+    task.execute(this.localMsgTaskRequest.get());
   }
 
   protected void onCheckedException(TaskException exception) {
-    if (exception.hasMessage()) {
-      this.getMessageChannel()
-          .createMessage(exception.getMessage())
-          .block();
+    if (! exception.hasMessage()) {
+      return;
     }
+
+    this.localMsgTaskRequest.get()
+        .getChannel()
+        .createMessage(exception.getMessage())
+        .block();
   }
 
   protected void onUncheckedException(Exception uncheckedException) {
-    Emoji.BUG.reactOn(this.message).subscribe();
+    Emoji.BUG.reactOn(this.localMsgTaskRequest.get().getMessage())
+        .block();
   }
 }

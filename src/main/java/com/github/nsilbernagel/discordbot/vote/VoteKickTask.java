@@ -1,13 +1,9 @@
 package com.github.nsilbernagel.discordbot.vote;
 
 import com.github.nsilbernagel.discordbot.BeanUtil;
-import com.github.nsilbernagel.discordbot.message.MessageCreateEventListener;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.TaskException;
-import com.github.nsilbernagel.discordbot.vote.VoteKickPlusTask;
-import com.github.nsilbernagel.discordbot.vote.VotingRegistry;
-import com.github.nsilbernagel.discordbot.vote.KickVoting;
 
 import org.springframework.stereotype.Component;
 
@@ -22,13 +18,11 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
 
   private final VotingRegistry registry;
 
-  private final MessageCreateEventListener messageCreateEventListener;
 
   private final VoteKickPlusTask voteKickPlusTask;
 
-  public VoteKickTask(VotingRegistry registry, MessageCreateEventListener messageCreateEventListener, VoteKickPlusTask voteKickPlusTask) {
+  public VoteKickTask(VotingRegistry registry, VoteKickPlusTask voteKickPlusTask) {
     this.registry = registry;
-    this.messageCreateEventListener = messageCreateEventListener;
     this.voteKickPlusTask = voteKickPlusTask;
   }
 
@@ -38,14 +32,14 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
    */
   @Override
   public void action() {
-    Guild guild = this.getMessage()
+    Guild guild = this.msgTaskRequest.get().getMessage()
         .getGuild()
         .block();
 
     assert guild != null;
 
     Optional<Member> memberToKick = Optional.ofNullable(
-        this.getMessage()
+        this.currentMessage()
         .getUserMentions()
         .filter((userMention) -> !userMention.isBot())
         .flatMap(user -> user.asMember(guild.getId()))
@@ -62,16 +56,16 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
       throw new TaskException("Es läuft bereits eine Abstimmung zum kicken von " + runningKickVoting.get().getTargetMember().getDisplayName());
     }
 
-    KickVoting newKickVoting = new KickVoting(memberToKick.get(), this.getMessage());
+    KickVoting newKickVoting = new KickVoting(memberToKick.get(), this.currentMessage());
     newKickVoting.setEnoughVotesCallBack((kickVoting) -> {
       BeanUtil.getSpringContext().publishEvent(new VotingFinishedEvent(this, kickVoting));
     });
     this.registry.addVoting(newKickVoting);
-    this.voteKickPlusTask.addMessage(this.getMessage());
+    this.voteKickPlusTask.addMessage(this.currentMessage());
 
     newKickVoting.addVote(
-        this.messageCreateEventListener.getMsgAuthor(),
-        this.getMessage().getTimestamp()
+        this.currentAuthor(),
+        this.currentMessage().getTimestamp()
     );
   }
 
