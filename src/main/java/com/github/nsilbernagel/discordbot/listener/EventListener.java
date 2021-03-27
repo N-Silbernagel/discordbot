@@ -62,17 +62,22 @@ public abstract class EventListener<E extends Event> {
   }
 
   /**
+   * Execute the task on bounded elastic scheduler, thus executing it asynchronously
+   */
+  private Mono<E> asyncExecuteWithExceptionHandling(E event) {
+    return Mono.fromCallable(() -> {
+      this.executeWithExceptionHandling(event);
+      return event;
+    })
+        .subscribeOn(Schedulers.boundedElastic());
+  }
+
+  /**
    * Register a D4J Event listener
    */
   public void register() {
     this.discordClient.on(this.getEventType())
-        .flatMap(event ->
-            Mono.fromCallable(() -> {
-                this.executeWithExceptionHandling(event);
-                return event;
-            })
-            .subscribeOn(Schedulers.boundedElastic())
-        )
+        .flatMap(this::asyncExecuteWithExceptionHandling)
         .subscribe();
   }
 }
