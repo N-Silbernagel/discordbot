@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode()
+@EqualsAndHashCode(callSuper = false)
 public class AwsmSound extends Sound {
   private String label;
   private String url;
