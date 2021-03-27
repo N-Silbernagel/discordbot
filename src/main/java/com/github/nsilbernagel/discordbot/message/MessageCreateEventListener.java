@@ -38,7 +38,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   @Autowired
   private MessageTaskPreparer messageTaskPreparer;
 
-  private final ThreadLocal<MsgTaskRequest> localMsgTaskRequest = new ThreadLocal<>();
+  private final ThreadLocal<TaskRequest> localMsgTaskRequest = new ThreadLocal<>();
 
   public Class<MessageCreateEvent> getEventType() {
     return MessageCreateEvent.class;
@@ -46,9 +46,9 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
 
   public void execute(MessageCreateEvent event) {
     Message message = event.getMessage();
-    MsgTaskRequest msgTaskRequest;
+    TaskRequest taskRequest;
     try {
-      msgTaskRequest = new MsgTaskRequest(
+      taskRequest = new TaskRequest(
           message,
           (TextChannel) message.getChannel().block(),
           message.getAuthorAsMember().block()
@@ -58,13 +58,13 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
       return;
     }
 
-    this.localMsgTaskRequest.set(msgTaskRequest);
+    this.localMsgTaskRequest.set(taskRequest);
 
-    if (!this.channelBlacklist.canAnswerOnChannel(msgTaskRequest.getChannel())) {
+    if (!this.channelBlacklist.canAnswerOnChannel(taskRequest.getChannel())) {
       return;
     }
 
-    if (!msgTaskRequest.getMessage().getContent().startsWith(commandToken)) {
+    if (!taskRequest.getMessage().getContent().startsWith(commandToken)) {
       return;
     }
 
@@ -76,13 +76,13 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
     List<MessageTask> tasks = messageToTaskHandler.getMessageTasks(message);
 
     if(this.spamRegistry.isEnabled()){
-      if (this.spamRegistry.memberHasExceededThreshold(msgTaskRequest.getAuthor())) {
+      if (this.spamRegistry.memberHasExceededThreshold(taskRequest.getAuthor())) {
         Emoji.GUARD.reactOn(message).subscribe();
         return;
       }
 
       if (tasks.size() > 0) {
-        this.spamRegistry.countMemberUp(msgTaskRequest.getAuthor());
+        this.spamRegistry.countMemberUp(taskRequest.getAuthor());
       }
     }
 

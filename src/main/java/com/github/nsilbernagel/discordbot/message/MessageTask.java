@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 import java.util.Optional;
 
 abstract public class MessageTask {
-  protected final ThreadLocal<MsgTaskRequest> msgTaskRequest = new ThreadLocal<>();
+  protected final ThreadLocal<TaskRequest> msgTaskRequest = new ThreadLocal<>();
 
   /**
    * Answer the message with a given text on the same channel
@@ -47,8 +47,8 @@ abstract public class MessageTask {
   /**
    * Execute the message task action considering the needed permissions
    */
-  public void execute(MsgTaskRequest msgTaskRequest) {
-    this.msgTaskRequest.set(msgTaskRequest);
+  public void execute(TaskRequest taskRequest) {
+    this.msgTaskRequest.set(taskRequest);
     NeedsPermission needsPermissionAnnotation = this.getClass().getAnnotation(NeedsPermission.class);
 
     if (needsPermissionAnnotation == null) {

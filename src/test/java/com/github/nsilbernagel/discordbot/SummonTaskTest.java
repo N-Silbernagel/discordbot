@@ -1,7 +1,7 @@
 package com.github.nsilbernagel.discordbot;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
-import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
+import com.github.nsilbernagel.discordbot.message.TaskRequest;
 import com.github.nsilbernagel.discordbot.voice.LeaveTask;
 import com.github.nsilbernagel.discordbot.voice.SummonTask;
 import discord4j.core.object.VoiceState;
@@ -29,7 +29,7 @@ public class SummonTaskTest {
   @Mock
   private VoiceConnection voiceConnectionMock;
   @Mock
-  private MsgTaskRequest msgTaskRequestMock;
+  private TaskRequest taskRequestMock;
 
   @Test
   public void it_joins_a_voice_channel() {
@@ -37,10 +37,10 @@ public class SummonTaskTest {
     Mockito.when(memberMock.getVoiceState()).thenReturn(Mono.just(voiceStateMock));
     Mockito.when(voiceStateMock.getChannel()).thenReturn(Mono.just(voiceChannelMock));
     Mockito.when(voiceChannelMock.join(Mockito.any(Consumer.class))).thenReturn(Mono.just(voiceConnectionMock));
-    Mockito.when(msgTaskRequestMock.getAuthor()).thenReturn(this.memberMock);
+    Mockito.when(taskRequestMock.getAuthor()).thenReturn(this.memberMock);
 
     SummonTask summonTask = new SummonTask(lavaPlayerAudioProviderMock, new LeaveTask());
-    summonTask.execute(msgTaskRequestMock);
+    summonTask.execute(taskRequestMock);
 
     Assertions.assertTrue(summonTask.getVoiceConnection().isPresent());
     Assertions.assertEquals(voiceConnectionMock, summonTask.getVoiceConnection().get());
