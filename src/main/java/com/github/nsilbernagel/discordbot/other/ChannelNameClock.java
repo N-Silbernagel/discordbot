@@ -1,9 +1,7 @@
-package com.github.nsilbernagel.discordbot.schedules;
+package com.github.nsilbernagel.discordbot.other;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-
-import com.github.nsilbernagel.discordbot.schedules.dto.CustomTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +24,7 @@ public class ChannelNameClock {
   @PostConstruct
   public void initialize() {
     this.channel = (VoiceChannel) discordClient.getChannelById(channelId).block();
+    this.changeChannelName();
   }
 
   @Scheduled(cron = "0 0 */1 * * ?")
