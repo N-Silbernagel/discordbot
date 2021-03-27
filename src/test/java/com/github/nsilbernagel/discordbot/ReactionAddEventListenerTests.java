@@ -2,7 +2,7 @@ package com.github.nsilbernagel.discordbot;
 
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
-import com.github.nsilbernagel.discordbot.message.MemberMissingOrBotException;
+import com.github.nsilbernagel.discordbot.task.MemberMissingOrBotException;
 import com.github.nsilbernagel.discordbot.reaction.ReactionAddEventListener;
 import com.github.nsilbernagel.discordbot.reaction.ReactionToTaskHandler;
 import discord4j.core.event.domain.message.ReactionAddEvent;

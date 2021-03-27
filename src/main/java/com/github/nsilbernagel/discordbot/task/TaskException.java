@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.message;
+package com.github.nsilbernagel.discordbot.task;
 
 /**
  * An exception to be thrown when some logic inside a task handler fails. These

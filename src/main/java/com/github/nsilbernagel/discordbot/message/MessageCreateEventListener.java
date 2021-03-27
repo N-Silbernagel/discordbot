@@ -7,6 +7,7 @@ import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
 import com.github.nsilbernagel.discordbot.listener.EventListener;
+import com.github.nsilbernagel.discordbot.task.TaskException;
 import com.github.nsilbernagel.discordbot.validation.MessageTaskPreparer;
 import com.github.nsilbernagel.discordbot.validation.MessageValidationException;
 

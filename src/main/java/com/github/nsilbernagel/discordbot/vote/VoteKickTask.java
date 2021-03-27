@@ -3,7 +3,7 @@ package com.github.nsilbernagel.discordbot.vote;
 import com.github.nsilbernagel.discordbot.BeanUtil;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
-import com.github.nsilbernagel.discordbot.message.TaskException;
+import com.github.nsilbernagel.discordbot.task.TaskException;
 
 import org.springframework.stereotype.Component;
 

@@ -5,8 +5,8 @@ import java.util.List;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.listener.EventListener;
-import com.github.nsilbernagel.discordbot.message.MemberMissingOrBotException;
-import com.github.nsilbernagel.discordbot.message.TaskException;
+import com.github.nsilbernagel.discordbot.task.MemberMissingOrBotException;
+import com.github.nsilbernagel.discordbot.task.TaskException;
 
 import com.github.nsilbernagel.discordbot.message.TaskRequest;
 import org.springframework.stereotype.Component;
