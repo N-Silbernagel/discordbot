@@ -7,11 +7,11 @@ import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.listener.EventListener;
 import com.github.nsilbernagel.discordbot.message.TaskException;
 
+import com.github.nsilbernagel.discordbot.message.TaskRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.event.domain.message.ReactionAddEvent;
-import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
@@ -27,16 +27,9 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
   private ExclusiveBotChannel exclusiveBotChannel;
 
   @Getter
-  private Message message;
-
-  @Getter
-  private TextChannel messageChannel;
-
-  @Getter
-  private ReactionAddEvent reactionAddEvent;
-
-  @Getter
   private ReactionEmoji emoji;
+
+  private final ThreadLocal<TaskRequest> taskRequest = new ThreadLocal<>();
 
   @Override
   public Class<ReactionAddEvent> getEventType() {
@@ -49,23 +42,26 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
       return;
     }
 
-    this.reactionAddEvent = event;
-
-    this.message = event.getMessage().block();
-    this.emoji = event.getEmoji();
-
     try {
-      this.messageChannel = (TextChannel) this.message.getChannel().block();
+      this.taskRequest.set(
+          new TaskRequest(
+              event.getMessage().block(),
+              (TextChannel) event.getChannel().block(),
+              event.getMember().get()
+          )
+      );
     } catch (ClassCastException e) {
       // probably using a private channel which we dont support yet
       return;
     }
 
-    if (!this.channelBlacklist.canAnswerOnChannel(this.messageChannel)) {
+    this.emoji = event.getEmoji();
+
+    if (!this.channelBlacklist.canAnswerOnChannel(this.taskRequest.get().getChannel())) {
       return;
     }
 
-    if (!this.exclusiveBotChannel.isOnExclusiveChannel(message)) {
+    if (!this.exclusiveBotChannel.isOnExclusiveChannel(this.taskRequest.get().getMessage())) {
       // just don't handle the event
       return;
     }
@@ -82,6 +78,6 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
   }
 
   protected void onUncheckedException(Exception uncheckedException) {
-    Emoji.BUG.reactOn(this.message).subscribe();
+    Emoji.BUG.reactOn(this.taskRequest.get().getMessage()).subscribe();
   }
 }
