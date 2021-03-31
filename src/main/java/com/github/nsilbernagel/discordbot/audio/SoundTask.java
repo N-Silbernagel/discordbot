@@ -45,7 +45,8 @@ public class SoundTask extends MessageTask implements ExplainedMessageTask {
       throw new TaskException("Sound konnte nicht gefunden werden.");
     }
 
-    this.playTask.loadAudioSource(soundToPlay.get().getSource());
+    this.playTask.connectToVoice(this.msgTaskRequest.get());
+    this.playTask.loadAudioSource(soundToPlay.get().getSource(), this.msgTaskRequest.get());
   }
 
   public String getKeyword() {
