@@ -3,12 +3,14 @@ package com.github.nsilbernagel.discordbot.presence;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.presence.Activity;
+import discord4j.discordjson.json.ActivityUpdateRequest;
 import lombok.Getter;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
-public final class PresenceManager {
+public class PresenceManager {
   private final GatewayDiscordClient discordClient;
 
   @Getter
@@ -18,39 +20,38 @@ public final class PresenceManager {
     this.discordClient = discordClient;
   }
 
-  public void online() {
-    this.discordClient.updatePresence(
+  public Mono<Void> online() {
+    return this.discordClient.updatePresence(
         discord4j.core.object.presence.Presence.online()
-    )
-        .block();
+    );
   }
 
-  public void trackPlaying(String title) {
-    this.discordClient.updatePresence(
+  public Mono<Void> trackPlaying(String title) {
+    return this.discordClient.updatePresence(
         discord4j.core.object.presence.Presence.online(
-            Activity.playing(title)
+            setCurrentAndGenerateActivity(title)
         )
-    )
-        .block();
-
-    this.currentlyPlaying = title;
+    );
   }
 
-  public void trackPaused() {
-    this.discordClient.updatePresence(
+  public Mono<Void> trackPaused() {
+    return this.discordClient.updatePresence(
         discord4j.core.object.presence.Presence.online(
             Activity.playing(Emoji.PAUSE.getUnicodeEmoji() + this.getCurrentlyPlaying())
         )
-    )
-        .block();
+    );
   }
 
-  public void trackResumed() {
-    this.discordClient.updatePresence(
+  public Mono<Void> trackResumed() {
+    return this.discordClient.updatePresence(
         discord4j.core.object.presence.Presence.online(
             Activity.playing(this.getCurrentlyPlaying())
         )
-    )
-        .block();
+    );
+  }
+
+  private ActivityUpdateRequest setCurrentAndGenerateActivity(String title){
+    this.currentlyPlaying = title;
+    return Activity.playing(title);
   }
 }

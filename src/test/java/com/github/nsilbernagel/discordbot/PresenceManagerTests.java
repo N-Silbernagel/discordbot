@@ -39,7 +39,7 @@ public class PresenceManagerTests {
 
   @Test
   public void it_can_set_clients_presence_to_online_doing_nothing() {
-    this.presenceManager.online();
+    this.presenceManager.online().block();
 
     verify(this.discordClientMock).updatePresence(this.statusUpdateArgumentCaptor.capture());
     verify(this.updatePresenceMonoMock).block();
@@ -50,7 +50,7 @@ public class PresenceManagerTests {
 
   @Test
   public void it_can_set_clients_presence_to_playing_track() {
-    this.presenceManager.trackPlaying(this.testPlayingString);
+    this.presenceManager.trackPlaying(this.testPlayingString).block();
 
     verify(this.discordClientMock).updatePresence(this.statusUpdateArgumentCaptor.capture());
     verify(this.updatePresenceMonoMock).block();
@@ -63,13 +63,27 @@ public class PresenceManagerTests {
   public void it_can_set_clients_presence_to_paused_track() {
     ReflectionTestUtils.setField(this.presenceManager, "currentlyPlaying", this.testPlayingString);
 
-    this.presenceManager.trackPaused();
+    this.presenceManager.trackPaused().block();
 
     verify(this.discordClientMock).updatePresence(this.statusUpdateArgumentCaptor.capture());
     verify(this.updatePresenceMonoMock).block();
 
     assertEquals("online", this.statusUpdateArgumentCaptor.getValue().status().toLowerCase());
     assertTrue(this.statusUpdateArgumentCaptor.getValue().game().get().name().contains(Emoji.PAUSE.getUnicodeEmoji().toString()));
+    assertTrue(this.statusUpdateArgumentCaptor.getValue().game().get().name().contains(this.testPlayingString));
+  }
+
+  @Test
+  public void it_can_resume_last_playing_state() {
+    ReflectionTestUtils.setField(this.presenceManager, "currentlyPlaying", this.testPlayingString);
+
+    this.presenceManager.trackResumed().block();
+
+    verify(this.discordClientMock).updatePresence(this.statusUpdateArgumentCaptor.capture());
+    verify(this.updatePresenceMonoMock).block();
+
+    assertEquals("online", this.statusUpdateArgumentCaptor.getValue().status().toLowerCase());
+    assertFalse(this.statusUpdateArgumentCaptor.getValue().game().get().name().contains(Emoji.PAUSE.getUnicodeEmoji().toString()));
     assertTrue(this.statusUpdateArgumentCaptor.getValue().game().get().name().contains(this.testPlayingString));
   }
 }

@@ -29,7 +29,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
   @Getter
   private final Map<String, AudioRequest> audioRequest = new HashMap<>();
 
-  public LavaTrackScheduler(LavaPlayerAudioProvider lavaPlayerAudioProvider, @Lazy PresenceManager presenceManager) {
+  public LavaTrackScheduler(@Lazy LavaPlayerAudioProvider lavaPlayerAudioProvider, @Lazy PresenceManager presenceManager) {
     this.lavaPlayerAudioProvider = lavaPlayerAudioProvider;
     this.presenceManager = presenceManager;
   }
@@ -67,7 +67,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
     AudioTrack nextTrack = queue.poll();
 
     if (nextTrack == null) {
-      this.presenceManager.online();
+      this.presenceManager.online().subscribe();
     }
 
     this.lavaPlayerAudioProvider.getPlayer()
@@ -95,18 +95,18 @@ public class LavaTrackScheduler extends AudioEventAdapter {
     if (endReason.mayStartNext) {
       nextTrack();
     } else {
-      this.presenceManager.online();
+      this.presenceManager.online().subscribe();
     }
   }
 
   @Override
   public void onPlayerPause(AudioPlayer player) {
-    this.presenceManager.trackPaused();
+    this.presenceManager.trackPaused().subscribe();
   }
 
   @Override
   public void onPlayerResume(AudioPlayer player) {
-    this.presenceManager.trackResumed();
+    this.presenceManager.trackResumed().subscribe();
   }
 
   @Override
@@ -116,7 +116,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
       return;
     }
 
-    this.presenceManager.trackPlaying(track.getInfo().title);
+    this.presenceManager.trackPlaying(track.getInfo().title).subscribe();
   }
 
   @Override

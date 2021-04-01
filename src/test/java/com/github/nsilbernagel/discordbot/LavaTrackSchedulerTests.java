@@ -174,7 +174,7 @@ public class LavaTrackSchedulerTests {
 
     this.lavaTrackScheduler.onTrackStart(this.audioPlayerMock, this.audioTrackMock);
 
-    verify(updatePresenceMock).block();
+    verify(updatePresenceMock).subscribe();
 
     assertEquals(trackTitleTestValue, statusUpdateArgumentCaptor.getValue().game().get().name());
   }
@@ -192,7 +192,7 @@ public class LavaTrackSchedulerTests {
 
     this.lavaTrackScheduler.nextTrack();
 
-    verify(updatePresenceMock).block();
+    verify(updatePresenceMock).subscribe();
 
     assertTrue(statusUpdateArgumentCaptor.getValue().game().isEmpty());
     assertEquals("online", statusUpdateArgumentCaptor.getValue().status().toLowerCase(Locale.ROOT));
@@ -211,7 +211,7 @@ public class LavaTrackSchedulerTests {
 
     this.lavaTrackScheduler.onTrackEnd(this.audioPlayerMock, this.audioTrackMock, AudioTrackEndReason.CLEANUP);
 
-    verify(updatePresenceMock).block();
+    verify(updatePresenceMock).subscribe();
 
     assertTrue(statusUpdateArgumentCaptor.getValue().game().isEmpty());
     assertEquals("online", statusUpdateArgumentCaptor.getValue().status().toLowerCase(Locale.ROOT));
@@ -238,7 +238,7 @@ public class LavaTrackSchedulerTests {
 
     this.lavaTrackScheduler.onPlayerPause(this.audioPlayerMock);
 
-    verify(updatePresenceMock).block();
+    verify(updatePresenceMock).subscribe();
 
     assertTrue(
         statusUpdateArgumentCaptor.getValue()
@@ -270,7 +270,7 @@ public class LavaTrackSchedulerTests {
 
     this.lavaTrackScheduler.onPlayerResume(this.audioPlayerMock);
 
-    verify(updatePresenceMock).block();
+    verify(updatePresenceMock).subscribe();
 
     assertEquals(trackTitleTestValue, statusUpdateArgumentCaptor.getValue().game().get().name());
   }
