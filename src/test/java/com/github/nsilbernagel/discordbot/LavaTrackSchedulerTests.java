@@ -4,21 +4,28 @@ import com.github.nsilbernagel.discordbot.audio.AudioRequest;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.audio.LavaTrackScheduler;
 import com.github.nsilbernagel.discordbot.message.TaskRequest;
+import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
+import discord4j.core.object.presence.Presence;
 import discord4j.discordjson.json.gateway.StatusUpdate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.function.Consumer;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -146,5 +153,124 @@ public class LavaTrackSchedulerTests {
     this.lavaTrackScheduler.onTrackException(this.audioPlayerMock, this.audioTrackMock, mock(FriendlyException.class));
 
     verify(alertMessageMonoMock).block();
+  }
+
+  @Test
+  public void it_sets_the_presence_to_playing_when_a_track_starts() {
+    this.lavaTrackScheduler.getAudioRequest()
+        .get(this.requestIdFake)
+        .getTrackList()
+        .add(this.audioTrackMock);
+
+    String trackTitleTestValue = "test";
+
+    AudioTrackInfo audioTrackInfoMock = mock(AudioTrackInfo.class);
+    ReflectionTestUtils.setField(audioTrackInfoMock, "title", trackTitleTestValue);
+    when(this.audioTrackMock.getInfo()).thenReturn(audioTrackInfoMock);
+
+    Mono<Void> updatePresenceMock = mock(Mono.class);
+    ArgumentCaptor<StatusUpdate> statusUpdateArgumentCaptor = ArgumentCaptor.forClass(StatusUpdate.class);
+    when(this.gatewayDiscordClientMock.updatePresence(statusUpdateArgumentCaptor.capture())).thenReturn(updatePresenceMock);
+
+    this.lavaTrackScheduler.onTrackStart(this.audioPlayerMock, this.audioTrackMock);
+
+    verify(updatePresenceMock).block();
+
+    assertEquals(trackTitleTestValue, statusUpdateArgumentCaptor.getValue().game().get().name());
+  }
+
+  @Test
+  public void it_sets_the_presence_to_online_when_next_track_should_start_on_empty_queue() {
+    this.lavaTrackScheduler.getAudioRequest()
+        .get(this.requestIdFake)
+        .getTrackList()
+        .add(this.audioTrackMock);
+
+    Mono<Void> updatePresenceMock = mock(Mono.class);
+    ArgumentCaptor<StatusUpdate> statusUpdateArgumentCaptor = ArgumentCaptor.forClass(StatusUpdate.class);
+    when(this.gatewayDiscordClientMock.updatePresence(statusUpdateArgumentCaptor.capture())).thenReturn(updatePresenceMock);
+
+    this.lavaTrackScheduler.nextTrack();
+
+    verify(updatePresenceMock).block();
+
+    assertTrue(statusUpdateArgumentCaptor.getValue().game().isEmpty());
+    assertEquals("online", statusUpdateArgumentCaptor.getValue().status().toLowerCase(Locale.ROOT));
+  }
+
+  @Test
+  public void it_sets_the_presence_to_online_when_track_ends_and_the_next_should_not_start() {
+    this.lavaTrackScheduler.getAudioRequest()
+        .get(this.requestIdFake)
+        .getTrackList()
+        .add(this.audioTrackMock);
+
+    Mono<Void> updatePresenceMock = mock(Mono.class);
+    ArgumentCaptor<StatusUpdate> statusUpdateArgumentCaptor = ArgumentCaptor.forClass(StatusUpdate.class);
+    when(this.gatewayDiscordClientMock.updatePresence(statusUpdateArgumentCaptor.capture())).thenReturn(updatePresenceMock);
+
+    this.lavaTrackScheduler.onTrackEnd(this.audioPlayerMock, this.audioTrackMock, AudioTrackEndReason.CLEANUP);
+
+    verify(updatePresenceMock).block();
+
+    assertTrue(statusUpdateArgumentCaptor.getValue().game().isEmpty());
+    assertEquals("online", statusUpdateArgumentCaptor.getValue().status().toLowerCase(Locale.ROOT));
+  }
+
+  @Test
+  public void it_indicates_a_paused_track_through_the_activity_containing_pause_emoji() {
+    this.lavaTrackScheduler.getAudioRequest()
+        .get(this.requestIdFake)
+        .getTrackList()
+        .add(this.audioTrackMock);
+
+    ReflectionTestUtils.setField(this.lavaTrackScheduler, "currentTrack", this.audioTrackMock);
+
+    String trackTitleTestValue = "test";
+
+    AudioTrackInfo audioTrackInfoMock = mock(AudioTrackInfo.class);
+    ReflectionTestUtils.setField(audioTrackInfoMock, "title", trackTitleTestValue);
+    when(this.audioTrackMock.getInfo()).thenReturn(audioTrackInfoMock);
+
+    Mono<Void> updatePresenceMock = mock(Mono.class);
+    ArgumentCaptor<StatusUpdate> statusUpdateArgumentCaptor = ArgumentCaptor.forClass(StatusUpdate.class);
+    when(this.gatewayDiscordClientMock.updatePresence(statusUpdateArgumentCaptor.capture())).thenReturn(updatePresenceMock);
+
+    this.lavaTrackScheduler.onPlayerPause(this.audioPlayerMock);
+
+    verify(updatePresenceMock).block();
+
+    assertTrue(
+        statusUpdateArgumentCaptor.getValue()
+            .game().get()
+            .name()
+            .contains(Emoji.PAUSE.getUnicodeEmoji().toString())
+    );
+  }
+
+  @Test
+  public void it_sets_the_presence_to_playing_when_the_player_resumes() {
+    this.lavaTrackScheduler.getAudioRequest()
+        .get(this.requestIdFake)
+        .getTrackList()
+        .add(this.audioTrackMock);
+
+    ReflectionTestUtils.setField(this.lavaTrackScheduler, "currentTrack", this.audioTrackMock);
+
+    String trackTitleTestValue = "test";
+
+    AudioTrackInfo audioTrackInfoMock = mock(AudioTrackInfo.class);
+    ReflectionTestUtils.setField(audioTrackInfoMock, "title", trackTitleTestValue);
+    when(this.audioTrackMock.getInfo()).thenReturn(audioTrackInfoMock);
+
+    Mono<Void> updatePresenceMock = mock(Mono.class);
+    ArgumentCaptor<StatusUpdate> statusUpdateArgumentCaptor = ArgumentCaptor.forClass(StatusUpdate.class);
+    when(this.gatewayDiscordClientMock.updatePresence(statusUpdateArgumentCaptor.capture())).thenReturn(updatePresenceMock);
+
+    this.lavaTrackScheduler.onPlayerResume(this.audioPlayerMock);
+
+    verify(updatePresenceMock).block();
+
+    assertEquals(trackTitleTestValue, statusUpdateArgumentCaptor.getValue().game().get().name());
   }
 }

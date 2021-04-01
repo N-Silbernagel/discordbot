@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -111,8 +112,8 @@ public class LavaTrackScheduler extends AudioEventAdapter {
     if (this.currentTrack == null) {
       return;
     }
-    this.discordClient.updatePresence(Presence.online(Activity.playing("⏸" + this.currentTrack.getInfo().title)))
-        .subscribe();
+    this.discordClient.updatePresence(Presence.online(Activity.playing(Emoji.PAUSE.getUnicodeEmoji() + this.currentTrack.getInfo().title)))
+        .block();
   }
 
   @Override
@@ -121,7 +122,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
       return;
     }
     this.discordClient.updatePresence(Presence.online(Activity.playing(this.currentTrack.getInfo().title)))
-        .subscribe();
+        .block();
   }
 
   @Override
@@ -139,7 +140,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
 
     this.discordClient
         .updatePresence(Presence.online(Activity.playing(track.getInfo().title)))
-        .subscribe();
+        .block();
   }
 
   @Override
@@ -161,7 +162,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
 
     this.discordClient
         .updatePresence(Presence.online())
-        .subscribe();
+        .block();
   }
 
   private Optional<AudioRequest> audioRequestByTrack(AudioTrack track) {
