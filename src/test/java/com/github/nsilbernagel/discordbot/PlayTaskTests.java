@@ -1,6 +1,7 @@
 package com.github.nsilbernagel.discordbot;
 
 import com.github.nsilbernagel.discordbot.audio.*;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskRequest;
 import com.github.nsilbernagel.discordbot.voice.SummonTask;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -44,7 +45,7 @@ public class PlayTaskTests {
 
   @Test
   public void it_creates_audio_requests_and_registers_them() {
-    TaskRequest taskRequest = new TaskRequest(
+    MsgTaskRequest taskRequest = new MsgTaskRequest(
         Mockito.mock(Message.class),
         Mockito.mock(TextChannel.class),
         Mockito.mock(Member.class)
@@ -73,7 +74,7 @@ public class PlayTaskTests {
 
   @Test
   public void it_alerts_the_user_when_loading_fails() {
-    TaskRequest taskRequest = new TaskRequest(
+    MsgTaskRequest taskRequest = new MsgTaskRequest(
         Mockito.mock(Message.class),
         Mockito.mock(TextChannel.class),
         Mockito.mock(Member.class)
@@ -97,7 +98,7 @@ public class PlayTaskTests {
 
   @Test
   public void it_deletes_the_audio_request_when_loading_fails() {
-    TaskRequest taskRequest = new TaskRequest(
+    MsgTaskRequest taskRequest = new MsgTaskRequest(
         Mockito.mock(Message.class),
         Mockito.mock(TextChannel.class),
         Mockito.mock(Member.class)

@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.audio;
 
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
 import com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric;
 
@@ -27,10 +28,10 @@ public class VolumeTask extends MessageTask implements ExplainedMessageTask {
   private Integer volumeParam;
 
   @Override
-  public void action() {
+  public void action(MsgTaskRequest taskRequest) {
 
     if (this.volumeParam == null) {
-      this.msgTaskRequest.get().respond("Aktuelle Lautstärke: " + this.lavaPlayerAudioProvider.getPlayer().getVolume() + "%").block();
+      taskRequest.respond("Aktuelle Lautstärke: " + this.lavaPlayerAudioProvider.getPlayer().getVolume() + "%").block();
       return;
     }
 

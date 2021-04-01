@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.audio;
 
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskRequest;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.*;
@@ -17,10 +18,10 @@ public class AudioRequest {
   private final String id;
   @Setter
   private AudioStatus status = AudioStatus.QUEUEING;
-  private final TaskRequest taskRequest;
+  private final MsgTaskRequest taskRequest;
   private final List<AudioTrack> trackList = new ArrayList<>();
 
-  public AudioRequest(String id, TaskRequest taskRequest){
+  public AudioRequest(String id, MsgTaskRequest taskRequest){
     this.id = id;
     this.taskRequest = taskRequest;
   }

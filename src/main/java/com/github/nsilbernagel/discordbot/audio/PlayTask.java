@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.audio;
 
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskRequest;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
 import com.github.nsilbernagel.discordbot.validation.rules.annotations.Required;
@@ -52,13 +53,13 @@ public class PlayTask extends MessageTask implements ExplainedMessageTask {
     return "Eine Audioquelle in die Warteschlange packen.";
   }
 
-  public void connectToVoice(TaskRequest msgTaskRequest) {
+  public void connectToVoice(MsgTaskRequest msgTaskRequest) {
     if (summonTask.getVoiceConnection().isEmpty()) {
       summonTask.execute(msgTaskRequest);
     }
   }
 
-  public void loadAudioSource(String audioSource, TaskRequest taskRequest) {
+  public void loadAudioSource(String audioSource, MsgTaskRequest taskRequest) {
     AudioRequest audioRequest = new AudioRequest(
         audioSource,
         taskRequest

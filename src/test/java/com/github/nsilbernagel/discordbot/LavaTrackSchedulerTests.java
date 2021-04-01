@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot;
 import com.github.nsilbernagel.discordbot.audio.AudioRequest;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.audio.LavaTrackScheduler;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskRequest;
 import com.github.nsilbernagel.discordbot.presence.PresenceManager;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
@@ -39,7 +40,7 @@ public class LavaTrackSchedulerTests {
   @Mock
   private AudioTrack audioTrackMock;
   @Mock
-  private TaskRequest taskRequestMock;
+  private MsgTaskRequest taskRequestMock;
   private PresenceManager presenceManager;
 
   private final String requestIdFake = "test";
