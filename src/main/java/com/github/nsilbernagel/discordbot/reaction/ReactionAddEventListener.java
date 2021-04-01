@@ -26,7 +26,7 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
   @Getter
   private ReactionEmoji emoji;
 
-  private final ThreadLocal<TaskRequest> taskRequest = new ThreadLocal<>();
+  private final ThreadLocal<ReactionTaskRequest> taskRequest = new ThreadLocal<>();
 
   public ReactionAddEventListener(ReactionToTaskHandler reactionToTaskHandler, ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel) {
     this.reactionToTaskHandler = reactionToTaskHandler;
@@ -47,7 +47,7 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
 
     try {
       this.taskRequest.set(
-          new TaskRequest(
+          new ReactionTaskRequest(
               event.getMessage().block(),
               (TextChannel) event.getChannel().block(),
               event.getMember().get()

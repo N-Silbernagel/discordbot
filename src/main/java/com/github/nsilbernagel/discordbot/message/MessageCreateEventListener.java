@@ -40,7 +40,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   @Autowired
   private MessageTaskPreparer messageTaskPreparer;
 
-  private final ThreadLocal<TaskRequest> localMsgTaskRequest = new ThreadLocal<>();
+  private final ThreadLocal<MsgTaskRequest> localMsgTaskRequest = new ThreadLocal<>();
 
   public Class<MessageCreateEvent> getEventType() {
     return MessageCreateEvent.class;
@@ -48,9 +48,9 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
 
   public void execute(MessageCreateEvent event) {
     Message message = event.getMessage();
-    TaskRequest taskRequest;
+    MsgTaskRequest taskRequest;
     try {
-      taskRequest = new TaskRequest(
+      taskRequest = new MsgTaskRequest(
           message,
           (TextChannel) message.getChannel().block(),
           message.getAuthorAsMember().block()

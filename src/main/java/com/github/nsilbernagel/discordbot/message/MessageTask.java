@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 import java.util.Optional;
 
 abstract public class MessageTask extends Task {
-  protected final ThreadLocal<TaskRequest> msgTaskRequest = new ThreadLocal<>();
+  protected final ThreadLocal<MsgTaskRequest> msgTaskRequest = new ThreadLocal<>();
 
   /**
    * Answer the message with a given text on the same channel
@@ -49,7 +49,7 @@ abstract public class MessageTask extends Task {
   /**
    * Execute the message task action considering the needed permissions
    */
-  public void execute(TaskRequest taskRequest) {
+  public void execute(MsgTaskRequest taskRequest) {
     this.msgTaskRequest.set(taskRequest);
     NeedsPermission needsPermissionAnnotation = this.getClass().getAnnotation(NeedsPermission.class);
 

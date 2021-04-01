@@ -15,7 +15,7 @@ public abstract class ReactionTask extends Task {
   @Getter
   private final List<Message> messages = new ArrayList<>();
 
-  protected final ThreadLocal<TaskRequest> taskRequest = new ThreadLocal<>();
+  protected final ThreadLocal<ReactionTaskRequest> taskRequest = new ThreadLocal<>();
 
   abstract public boolean canHandle(ReactionEmoji reactionEmoji);
 
@@ -59,7 +59,7 @@ public abstract class ReactionTask extends Task {
     this.messages.remove(message);
   }
 
-  public void execute(TaskRequest taskRequest) {
+  public void execute(ReactionTaskRequest taskRequest) {
     this.taskRequest.set(taskRequest);
 
     if (!this.messages.contains(taskRequest.getMessage())) {
