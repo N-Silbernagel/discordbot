@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import com.github.nsilbernagel.discordbot.reaction.Emoji;
+import com.github.nsilbernagel.discordbot.presence.PresenceManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -14,22 +14,14 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
 import lombok.Getter;
-import org.springframework.lang.Nullable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import discord4j.core.GatewayDiscordClient;
-import discord4j.core.object.presence.Activity;
-import discord4j.core.object.presence.Presence;
 
 @Component
 public class LavaTrackScheduler extends AudioEventAdapter {
-
-  @Nullable
-  private AudioTrack currentTrack;
-
   private final LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
-  private final GatewayDiscordClient discordClient;
+  private final PresenceManager presenceManager;
 
   @Getter
   private final BlockingQueue<AudioTrack> queue = new LinkedBlockingDeque<>();
@@ -37,9 +29,9 @@ public class LavaTrackScheduler extends AudioEventAdapter {
   @Getter
   private final Map<String, AudioRequest> audioRequest = new HashMap<>();
 
-  public LavaTrackScheduler(LavaPlayerAudioProvider lavaPlayerAudioProvider, GatewayDiscordClient discordClient) {
+  public LavaTrackScheduler(LavaPlayerAudioProvider lavaPlayerAudioProvider, @Lazy PresenceManager presenceManager) {
     this.lavaPlayerAudioProvider = lavaPlayerAudioProvider;
-    this.discordClient = discordClient;
+    this.presenceManager = presenceManager;
   }
 
   /**
@@ -75,7 +67,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
     AudioTrack nextTrack = queue.poll();
 
     if (nextTrack == null) {
-      this.setPresenceOnline();
+      this.presenceManager.online();
     }
 
     this.lavaPlayerAudioProvider.getPlayer()
@@ -103,26 +95,18 @@ public class LavaTrackScheduler extends AudioEventAdapter {
     if (endReason.mayStartNext) {
       nextTrack();
     } else {
-      this.setPresenceOnline();
+      this.presenceManager.online();
     }
   }
 
   @Override
   public void onPlayerPause(AudioPlayer player) {
-    if (this.currentTrack == null) {
-      return;
-    }
-    this.discordClient.updatePresence(Presence.online(Activity.playing(Emoji.PAUSE.getUnicodeEmoji() + this.currentTrack.getInfo().title)))
-        .block();
+    this.presenceManager.trackPaused();
   }
 
   @Override
   public void onPlayerResume(AudioPlayer player) {
-    if (this.currentTrack == null) {
-      return;
-    }
-    this.discordClient.updatePresence(Presence.online(Activity.playing(this.currentTrack.getInfo().title)))
-        .block();
+    this.presenceManager.trackResumed();
   }
 
   @Override
@@ -132,15 +116,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
       return;
     }
 
-    this.setPresencePlayingTrack(track, audioRequest.get().getId());
-  }
-
-  private void setPresencePlayingTrack(AudioTrack track, String requestId) {
-    this.currentTrack = track;
-
-    this.discordClient
-        .updatePresence(Presence.online(Activity.playing(track.getInfo().title)))
-        .block();
+    this.presenceManager.trackPlaying(track.getInfo().title);
   }
 
   @Override
@@ -154,14 +130,6 @@ public class LavaTrackScheduler extends AudioEventAdapter {
         .getTaskRequest()
         .getChannel()
         .createMessage("Ich konnte das Audio <" + audioRequest.get().getId() + "> nicht abspielen. Ist es öffentlich? Leider gibt es momentan Probleme bei YouTube Videos 😕")
-        .block();
-  }
-
-  private void setPresenceOnline() {
-    this.currentTrack = null;
-
-    this.discordClient
-        .updatePresence(Presence.online())
         .block();
   }
 

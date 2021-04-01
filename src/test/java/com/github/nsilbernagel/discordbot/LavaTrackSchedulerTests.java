@@ -4,6 +4,7 @@ import com.github.nsilbernagel.discordbot.audio.AudioRequest;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.audio.LavaTrackScheduler;
 import com.github.nsilbernagel.discordbot.message.TaskRequest;
+import com.github.nsilbernagel.discordbot.presence.PresenceManager;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
@@ -13,7 +14,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
-import discord4j.core.object.presence.Presence;
 import discord4j.discordjson.json.gateway.StatusUpdate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Consumer;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,6 +40,7 @@ public class LavaTrackSchedulerTests {
   private AudioTrack audioTrackMock;
   @Mock
   private TaskRequest taskRequestMock;
+  private PresenceManager presenceManager;
 
   private final String requestIdFake = "test";
 
@@ -50,8 +50,8 @@ public class LavaTrackSchedulerTests {
   @BeforeEach
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-
-    this.lavaTrackScheduler = new LavaTrackScheduler(this.lavaPlayerAudioProviderMock, this.gatewayDiscordClientMock);
+    this.presenceManager = new PresenceManager(this.gatewayDiscordClientMock);
+    this.lavaTrackScheduler = new LavaTrackScheduler(this.lavaPlayerAudioProviderMock, this.presenceManager);
 
     this.audioRequest = new AudioRequest(
         this.requestIdFake,
@@ -224,13 +224,13 @@ public class LavaTrackSchedulerTests {
         .getTrackList()
         .add(this.audioTrackMock);
 
-    ReflectionTestUtils.setField(this.lavaTrackScheduler, "currentTrack", this.audioTrackMock);
-
     String trackTitleTestValue = "test";
 
     AudioTrackInfo audioTrackInfoMock = mock(AudioTrackInfo.class);
     ReflectionTestUtils.setField(audioTrackInfoMock, "title", trackTitleTestValue);
     when(this.audioTrackMock.getInfo()).thenReturn(audioTrackInfoMock);
+
+    ReflectionTestUtils.setField(this.presenceManager, "currentlyPlaying", this.audioTrackMock.getInfo().title);
 
     Mono<Void> updatePresenceMock = mock(Mono.class);
     ArgumentCaptor<StatusUpdate> statusUpdateArgumentCaptor = ArgumentCaptor.forClass(StatusUpdate.class);
@@ -255,13 +255,14 @@ public class LavaTrackSchedulerTests {
         .getTrackList()
         .add(this.audioTrackMock);
 
-    ReflectionTestUtils.setField(this.lavaTrackScheduler, "currentTrack", this.audioTrackMock);
 
     String trackTitleTestValue = "test";
 
     AudioTrackInfo audioTrackInfoMock = mock(AudioTrackInfo.class);
     ReflectionTestUtils.setField(audioTrackInfoMock, "title", trackTitleTestValue);
     when(this.audioTrackMock.getInfo()).thenReturn(audioTrackInfoMock);
+
+    ReflectionTestUtils.setField(this.presenceManager, "currentlyPlaying", this.audioTrackMock.getInfo().title);
 
     Mono<Void> updatePresenceMock = mock(Mono.class);
     ArgumentCaptor<StatusUpdate> statusUpdateArgumentCaptor = ArgumentCaptor.forClass(StatusUpdate.class);

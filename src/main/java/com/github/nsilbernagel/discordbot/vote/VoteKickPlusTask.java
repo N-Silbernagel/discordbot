@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
-import com.github.nsilbernagel.discordbot.reaction.ReactionAddEventListener;
 import com.github.nsilbernagel.discordbot.reaction.ReactionTask;
 
 import org.springframework.beans.factory.annotation.Autowired;

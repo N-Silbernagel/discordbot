@@ -64,9 +64,7 @@ public class KickVotingTests {
     //mock that user is not in voice channel, thus having no voice state
     Mockito.when(memberMock.getVoiceState()).thenReturn(Mono.empty());
 
-    Assertions.assertThrows(TaskException.class, () -> {
-      new KickVoting(memberMock, messageMock);
-    });
+    Assertions.assertThrows(TaskException.class, () -> new KickVoting(memberMock, messageMock));
   }
 
   @Test
@@ -78,9 +76,7 @@ public class KickVotingTests {
     List<VoiceState> otherVoiceStates = this.mockOtherVoiceStates(KickVoting.requiredVoiceChannelMembers - 1);
     Mockito.when(voiceChannelMock.getVoiceStates()).thenReturn(Flux.fromIterable(otherVoiceStates));
 
-    Assertions.assertThrows(TaskException.class, () -> {
-      new KickVoting(memberMock, messageMock);
-    });
+    Assertions.assertThrows(TaskException.class, () -> new KickVoting(memberMock, messageMock));
 
     // test that it does not throw when there are at least as many members as needed in the voice channel
     otherVoiceStates = this.mockOtherVoiceStates(KickVoting.requiredVoiceChannelMembers);

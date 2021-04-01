@@ -50,13 +50,12 @@ public class MessageTaskPreparer {
    * @param commandParamField the field annotated with command param to prepare
    */
   private void prepareCommandParamField(Field commandParamField, MessageTask messageTask) throws IllegalArgumentException {
-    Arrays.stream(commandParamField.getAnnotations())
-        .filter(fieldValidationAnnotation -> this.validationRules.stream()
-            .anyMatch(validationRule -> validationRule.getCorrespondingAnnotation().equals(
-                fieldValidationAnnotation.annotationType())))
-        .forEach(fieldValidationAnnotation -> {
-          this.validateFieldAccordingToAnnotation(commandParamField, fieldValidationAnnotation);
-        });
+    Arrays.stream(commandParamField.getAnnotations()).filter(fieldValidationAnnotation ->
+        this.validationRules.stream().anyMatch(validationRule ->
+            validationRule.getCorrespondingAnnotation().equals(fieldValidationAnnotation.annotationType())
+        )
+    )
+        .forEach(fieldValidationAnnotation -> this.validateFieldAccordingToAnnotation(commandParamField, fieldValidationAnnotation));
 
     // set the actual value of the field to that given to the command as a param
     commandParamField.setAccessible(true);
