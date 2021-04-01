@@ -6,6 +6,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import reactor.core.publisher.Mono;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -24,4 +25,9 @@ public class MsgTaskRequest extends TaskRequest {
    * The Member associated with the task, e.g. the Member who wrote the message containing the command for a MessageTask
    */
   private final Member author;
+
+  public Mono<Message> respond(String responseText) {
+    return this.getChannel()
+        .createMessage(responseText);
+  }
 }

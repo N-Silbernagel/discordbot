@@ -30,7 +30,7 @@ public class VolumeTask extends MessageTask implements ExplainedMessageTask {
   public void action() {
 
     if (this.volumeParam == null) {
-      this.answerMessage("Aktuelle Lautstärke: " + this.lavaPlayerAudioProvider.getPlayer().getVolume() + "%").block();
+      this.msgTaskRequest.get().respond("Aktuelle Lautstärke: " + this.lavaPlayerAudioProvider.getPlayer().getVolume() + "%").block();
       return;
     }
 

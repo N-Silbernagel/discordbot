@@ -30,7 +30,7 @@ public class HelpTask extends MessageTask {
 
     // explain all task if none is given
     if (this.taskToExplainQuery.isEmpty()) {
-      this.answerMessage(this.generateHelpMarkdown()).block();
+      this.msgTaskRequest.get().respond(this.generateHelpMarkdown()).block();
       return;
     }
 
@@ -42,7 +42,7 @@ public class HelpTask extends MessageTask {
       throw new TaskException("Den Befehl gibt es nicht.");
     }
 
-    this.answerMessage(taskToExplain.get().getExplaination()).block();
+    this.msgTaskRequest.get().respond(taskToExplain.get().getExplaination()).block();
   }
 
   private String generateHelpMarkdown() {

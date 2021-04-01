@@ -21,7 +21,7 @@ public class PongTask extends MessageTask {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    this.answerMessage("pong" + " " + String.join(" ", this.commandParams))
+    this.msgTaskRequest.get().respond("pong" + " " + String.join(" ", this.commandParams))
         .subscribe();
   }
 

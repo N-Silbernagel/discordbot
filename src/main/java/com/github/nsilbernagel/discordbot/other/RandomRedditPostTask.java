@@ -52,7 +52,7 @@ public class RandomRedditPostTask extends MessageTask implements ExplainedMessag
 
   @Override
   public void action() {
-    this.answerMessage(this.getRandomPost()).block();
+    this.msgTaskRequest.get().respond(this.getRandomPost()).block();
   }
 
   public String getKeyword() {

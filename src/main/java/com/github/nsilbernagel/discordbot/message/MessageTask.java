@@ -17,15 +17,6 @@ abstract public class MessageTask extends Task {
   protected final ThreadLocal<MsgTaskRequest> msgTaskRequest = new ThreadLocal<>();
 
   /**
-   * Answer the message with a given text on the same channel
-   */
-  public Mono<Message> answerMessage(String answerText) {
-    return this.msgTaskRequest.get()
-        .getChannel()
-        .createMessage(answerText);
-  }
-
-  /**
    * Get the message that initiated the message task
    */
   protected Message currentMessage() {

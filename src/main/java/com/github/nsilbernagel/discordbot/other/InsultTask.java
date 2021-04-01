@@ -29,7 +29,7 @@ public class InsultTask extends MessageTask implements ExplainedMessageTask {
         })
         .block();
 
-    this.answerMessage(HtmlUtils.htmlUnescape(insult)).block();
+    this.msgTaskRequest.get().respond(HtmlUtils.htmlUnescape(insult)).block();
   }
 
   public String getKeyword() {
