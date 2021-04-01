@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskException;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
 
@@ -26,11 +27,11 @@ public class HelpTask extends MessageTask {
   private Optional<String> taskToExplainQuery;
 
   @Override
-  public void action() {
+  public void action(MsgTaskRequest taskRequest) {
 
     // explain all task if none is given
     if (this.taskToExplainQuery.isEmpty()) {
-      this.msgTaskRequest.get().respond(this.generateHelpMarkdown()).block();
+      taskRequest.respond(this.generateHelpMarkdown()).block();
       return;
     }
 
@@ -42,7 +43,7 @@ public class HelpTask extends MessageTask {
       throw new TaskException("Den Befehl gibt es nicht.");
     }
 
-    this.msgTaskRequest.get().respond(taskToExplain.get().getExplaination()).block();
+    taskRequest.respond(taskToExplain.get().getExplaination()).block();
   }
 
   private String generateHelpMarkdown() {

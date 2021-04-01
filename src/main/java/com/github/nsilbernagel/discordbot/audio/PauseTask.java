@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot.audio;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ public class PauseTask extends MessageTask implements ExplainedMessageTask {
   }
 
   @Override
-  public void action() {
+  public void action(MsgTaskRequest taskRequest) {
     this.lavaPlayerAudioProvider.getPlayer().setPaused(true);
   }
 

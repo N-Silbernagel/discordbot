@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot.vote;
 import com.github.nsilbernagel.discordbot.BeanUtil;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskException;
 
 import org.springframework.stereotype.Component;
@@ -31,15 +32,15 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
    * @see KickVoting
    */
   @Override
-  public void action() {
-    Guild guild = this.msgTaskRequest.get().getMessage()
+  public void action(MsgTaskRequest taskRequest) {
+    Guild guild = taskRequest.getMessage()
         .getGuild()
         .block();
 
     assert guild != null;
 
     Optional<Member> memberToKick = Optional.ofNullable(
-        this.currentMessage()
+        taskRequest.getMessage()
         .getUserMentions()
         .filter((userMention) -> !userMention.isBot())
         .flatMap(user -> user.asMember(guild.getId()))
@@ -56,16 +57,16 @@ public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
       throw new TaskException("Es läuft bereits eine Abstimmung zum kicken von " + runningKickVoting.get().getTargetMember().getDisplayName());
     }
 
-    KickVoting newKickVoting = new KickVoting(memberToKick.get(), this.currentMessage());
+    KickVoting newKickVoting = new KickVoting(memberToKick.get(), taskRequest.getMessage());
     newKickVoting.setEnoughVotesCallBack((kickVoting) ->
         BeanUtil.getSpringContext().publishEvent(new VotingFinishedEvent(this, kickVoting))
     );
     this.registry.addVoting(newKickVoting);
-    this.voteKickPlusTask.addMessage(this.currentMessage());
+    this.voteKickPlusTask.addMessage(taskRequest.getMessage());
 
     newKickVoting.addVote(
-        this.currentAuthor(),
-        this.currentMessage().getTimestamp()
+        taskRequest.getAuthor(),
+        taskRequest.getMessage().getTimestamp()
     );
   }
 

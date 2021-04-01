@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.other;
 
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
 import org.springframework.stereotype.Component;
 
@@ -15,13 +16,13 @@ public class PongTask extends MessageTask {
   private List<String> commandParams;
 
   @Override
-  public void action() {
+  public void action(MsgTaskRequest taskRequest) {
     try {
       Thread.sleep(5000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    this.msgTaskRequest.get().respond("pong" + " " + String.join(" ", this.commandParams))
+    taskRequest.respond("pong" + " " + String.join(" ", this.commandParams))
         .subscribe();
   }
 

@@ -38,11 +38,11 @@ public class PlayTask extends MessageTask implements ExplainedMessageTask {
   }
 
   @Override
-  public void action() {
+  public void action(MsgTaskRequest taskRequest) {
 
-    this.connectToVoice(this.msgTaskRequest.get());
+    this.connectToVoice(taskRequest);
 
-    this.loadAudioSource(this.audioSourceString, this.msgTaskRequest.get());
+    this.loadAudioSource(this.audioSourceString, taskRequest);
   }
 
   public String getKeyword() {

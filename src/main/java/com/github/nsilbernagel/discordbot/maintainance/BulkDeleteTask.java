@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.maintainance;
 
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
 import com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric;
 import com.github.nsilbernagel.discordbot.validation.rules.annotations.Required;
@@ -28,13 +29,13 @@ public class BulkDeleteTask extends MessageTask {
   }
 
   @Override
-  public void action() {
-    Flux<Message> messageIdsToDelete = this.currentChannel()
-        .getMessagesBefore(this.currentMessage().getId())
+  public void action(MsgTaskRequest taskRequest) {
+    Flux<Message> messageIdsToDelete = taskRequest.getChannel()
+        .getMessagesBefore(taskRequest.getMessage().getId())
         .take(numberOfMessagesToDelete)
-        .mergeWith(Flux.just(this.currentMessage()));
+        .mergeWith(Flux.just(taskRequest.getMessage()));
 
-    this.currentChannel()
+    taskRequest.getChannel()
         .bulkDeleteMessages(messageIdsToDelete)
         .blockLast();
   }

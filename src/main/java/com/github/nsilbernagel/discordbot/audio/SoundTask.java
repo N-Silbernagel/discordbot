@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskException;
 import com.github.nsilbernagel.discordbot.validation.CommandParam;
 import com.github.nsilbernagel.discordbot.audio.awsmsounds.dto.AwsmSound;
@@ -30,7 +31,7 @@ public class SoundTask extends MessageTask implements ExplainedMessageTask {
   }
 
   @Override
-  public void action() {
+  public void action(MsgTaskRequest taskRequest) {
     Optional<? extends Sound> soundToPlay;
 
     String soundQuery = String.join(" ", this.soundQueryList);
@@ -45,8 +46,8 @@ public class SoundTask extends MessageTask implements ExplainedMessageTask {
       throw new TaskException("Sound konnte nicht gefunden werden.");
     }
 
-    this.playTask.connectToVoice(this.msgTaskRequest.get());
-    this.playTask.loadAudioSource(soundToPlay.get().getSource(), this.msgTaskRequest.get());
+    this.playTask.connectToVoice(taskRequest);
+    this.playTask.loadAudioSource(soundToPlay.get().getSource(), taskRequest);
   }
 
   public String getKeyword() {
