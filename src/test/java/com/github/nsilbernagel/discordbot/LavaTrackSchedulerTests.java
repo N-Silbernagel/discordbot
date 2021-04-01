@@ -3,7 +3,7 @@ package com.github.nsilbernagel.discordbot;
 import com.github.nsilbernagel.discordbot.audio.AudioRequest;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.audio.LavaTrackScheduler;
-import com.github.nsilbernagel.discordbot.message.TaskRequest;
+import com.github.nsilbernagel.discordbot.task.TaskRequest;
 import com.github.nsilbernagel.discordbot.presence.PresenceManager;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;

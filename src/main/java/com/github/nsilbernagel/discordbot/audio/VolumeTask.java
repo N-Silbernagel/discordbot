@@ -12,12 +12,15 @@ import org.springframework.stereotype.Component;
 public class VolumeTask extends MessageTask implements ExplainedMessageTask {
   public final static String KEYWORD = "volume";
 
+  private final LavaPlayerAudioProvider lavaPlayerAudioProvider;
+
+  public VolumeTask(LavaPlayerAudioProvider lavaPlayerAudioProvider) {
+    this.lavaPlayerAudioProvider = lavaPlayerAudioProvider;
+  }
+
   public boolean canHandle(String keyword) {
     return KEYWORD.equals(keyword);
   }
-
-  @Autowired
-  private LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
   @CommandParam(pos = 0)
   @Numeric(value = "Bitte gib eine Zahl zwischen 0 und 100 an.", min = 0, max = 100)

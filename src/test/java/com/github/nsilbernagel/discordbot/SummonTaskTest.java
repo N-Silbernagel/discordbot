@@ -1,7 +1,7 @@
 package com.github.nsilbernagel.discordbot;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
-import com.github.nsilbernagel.discordbot.message.TaskRequest;
+import com.github.nsilbernagel.discordbot.task.TaskRequest;
 import com.github.nsilbernagel.discordbot.voice.LeaveTask;
 import com.github.nsilbernagel.discordbot.voice.SummonTask;
 import discord4j.core.object.VoiceState;

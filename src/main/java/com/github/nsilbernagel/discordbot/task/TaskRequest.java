@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.message;
+package com.github.nsilbernagel.discordbot.task;
 
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;

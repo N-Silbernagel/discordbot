@@ -1,7 +1,7 @@
 package com.github.nsilbernagel.discordbot;
 
 import com.github.nsilbernagel.discordbot.audio.*;
-import com.github.nsilbernagel.discordbot.message.TaskRequest;
+import com.github.nsilbernagel.discordbot.task.TaskRequest;
 import com.github.nsilbernagel.discordbot.voice.SummonTask;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import discord4j.core.object.entity.Member;
