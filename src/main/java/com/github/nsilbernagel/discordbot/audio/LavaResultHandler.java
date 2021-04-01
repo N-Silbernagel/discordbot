@@ -5,9 +5,8 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
-import org.springframework.stereotype.Component;
+import lombok.Getter;
 
-@Component
 public final class LavaResultHandler implements AudioLoadResultHandler {
   /**
    * Threshold for how many items of a playlist may be queued
@@ -16,14 +15,18 @@ public final class LavaResultHandler implements AudioLoadResultHandler {
 
   private final LavaTrackScheduler lavaTrackScheduler;
 
-  public LavaResultHandler(LavaTrackScheduler lavaTrackScheduler) {
+  @Getter
+  private final String id;
+
+  public LavaResultHandler(LavaTrackScheduler lavaTrackScheduler, String id) {
+    this.id = id;
     this.lavaTrackScheduler = lavaTrackScheduler;
   }
 
   @Override
   public void trackLoaded(final AudioTrack track) {
     // LavaPlayer found an audio source for us to play
-    this.lavaTrackScheduler.queue(track);
+    this.lavaTrackScheduler.queue(track, this.id);
   }
 
   @Override
@@ -31,18 +34,16 @@ public final class LavaResultHandler implements AudioLoadResultHandler {
     playlist.getTracks()
         .stream()
         .limit(playlistThreshold)
-        .forEach(this.lavaTrackScheduler::queue);
+        .forEach(audioTrack -> this.lavaTrackScheduler.queue(audioTrack, this.id));
   }
 
   @Override
-  public void noMatches() throws LavaPlayerException {
+  public void noMatches() {
     // LavaPlayer did not find any audio to extract
-    throw new LavaPlayerException("Audio konnte nicht gefunden werden.");
   }
 
   @Override
-  public void loadFailed(final FriendlyException e) throws LavaPlayerException {
+  public void loadFailed(FriendlyException exception) {
     // LavaPlayer could not parse an audio source for some reason
-    throw new LavaPlayerException("Audio konnte nicht geladen werden.");
   }
 }

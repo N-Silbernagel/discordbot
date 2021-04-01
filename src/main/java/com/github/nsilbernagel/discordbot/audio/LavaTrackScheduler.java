@@ -1,14 +1,19 @@
 package com.github.nsilbernagel.discordbot.audio;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Getter;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.GatewayDiscordClient;
@@ -18,33 +23,48 @@ import discord4j.core.object.presence.Presence;
 @Component
 public class LavaTrackScheduler extends AudioEventAdapter {
 
+  @Nullable
   private AudioTrack currentTrack;
 
-  @Autowired
-  private LavaPlayerAudioProvider lavaPlayerAudioProvider;
+  private final LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
-  @Autowired
-  private GatewayDiscordClient discordClient;
+  private final GatewayDiscordClient discordClient;
 
-  private final BlockingQueue<AudioTrack> queue;
+  @Getter
+  private final BlockingQueue<AudioTrack> queue = new LinkedBlockingDeque<>();
 
-  public LavaTrackScheduler() {
-    this.queue = new LinkedBlockingDeque<>();
+  @Getter
+  private final Map<String, AudioRequest> audioRequest = new HashMap<>();
+
+  public LavaTrackScheduler(LavaPlayerAudioProvider lavaPlayerAudioProvider, GatewayDiscordClient discordClient) {
+    this.lavaPlayerAudioProvider = lavaPlayerAudioProvider;
+    this.discordClient = discordClient;
   }
 
   /**
    * @param track to queue
-   * @return queue success
    */
-  public boolean queue(AudioTrack track) {
+  public void queue(AudioTrack track, String requestId) throws LavaPlayerException {
+    AudioRequest correspondingAudioRequest = this.audioRequest.get(requestId);
+
+    if(correspondingAudioRequest == null){
+      throw new LavaPlayerException("No corresponding AudioRequest found for request id " + requestId);
+    }
+
+    correspondingAudioRequest.getTrackList()
+        .add(track);
+
+    // set Track Request to being queued so it doesn't get deleted
+    correspondingAudioRequest.setStatus(AudioStatus.QUEUED);
+
     boolean trackImmediatelyStarted = this.lavaPlayerAudioProvider.getPlayer()
         .startTrack(track, true);
 
     if (trackImmediatelyStarted) {
-      return true;
+      return;
     }
 
-    return this.queue.offer(track);
+    this.queue.offer(track);
   }
 
   /**
@@ -63,8 +83,22 @@ public class LavaTrackScheduler extends AudioEventAdapter {
 
   @Override
   public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
-    // Only start the next track if the end reason is suitable for it (FINISHED or
-    // LOAD_FAILED)
+    Optional<AudioRequest> audioRequest = this.audioRequestByTrack(track);
+    if(audioRequest.isEmpty()){
+      return;
+    }
+
+    // remove the track that just ended from the audio request
+    audioRequest.get()
+        .getTrackList()
+        .remove(track);
+
+    // delete the audio request if it is now empty
+    if(audioRequest.get().getTrackList().isEmpty()){
+      this.audioRequest.remove(audioRequest.get().getId());
+    }
+
+    // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
     if (endReason.mayStartNext) {
       nextTrack();
     } else {
@@ -92,15 +126,34 @@ public class LavaTrackScheduler extends AudioEventAdapter {
 
   @Override
   public void onTrackStart(AudioPlayer player, AudioTrack track) {
-    this.setPresencePlayingTrack(track);
+    Optional<AudioRequest> audioRequest = this.audioRequestByTrack(track);
+    if(audioRequest.isEmpty()){
+      return;
+    }
+
+    this.setPresencePlayingTrack(track, audioRequest.get().getId());
   }
 
-  private void setPresencePlayingTrack(AudioTrack track) {
+  private void setPresencePlayingTrack(AudioTrack track, String requestId) {
     this.currentTrack = track;
 
     this.discordClient
         .updatePresence(Presence.online(Activity.playing(track.getInfo().title)))
         .subscribe();
+  }
+
+  @Override
+  public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
+    Optional<AudioRequest> audioRequest = this.audioRequestByTrack(track);
+    if(audioRequest.isEmpty()){
+      return;
+    }
+
+    audioRequest.get()
+        .getTaskRequest()
+        .getChannel()
+        .createMessage("Ich konnte das Audio <" + audioRequest.get().getId() + "> nicht abspielen. Ist es öffentlich?")
+        .block();
   }
 
   private void setPresenceOnline() {
@@ -109,5 +162,15 @@ public class LavaTrackScheduler extends AudioEventAdapter {
     this.discordClient
         .updatePresence(Presence.online())
         .subscribe();
+  }
+
+  private Optional<AudioRequest> audioRequestByTrack(AudioTrack track) {
+    return this.audioRequest.values()
+        .stream()
+        .filter(audioRequest ->
+            audioRequest.getTrackList()
+                .contains(track)
+        )
+        .findFirst();
   }
 }
