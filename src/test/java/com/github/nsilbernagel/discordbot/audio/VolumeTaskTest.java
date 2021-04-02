@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.audio;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.audio.VolumeTask;
+import com.github.nsilbernagel.discordbot.message.MessageTestUtil;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import discord4j.core.object.entity.Member;
@@ -36,11 +37,7 @@ public class VolumeTaskTest {
   public void it_returns_the_current_volume_if_no_volume_param_was_specified(){
     Integer fakeVolume = 50;
 
-    MsgTaskRequest volumeTaskRequest = spy(new MsgTaskRequest(
-        Mockito.mock(Message.class),
-        Mockito.mock(TextChannel.class),
-        Mockito.mock(Member.class)
-    ));
+    MsgTaskRequest volumeTaskRequest = spy(MessageTestUtil.generateMsgTaskRequest());
 
     // current volume fake
     when(this.lavaPlayerAudioProviderMock.getPlayer()).thenReturn(this.audioPlayerMock);

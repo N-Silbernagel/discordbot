@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.message;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
@@ -29,7 +30,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   private SpamRegistry spamRegistry;
 
   @Autowired
-  private MessageToTaskHandler messageToTaskHandler;
+  private MessageTaskPreparer messageTaskPreparer;
 
   @Autowired
   private ChannelBlacklist channelBlacklist;
@@ -38,7 +39,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   private ExclusiveBotChannel exclusiveBotChannel;
 
   @Autowired
-  private MessageTaskPreparer messageTaskPreparer;
+  private List<MessageTask> tasks;
 
   private final ThreadLocal<MsgTaskRequest> localMsgTaskRequest = new ThreadLocal<>();
 
@@ -48,25 +49,31 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
 
   public void execute(MessageCreateEvent event) {
     Message message = event.getMessage();
-    MsgTaskRequest taskRequest;
+
+    // not a command, ignore
+    if (!message.getContent().startsWith(commandToken)) {
+      return;
+    }
+
+    TextChannel channel;
     try {
-      taskRequest = new MsgTaskRequest(
-          message,
-          (TextChannel) message.getChannel().block(),
-          message.getAuthorAsMember().block()
-      );
+      channel = (TextChannel) message.getChannel().block();
     } catch (ClassCastException e) {
       // probably using a private channel which we dont support yet
       return;
     }
 
+    MsgTaskRequest taskRequest;
+    taskRequest = new MsgTaskRequest(
+        message,
+        channel,
+        message.getAuthorAsMember().block(),
+        this.commandToken
+    );
+
     this.localMsgTaskRequest.set(taskRequest);
 
     if (!this.channelBlacklist.canAnswerOnChannel(taskRequest.getChannel())) {
-      return;
-    }
-
-    if (!taskRequest.getMessage().getContent().startsWith(commandToken)) {
       return;
     }
 
@@ -75,7 +82,13 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
       return;
     }
 
-    List<MessageTask> tasks = messageToTaskHandler.getMessageTasks(message);
+    List<MessageTask> tasks = this.getTasksForCommand(taskRequest.getCommand());
+
+    if (tasks.isEmpty()) {
+      // react to members message with question mark emoji to show that the command was not found
+      Emoji.QUESTION_MARK.reactOn(message).block();
+      return;
+    }
 
     if(this.spamRegistry.isEnabled()){
       if (this.spamRegistry.memberHasExceededThreshold(taskRequest.getAuthor())) {
@@ -93,7 +106,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
 
   private void prepareAndExecuteTask(MessageTask task) throws TaskException {
     try {
-      this.messageTaskPreparer.execute(task);
+      this.messageTaskPreparer.execute(task, this.localMsgTaskRequest.get());
     } catch (MessageValidationException e) {
       throw new TaskException(e.getMessage(), e);
     }
@@ -101,6 +114,21 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
     task.execute(this.localMsgTaskRequest.get());
   }
 
+  /**
+   * Get tasks that can handle a given command
+   */
+  private List<MessageTask> getTasksForCommand(String command) {
+    List<MessageTask> result = new ArrayList<>();
+    for (MessageTask task : this.tasks) {
+      if (task.canHandle(command)) {
+        result.add(task);
+      }
+    }
+
+    return result;
+  }
+
+  @Override
   protected void onCheckedException(TaskException exception) {
     if (! exception.hasMessage()) {
       return;
@@ -112,6 +140,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
         .block();
   }
 
+  @Override
   protected void onUncheckedException(Exception uncheckedException) {
     Emoji.BUG.reactOn(this.localMsgTaskRequest.get().getMessage())
         .block();
