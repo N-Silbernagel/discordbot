@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SoundTask extends MessageTask implements ExplainedMessageTask {
+public class SoundTask extends MessageTask<MsgTaskRequest> implements ExplainedMessageTask {
   public static final String KEYWORD = "sound";
 
   @CommandParam(pos = 0, range = Integer.MAX_VALUE)

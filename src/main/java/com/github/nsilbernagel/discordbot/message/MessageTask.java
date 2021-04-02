@@ -4,25 +4,34 @@ import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 
 import com.github.nsilbernagel.discordbot.task.Task;
-import com.github.nsilbernagel.discordbot.task.TaskRequest;
-import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.channel.TextChannel;
 
-import discord4j.core.object.entity.Message;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
-abstract public class MessageTask extends Task {
+abstract public class MessageTask<R extends MsgTaskRequest> extends Task {
   /**
    * Execute the message task action considering the needed permissions
    */
+  @SuppressWarnings("unchecked")
   public void execute(MsgTaskRequest taskRequest) {
+
+    if(!this.authorHasRequiredPermission(taskRequest)){
+      Emoji.GUARD.reactOn(taskRequest.getMessage()).block();
+      return;
+    }
+
+    R castedTaskRequest = (R) taskRequest;
+    castedTaskRequest.validate();
+
+    this.action((R) taskRequest);
+  }
+
+  private boolean authorHasRequiredPermission(MsgTaskRequest taskRequest) {
     NeedsPermission needsPermissionAnnotation = this.getClass().getAnnotation(NeedsPermission.class);
 
-    if (needsPermissionAnnotation == null) {
-      this.action(taskRequest);
-      return;
+    if(needsPermissionAnnotation == null){
+      return true;
     }
 
     Optional<Boolean> authorHasRequiredPermission = Optional.ofNullable(taskRequest.getAuthor()
@@ -30,23 +39,16 @@ abstract public class MessageTask extends Task {
         .flatMap(permissions -> Mono.just(permissions.contains(needsPermissionAnnotation.value())))
         .block());
 
-    if (authorHasRequiredPermission.isPresent() && authorHasRequiredPermission.get()) {
-      this.action(taskRequest);
-    } else {
-      Emoji.GUARD.reactOn(taskRequest.getMessage()).block();
-    }
+    return authorHasRequiredPermission.isPresent() && authorHasRequiredPermission.get();
   }
 
   /*
    * Start the task that was triggered by a command in a channel.
    */
-  abstract protected void action(MsgTaskRequest taskRequest);
+  abstract protected void action(R taskRequest);
 
   /**
-   * Check if a task can do anything with a given command keyword
-   *
-   * @param keyword the keyword to check
-   * @return can handle keyword
+   * Check if a task can do anything with a given command
    */
-  abstract public boolean canHandle(String keyword);
+  abstract public boolean canHandle(String command);
 }

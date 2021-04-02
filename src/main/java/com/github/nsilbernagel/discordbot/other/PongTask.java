@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class PongTask extends MessageTask {
+public class PongTask extends MessageTask<MsgTaskRequest> {
   public final static String KEYWORD = "ping";
 
   @CommandParam(pos = 0, range = Integer.MAX_VALUE)

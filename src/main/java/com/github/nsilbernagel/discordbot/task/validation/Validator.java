@@ -2,9 +2,10 @@ package com.github.nsilbernagel.discordbot.task.validation;
 
 import com.github.nsilbernagel.discordbot.task.TaskRequest;
 
-public interface Validator<t extends TaskRequest> {
+public interface Validator<r extends TaskRequest> {
   /**
-   * validate a resource
+   * validate a request
+   * @return the error message
    */
-  boolean validate(t resource);
+  String validate(r request) throws ValidationException;
 }

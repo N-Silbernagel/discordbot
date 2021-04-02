@@ -79,4 +79,8 @@ public class MsgTaskRequest extends TaskRequest {
     }
     return this.command;
   }
+
+  public boolean validate() {
+    return this.validator.validate(this);
+  }
 }

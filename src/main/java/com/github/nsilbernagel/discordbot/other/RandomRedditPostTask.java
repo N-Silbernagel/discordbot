@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
-public class RandomRedditPostTask extends MessageTask implements ExplainedMessageTask {
+public class RandomRedditPostTask extends MessageTask<MsgTaskRequest> implements ExplainedMessageTask {
 
   public static final String KEYWORD = "reddit";
 

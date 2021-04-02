@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.HtmlUtils;
 
 @Component
-public class InsultTask extends MessageTask implements ExplainedMessageTask {
+public class InsultTask extends MessageTask<MsgTaskRequest> implements ExplainedMessageTask {
 
   public final static String KEYWORD = "insult";
 

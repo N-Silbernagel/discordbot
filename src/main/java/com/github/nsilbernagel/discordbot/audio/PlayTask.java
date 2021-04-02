@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.ExecutionException;
 
 @Component
-public class PlayTask extends MessageTask implements ExplainedMessageTask {
+public class PlayTask extends MessageTask<MsgTaskRequest> implements ExplainedMessageTask {
   public final static String KEYWORD = "play";
 
   private final SummonTask summonTask;

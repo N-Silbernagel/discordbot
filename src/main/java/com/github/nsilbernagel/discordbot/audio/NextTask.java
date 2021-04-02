@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NextTask extends MessageTask implements ExplainedMessageTask {
+public class NextTask extends MessageTask<MsgTaskRequest> implements ExplainedMessageTask {
 
   public final static String KEYWORD = "next";
 

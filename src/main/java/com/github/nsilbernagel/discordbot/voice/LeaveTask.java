@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import discord4j.voice.VoiceConnection;
 
 @Component
-public class LeaveTask extends MessageTask implements ExplainedMessageTask {
+public class LeaveTask extends MessageTask<MsgTaskRequest> implements ExplainedMessageTask {
 
   public final static String KEYWORD = "leave";
 
