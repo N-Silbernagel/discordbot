@@ -40,6 +40,7 @@ public class MsgTaskRequest extends TaskRequest {
   /**
    * The token used to indicate a command in a message
    */
+  @Getter
   private final String commandToken;
 
   /**
@@ -60,6 +61,7 @@ public class MsgTaskRequest extends TaskRequest {
     if(this.commandParameters == null) {
       this.commandParameters = Arrays.stream(this.getMessage().getContent()
           .split(" "))
+          // skip first element as it is the command, not a param
           .skip(1)
           .collect(Collectors.toList());
     }
