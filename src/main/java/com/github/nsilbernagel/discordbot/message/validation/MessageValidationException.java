@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.validation;
+package com.github.nsilbernagel.discordbot.message.validation;
 
 public class MessageValidationException extends RuntimeException {
   final static long serialVersionUID = 6L;

@@ -7,7 +7,7 @@ import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskException;
-import com.github.nsilbernagel.discordbot.validation.CommandParam;
+import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

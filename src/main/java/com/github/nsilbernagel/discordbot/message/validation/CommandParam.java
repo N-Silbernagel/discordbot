@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.validation;
+package com.github.nsilbernagel.discordbot.message.validation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

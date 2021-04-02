@@ -3,10 +3,9 @@ package com.github.nsilbernagel.discordbot.audio;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
-import com.github.nsilbernagel.discordbot.validation.CommandParam;
-import com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric;
+import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
+import com.github.nsilbernagel.discordbot.message.validation.annotations.Numeric;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -3,15 +3,15 @@ package com.github.nsilbernagel.discordbot.message;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.nsilbernagel.discordbot.message.validation.MessageTaskValidator;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
 import com.github.nsilbernagel.discordbot.listener.EventListener;
 import com.github.nsilbernagel.discordbot.task.TaskException;
-import com.github.nsilbernagel.discordbot.task.TaskRequest;
-import com.github.nsilbernagel.discordbot.validation.MessageTaskPreparer;
-import com.github.nsilbernagel.discordbot.validation.MessageValidationException;
+import com.github.nsilbernagel.discordbot.task.validation.MessageTaskPreparer;
+import com.github.nsilbernagel.discordbot.message.validation.MessageValidationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +37,9 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
 
   @Autowired
   private ExclusiveBotChannel exclusiveBotChannel;
+
+  @Autowired
+  private MessageTaskValidator messageTaskValidator;
 
   @Autowired
   private List<MessageTask> tasks;
@@ -68,7 +71,8 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
         message,
         channel,
         message.getAuthorAsMember().block(),
-        this.commandToken
+        this.commandToken,
+        messageTaskValidator
     );
 
     this.localMsgTaskRequest.set(taskRequest);

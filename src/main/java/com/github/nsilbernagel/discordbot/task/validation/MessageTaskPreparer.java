@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot.validation;
+package com.github.nsilbernagel.discordbot.task.validation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -11,7 +11,9 @@ import javax.annotation.PostConstruct;
 
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
-import com.github.nsilbernagel.discordbot.validation.rules.ValidationRule;
+import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
+import com.github.nsilbernagel.discordbot.message.validation.MessageValidationException;
+import com.github.nsilbernagel.discordbot.task.validation.rules.ValidationRule;
 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;

@@ -3,9 +3,9 @@ package com.github.nsilbernagel.discordbot.maintainance;
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
-import com.github.nsilbernagel.discordbot.validation.CommandParam;
-import com.github.nsilbernagel.discordbot.validation.rules.annotations.Numeric;
-import com.github.nsilbernagel.discordbot.validation.rules.annotations.Required;
+import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
+import com.github.nsilbernagel.discordbot.message.validation.annotations.Numeric;
+import com.github.nsilbernagel.discordbot.message.validation.annotations.Required;
 
 import discord4j.core.object.entity.Message;
 import org.springframework.stereotype.Component;

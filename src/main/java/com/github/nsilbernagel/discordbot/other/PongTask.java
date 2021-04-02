@@ -3,7 +3,7 @@ package com.github.nsilbernagel.discordbot.other;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
-import com.github.nsilbernagel.discordbot.validation.CommandParam;
+import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

@@ -1,6 +1,7 @@
 package com.github.nsilbernagel.discordbot.message;
 
 import com.github.nsilbernagel.discordbot.task.TaskRequest;
+import com.github.nsilbernagel.discordbot.task.validation.Validator;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
@@ -42,6 +43,8 @@ public class MsgTaskRequest extends TaskRequest {
    */
   @Getter
   private final String commandToken;
+
+  private final Validator<MsgTaskRequest> validator;
 
   /**
    * The string after the commandToken in the message's content, e.g. !COMMAND
