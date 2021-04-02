@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot;
+package com.github.nsilbernagel.discordbot.reaction;
 
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;

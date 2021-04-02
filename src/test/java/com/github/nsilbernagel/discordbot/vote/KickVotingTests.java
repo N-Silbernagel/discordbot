@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot;
+package com.github.nsilbernagel.discordbot.vote;
 
 import com.github.nsilbernagel.discordbot.task.TaskException;
 import com.github.nsilbernagel.discordbot.vote.KickVoting;

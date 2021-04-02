@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot;
+package com.github.nsilbernagel.discordbot.audio;
 
 import com.github.nsilbernagel.discordbot.audio.LavaResultHandler;
 import com.github.nsilbernagel.discordbot.audio.LavaTrackScheduler;

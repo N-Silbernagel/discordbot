@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot;
+package com.github.nsilbernagel.discordbot.presence;
 
 import com.github.nsilbernagel.discordbot.presence.PresenceManager;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
