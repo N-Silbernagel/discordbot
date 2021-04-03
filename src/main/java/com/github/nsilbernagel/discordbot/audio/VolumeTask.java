@@ -3,9 +3,8 @@ package com.github.nsilbernagel.discordbot.audio;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
-import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
-import com.github.nsilbernagel.discordbot.message.validation.annotations.Numeric;
 
+import com.github.nsilbernagel.discordbot.message.validation.rules.Numeric;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,19 +21,18 @@ public class VolumeTask extends MessageTask implements ExplainedMessageTask {
     return KEYWORD.equals(keyword);
   }
 
-  @CommandParam(pos = 0)
-  @Numeric(value = "Bitte gib eine Zahl zwischen 0 und 100 an.", min = 0, max = 100)
-  private Integer volumeParam;
-
   @Override
   protected void action(MsgTaskRequest taskRequest) {
+    Integer newVolume = taskRequest.param(0)
+        .is(new Numeric(), "Bitte gib eine Zahl zwischen 0 und 100 an.")
+        .as(Integer.class);
 
-    if (this.volumeParam == null) {
+    if (newVolume == null) {
       taskRequest.respond("Aktuelle Lautstärke: " + this.lavaPlayerAudioProvider.getPlayer().getVolume() + "%").block();
       return;
     }
 
-    this.lavaPlayerAudioProvider.getPlayer().setVolume(this.volumeParam);
+    this.lavaPlayerAudioProvider.getPlayer().setVolume(newVolume);
   }
 
   public String getKeyword() {

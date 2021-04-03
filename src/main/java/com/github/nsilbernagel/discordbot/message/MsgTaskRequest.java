@@ -1,7 +1,7 @@
 package com.github.nsilbernagel.discordbot.message;
 
+import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
 import com.github.nsilbernagel.discordbot.task.TaskRequest;
-import com.github.nsilbernagel.discordbot.task.validation.Validator;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
@@ -43,8 +43,6 @@ public class MsgTaskRequest extends TaskRequest {
   @Getter
   private final String commandToken;
 
-  private final Validator<MsgTaskRequest> validator;
-
   /**
    * The string after the commandToken in the message's content, e.g. !COMMAND
    */
@@ -79,9 +77,35 @@ public class MsgTaskRequest extends TaskRequest {
     return this.command;
   }
 
-  public void validate() {
-    this.validator.validate(this);
+  public CommandParam param(int index){
+    String rawValue;
+
+    if(this.getCommandParameters().size() > index){
+      rawValue = this.getCommandParameters().get(index);
+    } else {
+      rawValue = null;
+    }
+
+    return new CommandParam(rawValue);
   }
 
-  
+  public CommandParam param(int first, int last){
+    int lastIndex = last;
+    String rawValue;
+
+    if (last > this.getCommandParameters().size()){
+      lastIndex = this.getCommandParameters().size();
+    }
+
+    if(this.getCommandParameters().size() > first){
+      rawValue = String.join(
+          " ",
+          this.getCommandParameters().subList(first, lastIndex)
+      );
+    } else {
+      rawValue = null;
+    }
+
+    return new CommandParam(rawValue);
+  }
 }

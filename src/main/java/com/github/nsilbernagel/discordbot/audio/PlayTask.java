@@ -3,8 +3,7 @@ package com.github.nsilbernagel.discordbot.audio;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
-import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
-import com.github.nsilbernagel.discordbot.message.validation.annotations.Required;
+import com.github.nsilbernagel.discordbot.message.validation.rules.Required;
 
 import com.github.nsilbernagel.discordbot.voice.SummonTask;
 import org.springframework.context.annotation.Lazy;
@@ -22,10 +21,6 @@ public class PlayTask extends MessageTask implements ExplainedMessageTask {
 
   private final LavaTrackScheduler lavaTrackScheduler;
 
-  @CommandParam(pos = 0)
-  @Required("Bitte gib einen Link zu einer Audioquelle an.")
-  private String audioSourceString;
-
   public PlayTask(@Lazy SummonTask summonTask, @Lazy LavaPlayerAudioProvider lavaPlayerAudioProvider, @Lazy LavaTrackScheduler lavaTrackScheduler) {
     this.summonTask = summonTask;
     this.lavaPlayerAudioProvider = lavaPlayerAudioProvider;
@@ -38,10 +33,13 @@ public class PlayTask extends MessageTask implements ExplainedMessageTask {
 
   @Override
   public void action(MsgTaskRequest taskRequest) {
+    String audioSource = taskRequest.param(0)
+        .is(new Required(), "Bitte gib einen Link zu einer Audioquelle an.")
+        .as(String.class);
 
     this.connectToVoice(taskRequest);
 
-    this.loadAudioSource(this.audioSourceString, taskRequest);
+    this.loadAudioSource(audioSource, taskRequest);
   }
 
   public String getKeyword() {
@@ -76,7 +74,7 @@ public class PlayTask extends MessageTask implements ExplainedMessageTask {
 
     if (audioRequest.getStatus().isDeletable()) {
       taskRequest.getChannel()
-          .createMessage("Auf <" + audioSource + "> konnte keine Audioquelle gefunden werden.")
+          .createMessage("Unter <" + audioSource + "> konnte keine Audioquelle gefunden werden.")
           .block();
       this.lavaTrackScheduler.getAudioRequest().remove(audioSource);
     }

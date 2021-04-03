@@ -3,9 +3,10 @@ package com.github.nsilbernagel.discordbot.maintainance;
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
-import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
-import com.github.nsilbernagel.discordbot.message.validation.annotations.Numeric;
-import com.github.nsilbernagel.discordbot.message.validation.annotations.Required;
+import com.github.nsilbernagel.discordbot.message.validation.rules.Max;
+import com.github.nsilbernagel.discordbot.message.validation.rules.Min;
+import com.github.nsilbernagel.discordbot.message.validation.rules.Numeric;
+import com.github.nsilbernagel.discordbot.message.validation.rules.Required;
 
 import discord4j.core.object.entity.Message;
 import org.springframework.stereotype.Component;
@@ -19,17 +20,19 @@ public class BulkDeleteTask extends MessageTask {
 
   public final static String KEYWORD = "delete";
 
-  @CommandParam(pos = 0)
-  @Required("Bitte gib eine Zahl an.")
-  @Numeric(value = "Bitte gib eine Zahl zwischen 1 und 10 an.", min = 1, max = 100)
-  private long numberOfMessagesToDelete;
-
   public boolean canHandle(String keyword) {
     return KEYWORD.equals(keyword);
   }
 
   @Override
   public void action(MsgTaskRequest taskRequest) {
+    Long numberOfMessagesToDelete = taskRequest.param(0)
+        .is(new Required(), "Bitte gib an, wie viele Nachrichten du löschen möchtest.")
+        .is(new Numeric(), "Bitte gib eine Zahl an.")
+        .is(new Min(1), "Bitte gib eine Zahl über 0 an.")
+        .is(new Max(100), "Bitte gib eine Zahl unter 101 an")
+        .as(Long.class);
+
     Flux<Message> messageIdsToDelete = taskRequest.getChannel()
         .getMessagesBefore(taskRequest.getMessage().getId())
         .take(numberOfMessagesToDelete)

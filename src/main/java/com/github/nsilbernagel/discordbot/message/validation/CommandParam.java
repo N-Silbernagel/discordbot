@@ -1,22 +1,49 @@
 package com.github.nsilbernagel.discordbot.message.validation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.github.nsilbernagel.discordbot.task.validation.ValidationRule;
+import lombok.*;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface CommandParam {
-  /**
-   * the position of the command param in the chain of words given after a bot
-   * command in a msg
-   */
-  int pos();
+import java.util.Objects;
 
+@Getter
+@ToString
+public class CommandParam {
   /**
-   * Take all command param from pos to pos + the range. Integer.MAX_VALUE is
-   * recommended for infinity
+   * Command param's raw value
    */
-  int range() default 1;
+  private final String raw;
+
+  private final ConversionService conversionService = DefaultConversionService.getSharedInstance();
+
+  public CommandParam(String raw){
+    this.raw = raw;
+  }
+
+  public <R extends ValidationRule> CommandParam is(R rule, String errorMessage){
+    boolean valid = rule.validate(this);
+
+    if (!valid){
+      throw new MessageValidationException(errorMessage);
+    }
+    return this;
+  }
+
+  public <T> T as(Class<T> klass){
+    return conversionService.convert(this.raw, klass);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    CommandParam that = (CommandParam) o;
+    return Objects.equals(raw, that.raw);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(raw);
+  }
 }

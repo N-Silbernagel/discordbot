@@ -8,7 +8,6 @@ import com.github.nsilbernagel.discordbot.listener.EventListener;
 import com.github.nsilbernagel.discordbot.task.MemberMissingOrBotException;
 import com.github.nsilbernagel.discordbot.task.TaskException;
 
-import com.github.nsilbernagel.discordbot.task.TaskRequest;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.event.domain.message.ReactionAddEvent;

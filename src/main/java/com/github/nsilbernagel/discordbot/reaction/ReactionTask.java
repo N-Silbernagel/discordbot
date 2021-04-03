@@ -3,7 +3,6 @@ package com.github.nsilbernagel.discordbot.reaction;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.nsilbernagel.discordbot.task.TaskRequest;
 import com.github.nsilbernagel.discordbot.task.Task;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;

@@ -1,6 +1,8 @@
 package com.github.nsilbernagel.discordbot.message.validation;
 
-public class MessageValidationException extends RuntimeException {
+import com.github.nsilbernagel.discordbot.task.TaskException;
+
+public class MessageValidationException extends TaskException {
   final static long serialVersionUID = 6L;
 
   public MessageValidationException(String errorMessage) {

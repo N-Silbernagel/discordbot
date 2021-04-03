@@ -1,18 +1,13 @@
 package com.github.nsilbernagel.discordbot.audio;
 
-import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
-import com.github.nsilbernagel.discordbot.audio.VolumeTask;
 import com.github.nsilbernagel.discordbot.message.MessageTestUtil;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 
@@ -39,9 +34,13 @@ public class VolumeTaskTest {
 
     MsgTaskRequest volumeTaskRequest = spy(MessageTestUtil.generateMsgTaskRequest());
 
+    String testCommand = volumeTaskRequest.getCommandToken() + "volume";
+
     // current volume fake
     when(this.lavaPlayerAudioProviderMock.getPlayer()).thenReturn(this.audioPlayerMock);
     when(this.audioPlayerMock.getVolume()).thenReturn(fakeVolume);
+
+    when(volumeTaskRequest.getMessage().getContent()).thenReturn(testCommand);
 
     ArgumentCaptor<String> volumeMessageResponseCaptor = ArgumentCaptor.forClass(String.class);
     Mono<Message> volumeMessageMono = mock(Mono.class);

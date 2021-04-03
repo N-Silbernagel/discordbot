@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.message;
 
+import com.github.nsilbernagel.discordbot.message.validation.MessageValidationException;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 

@@ -3,26 +3,23 @@ package com.github.nsilbernagel.discordbot.other;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
-import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class PongTask extends MessageTask {
   public final static String KEYWORD = "ping";
 
-  @CommandParam(pos = 0, range = Integer.MAX_VALUE)
-  private List<String> commandParams;
-
   @Override
   public void action(MsgTaskRequest taskRequest) {
+    String commandParams = taskRequest.param(0, Integer.MAX_VALUE)
+        .as(String.class);
+
     try {
       Thread.sleep(5000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    taskRequest.respond("pong" + " " + String.join(" ", this.commandParams))
+    taskRequest.respond("pong" + " " + commandParams)
         .subscribe();
   }
 

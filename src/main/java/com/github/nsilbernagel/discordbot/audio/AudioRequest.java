@@ -1,7 +1,6 @@
 package com.github.nsilbernagel.discordbot.audio;
 
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
-import com.github.nsilbernagel.discordbot.task.TaskRequest;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import lombok.*;
 

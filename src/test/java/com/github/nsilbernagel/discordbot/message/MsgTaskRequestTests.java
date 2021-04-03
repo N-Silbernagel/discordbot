@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -33,11 +32,7 @@ public class MsgTaskRequestTests {
     String testMessageContent = "!abc test 1 2 3";
     when(this.msgTaskRequest.getMessage().getContent()).thenReturn(testMessageContent);
 
-    List<String> expectedCommandParams = new ArrayList<>();
-    expectedCommandParams.add("test");
-    expectedCommandParams.add("1");
-    expectedCommandParams.add("2");
-    expectedCommandParams.add("3");
+    List<String> expectedCommandParams = List.of("test", "1", "2", "3");
 
     assertEquals(expectedCommandParams, msgTaskRequest.getCommandParameters());
   }
