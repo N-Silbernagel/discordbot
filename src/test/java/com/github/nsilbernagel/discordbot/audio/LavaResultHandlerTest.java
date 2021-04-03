@@ -1,10 +1,9 @@
-package com.github.nsilbernagel.discordbot;
+package com.github.nsilbernagel.discordbot.audio;
 
 import com.github.nsilbernagel.discordbot.audio.LavaResultHandler;
 import com.github.nsilbernagel.discordbot.audio.LavaTrackScheduler;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -26,7 +25,9 @@ public class LavaResultHandlerTest {
 
   @Test
   public void there_is_a_threshold_for_how_many_items_of_a_playlist_are_queued() {
-    LavaResultHandler lavaResultHandler = new LavaResultHandler(this.lavaTrackSchedulerMock);
+    String audioSourceIdFake = "test";
+
+    LavaResultHandler lavaResultHandler = new LavaResultHandler(this.lavaTrackSchedulerMock, audioSourceIdFake);
 
     AudioPlaylist audioPlaylistMock = Mockito.mock(AudioPlaylist.class);
 
@@ -39,6 +40,6 @@ public class LavaResultHandlerTest {
 
     lavaResultHandler.playlistLoaded(audioPlaylistMock);
 
-    Mockito.verify(lavaTrackSchedulerMock, Mockito.times(LavaResultHandler.playlistThreshold)).queue(Mockito.any(AudioTrack.class));
+    Mockito.verify(lavaTrackSchedulerMock, Mockito.times(LavaResultHandler.playlistThreshold)).queue(Mockito.any(AudioTrack.class), Mockito.eq(audioSourceIdFake));
   }
 }

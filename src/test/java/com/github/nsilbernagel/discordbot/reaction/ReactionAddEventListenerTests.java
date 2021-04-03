@@ -1,4 +1,4 @@
-package com.github.nsilbernagel.discordbot;
+package com.github.nsilbernagel.discordbot.reaction;
 
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
@@ -41,8 +41,6 @@ public class ReactionAddEventListenerTests {
     when(this.memberMock.isBot()).thenReturn(true);
     when(reactionAddEventMock.getMember()).thenReturn(Optional.of(this.memberMock));
 
-    assertThrows(MemberMissingOrBotException.class, () -> {
-      reactionAddEventListener.execute(reactionAddEventMock);
-    });
+    assertThrows(MemberMissingOrBotException.class, () -> reactionAddEventListener.execute(reactionAddEventMock));
   }
 }

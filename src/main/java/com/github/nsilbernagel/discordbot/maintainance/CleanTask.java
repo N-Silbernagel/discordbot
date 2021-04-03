@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot.maintainance;
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +23,8 @@ public class CleanTask extends MessageTask {
   }
 
   @Override
-  public void action() {
-    this.channelCleaner
-        .execute(this.currentChannel());
+  public void action(MsgTaskRequest taskRequest) {
+    this.channelCleaner.execute(taskRequest.getChannel());
   }
 
 }

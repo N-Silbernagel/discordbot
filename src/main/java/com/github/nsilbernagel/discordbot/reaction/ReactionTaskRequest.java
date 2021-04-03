@@ -1,15 +1,15 @@
-package com.github.nsilbernagel.discordbot.message;
+package com.github.nsilbernagel.discordbot.reaction;
 
+import com.github.nsilbernagel.discordbot.task.TaskRequest;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.TextChannel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-/**
- * Request data of a task
- */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class TaskRequest {
+public class ReactionTaskRequest extends TaskRequest {
   /**
    * The Message associated with the task, e.g. the message containing the command for a MessageTask
    */

@@ -2,42 +2,44 @@ package com.github.nsilbernagel.discordbot.audio;
 
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
-import com.github.nsilbernagel.discordbot.validation.CommandParam;
-import com.github.nsilbernagel.discordbot.validation.rules.annotations.Required;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
+import com.github.nsilbernagel.discordbot.message.validation.rules.Required;
 
 import com.github.nsilbernagel.discordbot.voice.SummonTask;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.ExecutionException;
 
 @Component
 public class PlayTask extends MessageTask implements ExplainedMessageTask {
   public final static String KEYWORD = "play";
 
-  @Autowired
-  private SummonTask summonTask;
+  private final SummonTask summonTask;
 
-  @Autowired
-  private LavaPlayerAudioProvider lavaPlayerAudioProvider;
+  private final LavaPlayerAudioProvider lavaPlayerAudioProvider;
 
-  @Autowired
-  private LavaResultHandler lavaResultHandler;
+  private final LavaTrackScheduler lavaTrackScheduler;
 
-  @CommandParam(pos = 0)
-  @Required("Bitte gib einen Link zu einer Audioquelle an.")
-  private String audioSourceString;
+  public PlayTask(@Lazy SummonTask summonTask, @Lazy LavaPlayerAudioProvider lavaPlayerAudioProvider, @Lazy LavaTrackScheduler lavaTrackScheduler) {
+    this.summonTask = summonTask;
+    this.lavaPlayerAudioProvider = lavaPlayerAudioProvider;
+    this.lavaTrackScheduler = lavaTrackScheduler;
+  }
 
   public boolean canHandle(String keyword) {
     return KEYWORD.equals(keyword);
   }
 
   @Override
-  public void action() {
+  public void action(MsgTaskRequest taskRequest) {
+    String audioSource = taskRequest.param(0)
+        .is(new Required(), "Bitte gib einen Link zu einer Audioquelle an.")
+        .as(String.class);
 
-    if (summonTask.getVoiceConnection().isEmpty()) {
-      summonTask.execute(this.msgTaskRequest.get());
-    }
+    this.connectToVoice(taskRequest);
 
-    this.loadAudioSource(this.audioSourceString);
+    this.loadAudioSource(audioSource, taskRequest);
   }
 
   public String getKeyword() {
@@ -48,12 +50,33 @@ public class PlayTask extends MessageTask implements ExplainedMessageTask {
     return "Eine Audioquelle in die Warteschlange packen.";
   }
 
-  public void loadAudioSource(String audioSource) throws LavaPlayerException {
-    lavaPlayerAudioProvider.getPlayerManager()
-      .loadItem(audioSource, this.lavaResultHandler);
+  public void connectToVoice(MsgTaskRequest msgTaskRequest) {
+    if (summonTask.getVoiceConnection().isEmpty()) {
+      summonTask.execute(msgTaskRequest);
+    }
   }
 
-  public void setAudioSourceString(String src) {
-    this.audioSourceString = src;
+  public void loadAudioSource(String audioSource, MsgTaskRequest taskRequest) {
+    AudioRequest audioRequest = new AudioRequest(
+        audioSource,
+        taskRequest
+    );
+
+    this.lavaTrackScheduler.getAudioRequest()
+        .put(audioSource, audioRequest);
+
+    try {
+      lavaPlayerAudioProvider.getPlayerManager()
+        .loadItem(audioSource, new LavaResultHandler(this.lavaTrackScheduler, audioSource))
+        .get();
+    } catch (InterruptedException | ExecutionException ignored) {
+    }
+
+    if (audioRequest.getStatus().isDeletable()) {
+      taskRequest.getChannel()
+          .createMessage("Unter <" + audioSource + "> konnte keine Audioquelle gefunden werden.")
+          .block();
+      this.lavaTrackScheduler.getAudioRequest().remove(audioSource);
+    }
   }
 }

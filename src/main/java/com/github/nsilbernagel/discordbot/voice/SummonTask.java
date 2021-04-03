@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskException;
 
 import org.springframework.context.annotation.Lazy;
@@ -34,17 +35,17 @@ public class SummonTask extends MessageTask implements ExplainedMessageTask {
   }
 
   public boolean canHandle(String keyword) {
-    return keyword.equals(KEYWORD) || keyword.equals("join");
+    return keyword.equals(KEYWORD) || keyword.equals("join") || keyword.equals("connect");
   }
 
   @Override
-  public void action() {
+  public void action(MsgTaskRequest taskRequest) {
     if (this.voiceConnection.isPresent()) {
-      this.leaveTask.execute(this.msgTaskRequest.get());
+      this.leaveTask.execute(taskRequest);
     }
 
     this.voiceConnection = Optional.ofNullable(
-        this.currentAuthor()
+        taskRequest.getAuthor()
             .getVoiceState()
             .flatMap(VoiceState::getChannel)
             .flatMap(channel -> channel.join(spec -> spec.setProvider(lavaPlayerAudioProvider)))

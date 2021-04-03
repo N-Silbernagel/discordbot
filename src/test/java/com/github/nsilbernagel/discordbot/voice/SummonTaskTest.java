@@ -1,7 +1,7 @@
-package com.github.nsilbernagel.discordbot;
+package com.github.nsilbernagel.discordbot.voice;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
-import com.github.nsilbernagel.discordbot.message.TaskRequest;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.voice.LeaveTask;
 import com.github.nsilbernagel.discordbot.voice.SummonTask;
 import discord4j.core.object.VoiceState;
@@ -29,7 +29,7 @@ public class SummonTaskTest {
   @Mock
   private VoiceConnection voiceConnectionMock;
   @Mock
-  private TaskRequest taskRequestMock;
+  private MsgTaskRequest taskRequestMock;
 
   @Test
   public void it_joins_a_voice_channel() {

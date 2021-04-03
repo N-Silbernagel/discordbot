@@ -13,6 +13,7 @@ public enum Emoji {
   GUARD("👮‍♂️"),
   QUESTION_MARK("❓"),
   CHECK("✅"),
+  PAUSE("⏸"),
   CROSS("❌");
 
   @Getter

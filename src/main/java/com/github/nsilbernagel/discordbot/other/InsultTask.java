@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.other;
 
 import com.github.nsilbernagel.discordbot.message.MessageTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
+import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskException;
 
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class InsultTask extends MessageTask implements ExplainedMessageTask {
   }
 
   @Override
-  public void action() {
+  public void action(MsgTaskRequest taskRequest) {
     String insult = WebClient.create("https://evilinsult.com")
         .get()
         .uri("/generate_insult.php?lang=en&type=text")
@@ -29,7 +30,7 @@ public class InsultTask extends MessageTask implements ExplainedMessageTask {
         })
         .block();
 
-    this.answerMessage(HtmlUtils.htmlUnescape(insult)).block();
+    taskRequest.respond(HtmlUtils.htmlUnescape(insult)).block();
   }
 
   public String getKeyword() {
