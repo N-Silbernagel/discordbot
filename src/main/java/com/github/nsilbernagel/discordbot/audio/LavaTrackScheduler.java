@@ -129,7 +129,7 @@ public class LavaTrackScheduler extends AudioEventAdapter {
     audioRequest.get()
         .getTaskRequest()
         .getChannel()
-        .createMessage("Ich konnte das Audio <" + audioRequest.get().getId() + "> nicht abspielen. Ist es öffentlich? Leider gibt es momentan Probleme bei YouTube Videos 😕")
+        .createMessage("Ich konnte das Audio <" + audioRequest.get().getId() + "> nicht abspielen. Ist es öffentlich und für Zuschauer unter 18 Jahren sichtbar?")
         .block();
   }
 
