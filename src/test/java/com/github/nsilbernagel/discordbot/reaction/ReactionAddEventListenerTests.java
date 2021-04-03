@@ -3,8 +3,6 @@ package com.github.nsilbernagel.discordbot.reaction;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.task.MemberMissingOrBotException;
-import com.github.nsilbernagel.discordbot.reaction.ReactionAddEventListener;
-import com.github.nsilbernagel.discordbot.reaction.ReactionToTaskHandler;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Member;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,14 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ReactionAddEventListenerTests {
-  @Mock
-  private ReactionToTaskHandler reactionToTaskHandlerMock;
   @Mock
   private ChannelBlacklist channelBlacklistMock;
   @Mock
@@ -28,6 +25,8 @@ public class ReactionAddEventListenerTests {
   private ReactionAddEvent reactionAddEventMock;
   @Mock
   private Member memberMock;
+  @Mock
+  private ReactionTask reactionTaskMock;
 
   @BeforeEach
   public void setUp(){
@@ -36,7 +35,7 @@ public class ReactionAddEventListenerTests {
 
   @Test
   public void it_does_not_handle_its_own_reactions() {
-    ReactionAddEventListener reactionAddEventListener = new ReactionAddEventListener(this.reactionToTaskHandlerMock, this.channelBlacklistMock, this.exclusiveBotChannelMock);
+    ReactionAddEventListener reactionAddEventListener = new ReactionAddEventListener(this.channelBlacklistMock, this.exclusiveBotChannelMock, List.of(this.reactionTaskMock));
 
     when(this.memberMock.isBot()).thenReturn(true);
     when(reactionAddEventMock.getMember()).thenReturn(Optional.of(this.memberMock));

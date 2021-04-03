@@ -14,34 +14,11 @@ public abstract class ReactionTask extends Task {
   @Getter
   private final List<Message> messages = new ArrayList<>();
 
-  protected final ThreadLocal<ReactionTaskRequest> taskRequest = new ThreadLocal<>();
-
   abstract public boolean canHandle(ReactionEmoji reactionEmoji);
 
   abstract public ReactionEmoji getTrigger();
 
-  abstract public void action();
-
-  /**
-   * Get the message that initiated the reaction task
-   */
-  protected Message currentMessage() {
-    return this.taskRequest.get().getMessage();
-  }
-
-  /**
-   * Get the channel that the current task was initiated on
-   */
-  protected TextChannel currentChannel() {
-    return this.taskRequest.get().getChannel();
-  }
-
-  /**
-   * Get the author that initiated the reaction task
-   */
-  protected Member currentAuthor() {
-    return this.taskRequest.get().getAuthor();
-  }
+  abstract public void action(ReactionTaskRequest taskRequest);
 
   /**
    * Add a message that can be reacted on
@@ -59,12 +36,10 @@ public abstract class ReactionTask extends Task {
   }
 
   public void execute(ReactionTaskRequest taskRequest) {
-    this.taskRequest.set(taskRequest);
-
     if (!this.messages.contains(taskRequest.getMessage())) {
       throw new MessageNotReactableException();
     }
 
-    this.action();
+    this.action(taskRequest);
   }
 }

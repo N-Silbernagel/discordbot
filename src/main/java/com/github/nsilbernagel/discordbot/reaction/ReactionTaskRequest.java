@@ -11,17 +11,17 @@ import lombok.EqualsAndHashCode;
 @Data
 public class ReactionTaskRequest extends TaskRequest {
   /**
-   * The Message associated with the task, e.g. the message containing the command for a MessageTask
+   * The Message associated with the task, e.g. the message which was reacted on
    */
   private final Message message;
 
   /**
-   * The TextChannel associated with the task, e.g. the TextChannel the message containing the command was written on for a MessageTask
+   * The TextChannel associated with the task, e.g. the TextChannel reaction was received on
    */
   private final TextChannel channel;
 
   /**
-   * The Member associated with the task, e.g. the Member who wrote the message containing the command for a MessageTask
+   * The Member associated with the task, e.g. the Member who reacted
    */
   private final Member author;
 }

@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.reaction.ReactionTask;
 
+import com.github.nsilbernagel.discordbot.reaction.ReactionTaskRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,21 +27,21 @@ public class VoteKickPlusTask extends ReactionTask {
     return TRIGGER;
   }
 
-  public void action() {
+  public void action(ReactionTaskRequest taskRequest) {
     // get kickvoting by trigger message
     Optional<KickVoting> kickVotingTriggeredByMessage = this.votingRegistry
-        .getByTrigger(this.currentMessage(), KickVoting.class);
+        .getByTrigger(taskRequest.getMessage(), KickVoting.class);
 
     if (kickVotingTriggeredByMessage.isEmpty()) {
       return;
     }
 
-    if (kickVotingTriggeredByMessage.get().memberHasVotedAsOftenAsHeMay(this.currentAuthor())) {
+    if (kickVotingTriggeredByMessage.get().memberHasVotedAsOftenAsHeMay(taskRequest.getAuthor())) {
       return;
     }
 
     kickVotingTriggeredByMessage.get().addVote(
-        this.currentAuthor(),
+        taskRequest.getAuthor(),
         Instant.now()
     );
   }
