@@ -37,7 +37,6 @@ public class MsgTaskRequest extends TaskRequest {
   @Getter
   private final Member author;
 
-
   /**
    * The token used to indicate a command in a message
    */
@@ -80,7 +79,9 @@ public class MsgTaskRequest extends TaskRequest {
     return this.command;
   }
 
-  public boolean validate() {
-    return this.validator.validate(this);
+  public void validate() {
+    this.validator.validate(this);
   }
+
+  
 }

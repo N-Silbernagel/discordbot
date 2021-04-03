@@ -11,7 +11,7 @@ import discord4j.rest.util.Permission;
 
 @Component
 @NeedsPermission(Permission.BAN_MEMBERS)
-public class CleanTask extends MessageTask<MsgTaskRequest> {
+public class CleanTask extends MessageTask {
 
   public static final String KEYWORD = "clean";
 

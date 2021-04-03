@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MsgTaskRequestTests {
   @Spy
-  private final MsgTaskRequest msgTaskRequest = MessageTestUtil.generateMsgTaskRequest();
+  private MsgTaskRequest msgTaskRequest = MessageTestUtil.generateMsgTaskRequest();
 
   @BeforeEach
   public void setUp() {

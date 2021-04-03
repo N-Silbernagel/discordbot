@@ -9,11 +9,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
-abstract public class MessageTask<R extends MsgTaskRequest> extends Task {
+abstract public class MessageTask extends Task {
   /**
    * Execute the message task action considering the needed permissions
    */
-  @SuppressWarnings("unchecked")
   public void execute(MsgTaskRequest taskRequest) {
 
     if(!this.authorHasRequiredPermission(taskRequest)){
@@ -21,10 +20,7 @@ abstract public class MessageTask<R extends MsgTaskRequest> extends Task {
       return;
     }
 
-    R castedTaskRequest = (R) taskRequest;
-    castedTaskRequest.validate();
-
-    this.action((R) taskRequest);
+    this.action(taskRequest);
   }
 
   private boolean authorHasRequiredPermission(MsgTaskRequest taskRequest) {
@@ -45,7 +41,7 @@ abstract public class MessageTask<R extends MsgTaskRequest> extends Task {
   /*
    * Start the task that was triggered by a command in a channel.
    */
-  abstract protected void action(R taskRequest);
+  abstract protected void action(MsgTaskRequest taskRequest);
 
   /**
    * Check if a task can do anything with a given command

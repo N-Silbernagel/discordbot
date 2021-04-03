@@ -15,7 +15,7 @@ import reactor.core.publisher.Flux;
 
 @Component
 @NeedsPermission(Permission.ADMINISTRATOR)
-public class BulkDeleteTask extends MessageTask<MsgTaskRequest> {
+public class BulkDeleteTask extends MessageTask {
 
   public final static String KEYWORD = "delete";
 

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HelpTask extends MessageTask<HelpTaskRequest> {
+public class HelpTask extends MessageTask {
   public final static String KEYWORD = "help";
 
   public boolean canHandle(String keyword) {
@@ -27,7 +27,7 @@ public class HelpTask extends MessageTask<HelpTaskRequest> {
   private Optional<String> taskToExplainQuery;
 
   @Override
-  public void action(HelpTaskRequest taskRequest) {
+  public void action(MsgTaskRequest taskRequest) {
 
     // explain all task if none is given
     if (this.taskToExplainQuery.isEmpty()) {

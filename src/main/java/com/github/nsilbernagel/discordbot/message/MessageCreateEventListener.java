@@ -42,7 +42,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   private MessageTaskValidator messageTaskValidator;
 
   @Autowired
-  private List<MessageTask<? extends MsgTaskRequest>> tasks;
+  private List<MessageTask> tasks;
 
   private final ThreadLocal<MsgTaskRequest> localMsgTaskRequest = new ThreadLocal<>();
 
@@ -86,7 +86,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
       return;
     }
 
-    List<MessageTask<? extends MsgTaskRequest>> tasks = this.getTasksForCommand(taskRequest.getCommand());
+    List<MessageTask> tasks = this.getTasksForCommand(taskRequest.getCommand());
 
     if (tasks.isEmpty()) {
       // react to members message with question mark emoji to show that the command was not found
@@ -108,7 +108,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
     tasks.forEach(this::prepareAndExecuteTask);
   }
 
-  private void prepareAndExecuteTask(MessageTask<? extends  MsgTaskRequest> task) throws TaskException {
+  private void prepareAndExecuteTask(MessageTask task) throws TaskException {
     try {
       this.messageTaskPreparer.execute(task, this.localMsgTaskRequest.get());
     } catch (MessageValidationException e) {
@@ -121,9 +121,9 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   /**
    * Get tasks that can handle a given command
    */
-  private List<MessageTask<? extends  MsgTaskRequest>> getTasksForCommand(String command) {
-    List<MessageTask<? extends  MsgTaskRequest>> result = new ArrayList<>();
-    for (MessageTask<? extends  MsgTaskRequest> task : this.tasks) {
+  private List<MessageTask> getTasksForCommand(String command) {
+    List<MessageTask> result = new ArrayList<>();
+    for (MessageTask task : this.tasks) {
       if (task.canHandle(command)) {
         result.add(task);
       }

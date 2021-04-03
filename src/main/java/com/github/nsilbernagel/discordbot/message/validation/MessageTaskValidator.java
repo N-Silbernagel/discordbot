@@ -2,22 +2,52 @@ package com.github.nsilbernagel.discordbot.message.validation;
 
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.validation.Validator;
+import com.github.nsilbernagel.discordbot.task.validation.rules.ValidationRule;
 import org.springframework.stereotype.Component;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class MessageTaskValidator implements Validator<MsgTaskRequest> {
-  public String validate(MsgTaskRequest request){
+  private final List<ValidationRule<? extends Annotation>> validationRules;
+
+  public MessageTaskValidator(List<ValidationRule<? extends Annotation>> validationRules) {
+    this.validationRules = validationRules;
+  }
+
+  public boolean validate(MsgTaskRequest request) throws MessageValidationException{
     List<Field> fieldsAnnotatedWithCommandParam = this.commandParamAnnotatedFields(request);
 
-    fieldsAnnotatedWithCommandParam.forEach(field -> this.setCommandParamFieldValue(field, request));
+    fieldsAnnotatedWithCommandParam.forEach(field -> {
+      this.validateCommandParam(field, request);
+      this.setCommandParamFieldValue(field, request);
+    });
 
-    return "";
-  };
+    return true;
+  }
+
+  private void validateCommandParam(Field field, MsgTaskRequest msgTaskRequest) throws MessageValidationException{
+    Arrays.stream(field.getAnnotations()).forEach(fieldValidationAnnotation ->
+        this.validationRules.forEach(validationRule -> {
+          if (validationRule.getCorrespondingAnnotation().equals(fieldValidationAnnotation.annotationType())) {
+            this.validateFieldAccordingToAnnotation(field, validationRule, msgTaskRequest);
+          }
+        }
+    ));
+  }
+
+  private void validateFieldAccordingToAnnotation(Field field, ValidationRule<?> validationRule, MsgTaskRequest msgTaskRequest) throws MessageValidationException{
+    int commandParamIndex = field.getAnnotation(CommandParam.class).pos();
+
+    Optional<String> commandParamValue = Optional.ofNullable(msgTaskRequest.getCommandParameters().get(commandParamIndex));
+
+    validationRule.validate(commandParamValue, field);
+  }
 
   private List<Field> commandParamAnnotatedFields(MsgTaskRequest request) {
     Field[] requestFields = request.getClass().getFields();

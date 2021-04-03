@@ -37,7 +37,7 @@ public class Numeric
   }
 
   protected void handleInvalid() throws MessageValidationException {
-    throw new TaskException(this.commandField.getAnnotation(
+    throw new MessageValidationException(this.commandField.getAnnotation(
         com.github.nsilbernagel.discordbot.message.validation.annotations.Numeric.class).value());
   }
 }

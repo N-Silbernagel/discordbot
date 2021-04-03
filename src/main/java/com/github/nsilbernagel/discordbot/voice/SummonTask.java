@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Component
-public class SummonTask extends MessageTask<MsgTaskRequest> implements ExplainedMessageTask {
+public class SummonTask extends MessageTask implements ExplainedMessageTask {
 
   public final static String KEYWORD = "summon";
 
