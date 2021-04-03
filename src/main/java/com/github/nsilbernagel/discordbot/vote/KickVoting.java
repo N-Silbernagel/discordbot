@@ -2,6 +2,7 @@ package com.github.nsilbernagel.discordbot.vote;
 
 import com.github.nsilbernagel.discordbot.task.TaskException;
 
+import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.channel.VoiceChannel;
@@ -28,8 +29,10 @@ public class KickVoting extends Voting {
         .blockOptional()
         .orElseThrow(() -> new TaskException(memberToKick.getUsername() + " ist nicht in einem voice Channel"))
         .getChannel()
-        .map(VoiceChannel::getVoiceStates)
-        .flatMap(Flux::count)
+        .block()
+        .getVoiceStates()
+        .filter(voiceState -> !voiceState.getMember().block().isBot())
+        .count()
         .block();
 
     assert membersInVoiceChannel != null;

@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.reaction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
@@ -13,24 +14,20 @@ import org.springframework.stereotype.Component;
 import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
-import lombok.Getter;
 
 @Component
 public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
 
-  private final ReactionToTaskHandler reactionToTaskHandler;
   private final ChannelBlacklist channelBlacklist;
   private final ExclusiveBotChannel exclusiveBotChannel;
-
-  @Getter
-  private ReactionEmoji emoji;
+  private final List<ReactionTask> tasks;
 
   private final ThreadLocal<ReactionTaskRequest> taskRequest = new ThreadLocal<>();
 
-  public ReactionAddEventListener(ReactionToTaskHandler reactionToTaskHandler, ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel) {
-    this.reactionToTaskHandler = reactionToTaskHandler;
+  public ReactionAddEventListener(ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel, List<ReactionTask> tasks) {
     this.channelBlacklist = channelBlacklist;
     this.exclusiveBotChannel = exclusiveBotChannel;
+    this.tasks = tasks;
   }
 
   @Override
@@ -57,8 +54,6 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
       return;
     }
 
-    this.emoji = event.getEmoji();
-
     if (!this.channelBlacklist.canAnswerOnChannel(this.taskRequest.get().getChannel())) {
       return;
     }
@@ -68,9 +63,25 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
       return;
     }
 
-    List<ReactionTask> tasks = this.reactionToTaskHandler.getReactionTasks(this.emoji);
+    List<ReactionTask> tasks = this.getTasksForReactionEmoji(event.getEmoji());
 
-    tasks.forEach(ReactionTask::action);
+    tasks.forEach(task ->
+        task.execute(this.taskRequest.get())
+    );
+  }
+
+  /**
+   * Get tasks that can handle a given keyword
+   */
+  private List<ReactionTask> getTasksForReactionEmoji(ReactionEmoji reactionEmoji) {
+    List<ReactionTask> result = new ArrayList<>();
+    for (ReactionTask task : tasks) {
+      if (task.canHandle(reactionEmoji)) {
+        result.add(task);
+      }
+    }
+
+    return result;
   }
 
   protected void onCheckedException(TaskException exception) {
