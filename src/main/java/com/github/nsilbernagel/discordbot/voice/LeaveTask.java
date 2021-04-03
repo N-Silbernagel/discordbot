@@ -18,7 +18,7 @@ public class LeaveTask extends MessageTask implements ExplainedMessageTask {
   public final static String KEYWORD = "leave";
 
   public boolean canHandle(String keyword) {
-    return KEYWORD.equals(keyword);
+    return keyword.equals(KEYWORD) || keyword.equals("disconnect");
   }
 
   @Autowired

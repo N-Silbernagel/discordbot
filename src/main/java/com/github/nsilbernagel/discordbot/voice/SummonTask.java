@@ -35,7 +35,7 @@ public class SummonTask extends MessageTask implements ExplainedMessageTask {
   }
 
   public boolean canHandle(String keyword) {
-    return keyword.equals(KEYWORD) || keyword.equals("join");
+    return keyword.equals(KEYWORD) || keyword.equals("join") || keyword.equals("connect");
   }
 
   @Override
