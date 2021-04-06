@@ -1,48 +1,30 @@
 package com.github.nsilbernagel.discordbot.message.validation.rules;
 
 import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class MinTest {
-  @Test
-  void it_returns_true_for_numerics_bigger_than_threshold() {
-    CommandParam biggerCommandParam = new CommandParam("9");
+  @ParameterizedTest
+  @MethodSource("dataProvider")
+  void it_validates_if_an_input_is_bigger_than_a_threshold(String paramValue, int minValue, boolean expected) {
+    CommandParam commandParam = new CommandParam(paramValue);
 
-    Min min = new Min(8);
+    Min min = new Min(minValue);
 
-    assertTrue(min.validate(biggerCommandParam));
+    assertEquals(expected, min.validate(commandParam));
   }
 
-  @Test
-  public void it_returns_false_for_numerics_small_than_threshold() {
-    CommandParam smallerCommandParam = new CommandParam("9");
-
-    Min min = new Min(10);
-
-    assertFalse(min.validate(smallerCommandParam));
-  }
-
-  // as there is the required rule for mandatory command params, it is not the min rule's responsibility to fail on null values
-  @Test
-  public void it_returns_true_for_null_command_params() {
-    CommandParam nullCommandParam = new CommandParam(null);
-
-    Min min = new Min(1);
-
-    assertTrue(min.validate(nullCommandParam));
-  }
-
-  @Test
-  public void it_validates_a_strings_length() {
-    String testString = "test";
-    CommandParam commandParam = new CommandParam(testString);
-
-    Min fails = new Min(testString.length() + 1);
-    Min passes = new Min(testString.length());
-
-    assertTrue(passes.validate(commandParam));
-    assertFalse(fails.validate(commandParam));
+  public static Object[][] dataProvider() {
+    return new Object[][] {
+        {null, -1, true},
+        {null, 4, true},
+        {"9", 10, false},
+        {"11", 10, true},
+        {"abc", 2, true},
+        {"test", 5, false}
+    };
   }
 }

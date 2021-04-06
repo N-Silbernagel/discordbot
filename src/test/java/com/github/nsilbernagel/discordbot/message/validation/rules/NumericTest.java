@@ -6,25 +6,27 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MaxTest {
+class NumericTest {
   @ParameterizedTest
   @MethodSource("dataProvider")
-  public void it_validates_if_an_input_is_smaller_than_a_threshold(String paramValue, int maxValue, boolean expected) {
+  void it_validates_if_an_input_is_numeric(String paramValue, boolean expected) {
     CommandParam commandParam = new CommandParam(paramValue);
 
-    Max max = new Max(maxValue);
+    Numeric numeric = new Numeric();
 
-    assertEquals(expected, max.validate(commandParam));
+    assertEquals(expected, numeric.validate(commandParam));
   }
 
   public static Object[][] dataProvider() {
     return new Object[][] {
-        {null, -1, true},
-        {null, 4, true},
-        {"9", 10, true},
-        {"11", 10, false},
-        {"abc", 2, false},
-        {"test", 5, true}
+        {null,  true},
+        {Integer.MIN_VALUE + "", true},
+        {Integer.MAX_VALUE + "", true},
+        {Long.MAX_VALUE + "", true},
+        {Float.MIN_VALUE + "", true},
+        {Float.MAX_VALUE + "", true},
+        {"abc", false},
+        {"test", false},
     };
   }
 }

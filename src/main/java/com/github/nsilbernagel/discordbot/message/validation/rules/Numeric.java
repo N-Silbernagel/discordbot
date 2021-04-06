@@ -15,8 +15,23 @@ public class Numeric extends ValidationRule {
     try {
       Integer.parseInt(commandParam.getRaw());
       return true;
-    } catch (NumberFormatException e) {
-      return false;
+    } catch (NumberFormatException i) {
+      try {
+        Float.parseFloat(commandParam.getRaw());
+        return true;
+      } catch (NumberFormatException f) {
+        try {
+          Double.parseDouble(commandParam.getRaw());
+          return true;
+        } catch (NumberFormatException d) {
+          try {
+            Long.parseLong(commandParam.getRaw());
+            return true;
+          } catch (NumberFormatException l) {
+            return false;
+          }
+        }
+      }
     }
   }
 }
