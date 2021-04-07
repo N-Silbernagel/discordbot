@@ -14,11 +14,14 @@ import java.util.Arrays;
 
 @Component
 public abstract class EventListener<E extends Event> {
-  @Autowired
-  private GatewayDiscordClient discordClient;
+  private final GatewayDiscordClient discordClient;
 
-  @Autowired
-  private Environment env;
+  private final Environment env;
+
+  public EventListener(GatewayDiscordClient discordClient, Environment env) {
+    this.discordClient = discordClient;
+    this.env = env;
+  }
 
   /**
    * Get type of the discord4j event the listener listens for
