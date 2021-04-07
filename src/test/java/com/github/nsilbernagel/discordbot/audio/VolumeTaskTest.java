@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.audio;
 
+import com.github.nsilbernagel.discordbot.TestableMono;
 import com.github.nsilbernagel.discordbot.message.MessageTestUtil;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import reactor.core.publisher.Mono;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,13 +43,13 @@ public class VolumeTaskTest {
     when(volumeTaskRequest.getMessage().getContent()).thenReturn(testCommand);
 
     ArgumentCaptor<String> volumeMessageResponseCaptor = ArgumentCaptor.forClass(String.class);
-    Mono<Message> volumeMessageMono = mock(Mono.class);
+    TestableMono<Message> volumeMessageMono = TestableMono.forClass(Message.class);
 
-    doReturn(volumeMessageMono).when(volumeTaskRequest).respond(volumeMessageResponseCaptor.capture());
+    doReturn(volumeMessageMono.getMono()).when(volumeTaskRequest).respond(volumeMessageResponseCaptor.capture());
 
     this.volumeTask.action(volumeTaskRequest);
 
-    verify(volumeMessageMono).block();
+    assertTrue(volumeMessageMono.wasSubscribedTo());
     assertTrue(volumeMessageResponseCaptor.getValue().contains(fakeVolume.toString()));
   }
 }
