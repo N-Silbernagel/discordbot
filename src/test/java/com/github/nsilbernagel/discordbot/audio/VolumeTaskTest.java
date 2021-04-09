@@ -43,7 +43,7 @@ public class VolumeTaskTest {
     when(volumeTaskRequest.getMessage().getContent()).thenReturn(testCommand);
 
     ArgumentCaptor<String> volumeMessageResponseCaptor = ArgumentCaptor.forClass(String.class);
-    TestableMono<Message> volumeMessageMono = TestableMono.forClass(Message.class);
+    TestableMono<Message> volumeMessageMono = new TestableMono<>();
 
     doReturn(volumeMessageMono.getMono()).when(volumeTaskRequest).respond(volumeMessageResponseCaptor.capture());
 

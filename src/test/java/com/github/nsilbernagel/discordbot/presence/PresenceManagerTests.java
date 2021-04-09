@@ -32,7 +32,7 @@ public class PresenceManagerTests {
 
     this.presenceManager = new PresenceManager(this.discordClientMock);
 
-    this.updatePresence = TestableMono.forClass(Void.class);
+    this.updatePresence = new TestableMono<>();
 
     when(this.discordClientMock.updatePresence(any(StatusUpdate.class))).thenReturn(this.updatePresence.getMono());
   }

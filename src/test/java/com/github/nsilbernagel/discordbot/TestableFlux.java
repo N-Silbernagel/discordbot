@@ -10,10 +10,14 @@ public class TestableFlux<T> {
 
   private final Flux<T> flux;
 
-  private TestableFlux(Class<T> klass) {
+  public TestableFlux() {
+    this(Flux.empty());
+  }
+
+  public TestableFlux(Flux<T> flux) {
     this.subscribedTo = new AtomicBoolean(false);
 
-    this.flux = Flux.empty().doOnSubscribe(unused -> this.subscribedTo.set(true)).cast(klass);
+    this.flux = flux.doOnSubscribe(unused -> this.subscribedTo.set(true));
   }
 
 
@@ -23,9 +27,5 @@ public class TestableFlux<T> {
 
   public boolean wasSubscribedTo(){
     return this.subscribedTo.get();
-  }
-
-  public static <M> TestableFlux<M> forClass(Class<M> klass){
-    return new TestableFlux<>(klass);
   }
 }

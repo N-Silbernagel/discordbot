@@ -26,7 +26,7 @@ class EventListenerTest {
   public void setUp() {
     MockitoAnnotations.initMocks(this);
 
-    this.onEventFlux = TestableFlux.forClass(MessageCreateEvent.class);
+    this.onEventFlux = new TestableFlux<>();
   }
 
   @Test

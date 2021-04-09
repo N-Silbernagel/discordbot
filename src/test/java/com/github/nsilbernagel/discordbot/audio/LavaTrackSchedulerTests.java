@@ -61,7 +61,7 @@ public class LavaTrackSchedulerTests {
         this.taskRequestMock
     );
 
-    this.updatePresence = TestableMono.forClass(Void.class);
+    this.updatePresence = new TestableMono<>();
 
     lavaTrackScheduler.getAudioRequest()
         .put(this.requestIdFake, audioRequest);
@@ -151,7 +151,7 @@ public class LavaTrackSchedulerTests {
     TextChannel textChannelMock = mock(TextChannel.class);
 
     when(this.taskRequestMock.getChannel()).thenReturn(textChannelMock);
-    TestableMono<Message> alertMessageMono = TestableMono.forClass(Message.class);
+    TestableMono<Message> alertMessageMono = new TestableMono<>();
     when(textChannelMock.createMessage(any(String.class))).thenReturn(alertMessageMono.getMono());
 
     this.lavaTrackScheduler.onTrackException(this.audioPlayerMock, this.audioTrackMock, mock(FriendlyException.class));

@@ -16,7 +16,7 @@ class MessageTaskTest {
   @Spy
   private final MsgTaskRequest msgTaskRequest = MessageTestUtil.generateMsgTaskRequest();
 
-  private final TestableMono<Void> guardReactionMono = TestableMono.forClass(Void.class);
+  private final TestableMono<Void> guardReactionMono = new TestableMono<>();
   private final PermissionSet emptyPermissionSet = PermissionSet.none();
   private final Mono<PermissionSet> permissionSetMono = Mono.just(emptyPermissionSet);
 

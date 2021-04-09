@@ -41,7 +41,7 @@ public class PlayTaskTests {
 
     this.playTask = new PlayTask(this.summonTaskMock, this.lavaPlayerAudioProviderMock, this.lavaTrackSchedulerMock);
 
-    this.alertMessageMono = TestableMono.forClass(Message.class);
+    this.alertMessageMono = new TestableMono<>();
   }
 
   @Test
