@@ -10,8 +10,10 @@ import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
 import com.github.nsilbernagel.discordbot.listener.EventListener;
 import com.github.nsilbernagel.discordbot.task.TaskException;
 
+import discord4j.core.GatewayDiscordClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.event.domain.message.MessageCreateEvent;
@@ -23,19 +25,23 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   @Value("${app.discord.command-token:!}")
   private String commandToken;
 
-  @Autowired
-  private SpamRegistry spamRegistry;
+  private final SpamRegistry spamRegistry;
 
-  @Autowired
-  private ChannelBlacklist channelBlacklist;
+  private final ChannelBlacklist channelBlacklist;
 
-  @Autowired
-  private ExclusiveBotChannel exclusiveBotChannel;
+  private final ExclusiveBotChannel exclusiveBotChannel;
 
-  @Autowired
-  private List<MessageTask> tasks;
+  private final List<MessageTask> tasks;
 
   private final ThreadLocal<MsgTaskRequest> localMsgTaskRequest = new ThreadLocal<>();
+
+  public MessageCreateEventListener(SpamRegistry spamRegistry, ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel, List<MessageTask> tasks, GatewayDiscordClient discordClient, Environment env) {
+    super(discordClient, env);
+    this.spamRegistry = spamRegistry;
+    this.channelBlacklist = channelBlacklist;
+    this.exclusiveBotChannel = exclusiveBotChannel;
+    this.tasks = tasks;
+  }
 
   public Class<MessageCreateEvent> getEventType() {
     return MessageCreateEvent.class;

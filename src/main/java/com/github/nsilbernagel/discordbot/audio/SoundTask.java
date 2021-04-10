@@ -32,7 +32,7 @@ public class SoundTask extends MessageTask implements ExplainedMessageTask {
 
     Optional<? extends Sound> soundToPlay;
 
-    if (soundQuery.isEmpty()) {
+    if (soundQuery == null) {
       soundToPlay = Optional.of(this.soundsSource.random());
     } else {
       soundToPlay = this.soundsSource.filter(soundQuery);

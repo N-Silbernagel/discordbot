@@ -33,7 +33,7 @@ abstract public class MessageTask extends Task {
 
     Optional<Boolean> authorHasRequiredPermission = Optional.ofNullable(taskRequest.getAuthor()
         .getBasePermissions()
-        .flatMap(permissions -> Mono.just(permissions.contains(needsPermissionAnnotation.value())))
+        .map(permissions -> permissions.contains(needsPermissionAnnotation.value()))
         .block());
 
     return authorHasRequiredPermission.isPresent() && authorHasRequiredPermission.get();

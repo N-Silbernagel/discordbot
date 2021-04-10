@@ -9,6 +9,8 @@ import com.github.nsilbernagel.discordbot.listener.EventListener;
 import com.github.nsilbernagel.discordbot.task.MemberMissingOrBotException;
 import com.github.nsilbernagel.discordbot.task.TaskException;
 
+import discord4j.core.GatewayDiscordClient;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.event.domain.message.ReactionAddEvent;
@@ -24,7 +26,8 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
 
   private final ThreadLocal<ReactionTaskRequest> taskRequest = new ThreadLocal<>();
 
-  public ReactionAddEventListener(ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel, List<ReactionTask> tasks) {
+  public ReactionAddEventListener(ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel, List<ReactionTask> tasks, GatewayDiscordClient discordClient, Environment env) {
+    super(discordClient, env);
     this.channelBlacklist = channelBlacklist;
     this.exclusiveBotChannel = exclusiveBotChannel;
     this.tasks = tasks;

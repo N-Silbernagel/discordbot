@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.audio;
 
-import com.github.nsilbernagel.discordbot.audio.*;
+import com.github.nsilbernagel.discordbot.TestableMono;
 import com.github.nsilbernagel.discordbot.message.MessageTestUtil;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.voice.SummonTask;
@@ -33,11 +33,15 @@ public class PlayTaskTests {
 
   private final String requestIdFake = "test";
 
+  private TestableMono<Message> alertMessageMono;
+
   @BeforeEach
   public void setUp() {
     MockitoAnnotations.initMocks(this);
 
     this.playTask = new PlayTask(this.summonTaskMock, this.lavaPlayerAudioProviderMock, this.lavaTrackSchedulerMock);
+
+    this.alertMessageMono = new TestableMono<>();
   }
 
   @Test
@@ -75,13 +79,11 @@ public class PlayTaskTests {
     when(lavaPlayerAudioProviderMock.getPlayerManager()).thenReturn(this.audioPlayerManagerMock);
     when(this.audioPlayerManagerMock.loadItem(eq(this.requestIdFake), any(LavaResultHandler.class))).thenReturn(CompletableFuture.completedFuture(null));
 
-    Mono<Message> alertMessageMonoMock = mock(Mono.class);
-
-    when(taskRequest.getChannel().createMessage(any(String.class))).thenReturn(alertMessageMonoMock);
+    when(taskRequest.getChannel().createMessage(any(String.class))).thenReturn(this.alertMessageMono.getMono());
 
     this.playTask.loadAudioSource(this.requestIdFake, taskRequest);
 
-    verify(alertMessageMonoMock).block();
+    assertTrue(this.alertMessageMono.wasSubscribedTo());
   }
 
   @Test
@@ -95,9 +97,7 @@ public class PlayTaskTests {
     when(lavaPlayerAudioProviderMock.getPlayerManager()).thenReturn(this.audioPlayerManagerMock);
     when(this.audioPlayerManagerMock.loadItem(eq(this.requestIdFake), any(LavaResultHandler.class))).thenReturn(CompletableFuture.completedFuture(null));
 
-    Mono<Message> alertMessageMonoMock = mock(Mono.class);
-
-    when(taskRequest.getChannel().createMessage(any(String.class))).thenReturn(alertMessageMonoMock);
+    when(taskRequest.getChannel().createMessage(any(String.class))).thenReturn(this.alertMessageMono.getMono());
 
     this.playTask.loadAudioSource(this.requestIdFake, taskRequest);
 

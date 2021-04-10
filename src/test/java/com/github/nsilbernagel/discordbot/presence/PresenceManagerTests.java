@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.presence;
 
-import com.github.nsilbernagel.discordbot.presence.PresenceManager;
+import com.github.nsilbernagel.discordbot.TestableMono;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.discordjson.json.gateway.StatusUpdate;
@@ -11,7 +11,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
-import reactor.core.publisher.Mono;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,11 +20,10 @@ public class PresenceManagerTests {
 
   @Mock
   private GatewayDiscordClient discordClientMock;
-  @Mock
-  private Mono<Void> updatePresenceMonoMock;
   @Captor
   private ArgumentCaptor<StatusUpdate> statusUpdateArgumentCaptor;
 
+  private TestableMono<Void> updatePresence;
   private final String testPlayingString = "test";
 
   @BeforeEach
@@ -34,7 +32,9 @@ public class PresenceManagerTests {
 
     this.presenceManager = new PresenceManager(this.discordClientMock);
 
-    when(this.discordClientMock.updatePresence(any(StatusUpdate.class))).thenReturn(updatePresenceMonoMock);
+    this.updatePresence = new TestableMono<>();
+
+    when(this.discordClientMock.updatePresence(any(StatusUpdate.class))).thenReturn(this.updatePresence.getMono());
   }
 
   @Test
@@ -42,7 +42,7 @@ public class PresenceManagerTests {
     this.presenceManager.online().block();
 
     verify(this.discordClientMock).updatePresence(this.statusUpdateArgumentCaptor.capture());
-    verify(this.updatePresenceMonoMock).block();
+    assertTrue(this.updatePresence.wasSubscribedTo());
 
     assertEquals("online", this.statusUpdateArgumentCaptor.getValue().status().toLowerCase());
     assertTrue(this.statusUpdateArgumentCaptor.getValue().game().isEmpty());
@@ -53,7 +53,7 @@ public class PresenceManagerTests {
     this.presenceManager.trackPlaying(this.testPlayingString).block();
 
     verify(this.discordClientMock).updatePresence(this.statusUpdateArgumentCaptor.capture());
-    verify(this.updatePresenceMonoMock).block();
+    assertTrue(this.updatePresence.wasSubscribedTo());
 
     assertEquals("online", this.statusUpdateArgumentCaptor.getValue().status().toLowerCase());
     assertEquals(this.testPlayingString, this.statusUpdateArgumentCaptor.getValue().game().get().name());
@@ -66,7 +66,7 @@ public class PresenceManagerTests {
     this.presenceManager.trackPaused().block();
 
     verify(this.discordClientMock).updatePresence(this.statusUpdateArgumentCaptor.capture());
-    verify(this.updatePresenceMonoMock).block();
+    assertTrue(this.updatePresence.wasSubscribedTo());
 
     assertEquals("online", this.statusUpdateArgumentCaptor.getValue().status().toLowerCase());
     assertTrue(this.statusUpdateArgumentCaptor.getValue().game().get().name().contains(Emoji.PAUSE.getUnicodeEmoji().toString()));
@@ -80,7 +80,7 @@ public class PresenceManagerTests {
     this.presenceManager.trackResumed().block();
 
     verify(this.discordClientMock).updatePresence(this.statusUpdateArgumentCaptor.capture());
-    verify(this.updatePresenceMonoMock).block();
+    assertTrue(this.updatePresence.wasSubscribedTo());
 
     assertEquals("online", this.statusUpdateArgumentCaptor.getValue().status().toLowerCase());
     assertFalse(this.statusUpdateArgumentCaptor.getValue().game().get().name().contains(Emoji.PAUSE.getUnicodeEmoji().toString()));
