@@ -58,9 +58,10 @@ public abstract class EventListener<E extends Event> {
       if (Arrays.stream(this.env.getActiveProfiles()).anyMatch(activeProfile -> activeProfile.equalsIgnoreCase("prod"))) {
         // if we are in a prod environment, we don't want the app to crash, just print the stack trace to console silently
         uncheckedException.printStackTrace();
+      } else {
+        // in dev throw the exception so we know of error instantly
+        throw uncheckedException;
       }
-      // in dev throw the exception so we know of error instantly
-      throw uncheckedException;
     }
   }
 
