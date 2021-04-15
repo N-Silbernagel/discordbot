@@ -3,6 +3,7 @@ package com.github.nsilbernagel.discordbot.message;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.nsilbernagel.discordbot.guard.MessageFilter;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
@@ -13,6 +14,7 @@ import com.github.nsilbernagel.discordbot.task.TaskException;
 import discord4j.core.GatewayDiscordClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -35,12 +37,15 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
 
   private final ThreadLocal<MsgTaskRequest> localMsgTaskRequest = new ThreadLocal<>();
 
-  public MessageCreateEventListener(SpamRegistry spamRegistry, ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel, List<MessageTask> tasks, GatewayDiscordClient discordClient, Environment env) {
+  private final MessageFilter messageFilter;
+
+  public MessageCreateEventListener(SpamRegistry spamRegistry, ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel, List<MessageTask> tasks, GatewayDiscordClient discordClient, Environment env, @Lazy MessageFilter messageFilter) {
     super(discordClient, env);
     this.spamRegistry = spamRegistry;
     this.channelBlacklist = channelBlacklist;
     this.exclusiveBotChannel = exclusiveBotChannel;
     this.tasks = tasks;
+    this.messageFilter = messageFilter;
   }
 
   public Class<MessageCreateEvent> getEventType() {
@@ -49,6 +54,8 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
 
   public void execute(MessageCreateEvent event) {
     Message message = event.getMessage();
+
+    this.messageFilter.execute(message);
 
     // not a command, ignore
     if (!message.getContent().startsWith(commandToken)) {
