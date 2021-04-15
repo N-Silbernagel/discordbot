@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public final class MessageFilter {
+public class MessageFilter {
   @Getter
   private final List<String> regexFilters = List.of(".+restposten.de.+", "");
 
