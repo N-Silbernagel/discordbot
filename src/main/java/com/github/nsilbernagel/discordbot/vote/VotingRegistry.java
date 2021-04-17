@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
 import lombok.Getter;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Component
 public class VotingRegistry {
@@ -27,6 +29,15 @@ public class VotingRegistry {
 
   public void addVoting(Voting newVoting) {
     this.votings.add(newVoting);
+    Mono.just(newVoting)
+        .delayElement(newVoting.getTtl(), Schedulers.single())
+        .doOnSuccess(this::cleanUpVoting)
+        .subscribe();
+  }
+
+  public void cleanUpVoting(Voting voting) {
+    voting.votingEnded();
+    this.votings.remove(voting);
   }
 
   @EventListener

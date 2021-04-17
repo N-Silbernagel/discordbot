@@ -11,6 +11,7 @@ import com.github.nsilbernagel.discordbot.vote.dto.Vote;
 
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
+import discord4j.rest.http.client.ClientException;
 import lombok.Getter;
 import lombok.Setter;
 import reactor.core.publisher.Mono;
@@ -59,9 +60,8 @@ public abstract class Voting {
   /**
    * add a vote to the voting
    *
-   * @return if votes were sufficient
    */
-  public boolean addVote(Vote vote) {
+  public void addVote(Vote vote) {
     this.votes.add(vote);
     this.renewMessageWithNumberOfRemainingVotes().block();
     if (this.votes.size() >= this.votesNeeded) {
@@ -70,15 +70,13 @@ public abstract class Voting {
       if(this.enoughVotesCallBack != null){
         this.enoughVotesCallBack.accept(this);
       }
-      return true;
     }
-    return false;
   }
 
-  public boolean addVote(Member memberWhoVoted, Instant timestamp) {
+  public void addVote(Member memberWhoVoted, Instant timestamp) {
     Vote voteByMember = new Vote(memberWhoVoted, timestamp);
 
-    return this.addVote(voteByMember);
+    this.addVote(voteByMember);
   }
 
   public void removeVote(Vote vote) {
@@ -107,7 +105,7 @@ public abstract class Voting {
    */
   abstract protected void onEnoughVotes();
 
-  protected void createMessageWithNumberOfRemainingVotes() {
+  protected void votingStarted() {
     this.remainingVotesMessage = this.getTrigger()
         .getChannel()
         .flatMap((channel) -> channel.createMessage(this.generateRemainingVotesMessage()))
@@ -115,7 +113,10 @@ public abstract class Voting {
   }
 
   public Mono<Message> renewMessageWithNumberOfRemainingVotes() {
-    return this.remainingVotesMessage.edit(messageEditSpec -> messageEditSpec.setContent(this.generateRemainingVotesMessage()));
+    return this.remainingVotesMessage
+        .edit(messageEditSpec -> messageEditSpec.setContent(this.generateRemainingVotesMessage()))
+        // the message was probably deleted, just ignore that
+        .onErrorResume(ClientException.class, (unused) -> Mono.empty());
   }
 
   /**
@@ -126,5 +127,18 @@ public abstract class Voting {
         "Noch " + this.remainingVotes() + " Stimmen bis " +
         this.getTargetMember().getDisplayName() + " gekickt wird." +
         "```";
+  }
+
+  /**
+   * the ttl of the voting ran out
+   */
+  public void votingEnded() {
+    this.getRemainingVotesMessage()
+        .edit(messageEditSpec -> messageEditSpec.setContent("```\n" +
+            "Abstimmung zum kicken von " + this.getTargetMember().getDisplayName() +" abgelaufen." +
+            "```"))
+        // the message was probably deleted, just ignore that
+        .onErrorResume(ClientException.class, (unused) -> Mono.empty())
+        .subscribe();
   }
 }
