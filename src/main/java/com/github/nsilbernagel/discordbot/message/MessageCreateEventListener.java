@@ -39,7 +39,15 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
 
   private final MessageFilter messageFilter;
 
-  public MessageCreateEventListener(SpamRegistry spamRegistry, ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel, List<MessageTask> tasks, GatewayDiscordClient discordClient, Environment env, @Lazy MessageFilter messageFilter) {
+  public MessageCreateEventListener(
+      SpamRegistry spamRegistry,
+      ChannelBlacklist channelBlacklist,
+      ExclusiveBotChannel exclusiveBotChannel,
+      List<MessageTask> tasks,
+      GatewayDiscordClient discordClient,
+      Environment env,
+      @Lazy MessageFilter messageFilter
+  ) {
     super(discordClient, env);
     this.spamRegistry = spamRegistry;
     this.channelBlacklist = channelBlacklist;
