@@ -45,14 +45,4 @@ public class InteractionCreateEventListener extends EventListener<InteractionCre
       task.execute(event);
     }
   }
-
-  @Override
-  protected void onCheckedException(TaskException checkedException) {
-    // don't handle checked exceptions, discord will tell them something went wrong
-  }
-
-  @Override
-  protected void onUncheckedException(Exception uncheckedException) {
-    // don't handle unchecked exceptions, discord will tell them something went wrong
-  }
 }

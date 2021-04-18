@@ -38,7 +38,9 @@ public abstract class EventListener<E extends Event> {
    *
    * @param checkedException the thrown exception to handle
    */
-  abstract protected void onCheckedException(TaskException checkedException);
+  protected void onCheckedException(TaskException checkedException) {
+    // no default error handling
+  };
 
   /**
    * Do something in the case of an unchecked exception being thrown in the execute method
@@ -46,7 +48,9 @@ public abstract class EventListener<E extends Event> {
    *
    * @param uncheckedException the thrown exception to handle
    */
-  abstract protected void onUncheckedException(Exception uncheckedException);
+  protected void onUncheckedException(Exception uncheckedException) {
+    // no default error handling
+  };
 
   private void executeWithExceptionHandling(E event) {
     try {

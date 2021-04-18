@@ -63,7 +63,7 @@ public abstract class Voting {
    */
   public void addVote(Vote vote) {
     this.votes.add(vote);
-    this.renewMessageWithNumberOfRemainingVotes().block();
+    this.updateRemainingVotesMessage().block();
     if (this.votes.size() >= this.votesNeeded) {
       this.onEnoughVotes();
 
@@ -105,14 +105,14 @@ public abstract class Voting {
    */
   abstract protected void onEnoughVotes();
 
-  protected void votingStarted() {
+  protected void sendRemainingVotesMessage() {
     this.remainingVotesMessage = this.getTrigger()
         .getChannel()
         .flatMap((channel) -> channel.createMessage(this.generateRemainingVotesMessage()))
         .block();
   }
 
-  public Mono<Message> renewMessageWithNumberOfRemainingVotes() {
+  public Mono<Message> updateRemainingVotesMessage() {
     return this.remainingVotesMessage
         .edit(messageEditSpec -> messageEditSpec.setContent(this.generateRemainingVotesMessage()))
         // the message was probably deleted, just ignore that

@@ -87,12 +87,7 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
     return result;
   }
 
-  protected void onCheckedException(TaskException exception) {
-    // no error handling to reactions for now, dont spam the text channel for
-    // simple reactions
-    // might need to add it for future applications
-  }
-
+  @Override
   protected void onUncheckedException(Exception uncheckedException) {
     Emoji.BUG.reactOn(this.taskRequest.get().getMessage()).subscribe();
   }
