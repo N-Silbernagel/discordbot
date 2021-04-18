@@ -1,7 +1,7 @@
 package com.github.nsilbernagel.discordbot.message;
 
 import com.github.nsilbernagel.discordbot.listener.EventListener;
-import com.github.nsilbernagel.discordbot.task.TaskException;
+import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageDeleteEvent;
 import org.springframework.core.env.Environment;
@@ -27,12 +27,16 @@ public class MessageDeleteEventListener extends EventListener<MessageDeleteEvent
 
   @Override
   public void execute(MessageDeleteEvent event) {
+    this.executeFittingDeleteTasks(event.getChannelId(), event.getMessageId());
+  }
+
+  public void executeFittingDeleteTasks(Snowflake channelId, Snowflake messageId) {
     Stream<MessageDeleteTask> fittingMessageDeleteTasks = this.messageDeleteTasks.stream()
         .filter(messageDeleteTask -> messageDeleteTask.canHandle(new MessageInChannel(
-            event.getChannelId(),
-            event.getMessageId()
+            channelId,
+            messageId
         )));
 
-    fittingMessageDeleteTasks.forEach(messageDeleteTask -> messageDeleteTask.execute(event));
+    fittingMessageDeleteTasks.forEach(messageDeleteTask -> messageDeleteTask.execute(channelId, messageId));
   }
 }

@@ -7,10 +7,12 @@ import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.reaction.ReactionTask;
 
 import com.github.nsilbernagel.discordbot.reaction.ReactionTaskRequest;
+import discord4j.rest.http.client.ClientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import discord4j.core.object.reaction.ReactionEmoji;
+import reactor.core.publisher.Mono;
 
 @Component
 public class VoteKickPlusTask extends ReactionTask {
@@ -44,5 +46,12 @@ public class VoteKickPlusTask extends ReactionTask {
         taskRequest.getAuthor(),
         Instant.now()
     );
+
+    kickVotingTriggeredByMessage.get().getRemainingVotesMessage()
+        .edit(messageEditSpec -> messageEditSpec.setContent("```" +
+            "Noch " + kickVotingTriggeredByMessage.get().remainingVotes() + " Stimmen bis " + kickVotingTriggeredByMessage.get().getTargetMember().getDisplayName() + " gekickt wird." +
+            "```"))
+        .onErrorResume(ClientException.class, (unused) -> Mono.empty())
+        .block();
   }
 }

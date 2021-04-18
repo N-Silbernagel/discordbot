@@ -18,6 +18,7 @@ import reactor.core.publisher.Mono;
 
 public abstract class Voting {
   @Getter
+  @Setter
   private Message remainingVotesMessage;
 
   /** the member the voting is targeting */
@@ -52,8 +53,7 @@ public abstract class Voting {
   }
 
   public Voting(long votesNeeded, Message trigger, Duration ttl) {
-    this.votesNeeded = votesNeeded;
-    this.trigger = trigger;
+    this(votesNeeded, trigger);
     this.ttl = ttl;
   }
 
@@ -63,7 +63,6 @@ public abstract class Voting {
    */
   public void addVote(Vote vote) {
     this.votes.add(vote);
-    this.updateRemainingVotesMessage().block();
     if (this.votes.size() >= this.votesNeeded) {
       this.onEnoughVotes();
 
@@ -104,41 +103,4 @@ public abstract class Voting {
    * Action to be executed when the voting was successful
    */
   abstract protected void onEnoughVotes();
-
-  protected void sendRemainingVotesMessage() {
-    this.remainingVotesMessage = this.getTrigger()
-        .getChannel()
-        .flatMap((channel) -> channel.createMessage(this.generateRemainingVotesMessage()))
-        .block();
-  }
-
-  public Mono<Message> updateRemainingVotesMessage() {
-    return this.remainingVotesMessage
-        .edit(messageEditSpec -> messageEditSpec.setContent(this.generateRemainingVotesMessage()))
-        // the message was probably deleted, just ignore that
-        .onErrorResume(ClientException.class, (unused) -> Mono.empty());
-  }
-
-  /**
-   * Generate a message that has info about how many users need to vote to kick the user
-   */
-  private String generateRemainingVotesMessage() {
-    return "```\n" +
-        "Noch " + this.remainingVotes() + " Stimmen bis " +
-        this.getTargetMember().getDisplayName() + " gekickt wird." +
-        "```";
-  }
-
-  /**
-   * the ttl of the voting ran out
-   */
-  public void votingEnded() {
-    this.getRemainingVotesMessage()
-        .edit(messageEditSpec -> messageEditSpec.setContent("```\n" +
-            "Abstimmung zum kicken von " + this.getTargetMember().getDisplayName() +" abgelaufen." +
-            "```"))
-        // the message was probably deleted, just ignore that
-        .onErrorResume(ClientException.class, (unused) -> Mono.empty())
-        .subscribe();
-  }
 }

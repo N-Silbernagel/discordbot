@@ -53,6 +53,6 @@ class MessageDeleteEventListenerTest {
 
     this.messageDeleteEventListener.execute(this.messageDeleteEvent);
 
-    verify(this.messageDeleteTask).execute(this.messageDeleteEvent);
+    verify(this.messageDeleteTask).execute(this.deletableMessageChannelId, this.deletableMessageId);
   }
 }

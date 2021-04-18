@@ -1,7 +1,7 @@
 package com.github.nsilbernagel.discordbot.message;
 
 import com.github.nsilbernagel.discordbot.task.Task;
-import discord4j.core.event.domain.message.MessageDeleteEvent;
+import discord4j.common.util.Snowflake;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ abstract public class MessageDeleteTask extends Task {
     this.deletableMessages.add(messageInChannel);
   }
 
-  abstract public void execute(MessageDeleteEvent messageDeleteEvent);
+  abstract public void execute(Snowflake channelId, Snowflake messageId);
 
   public boolean canHandle(MessageInChannel messageInChannel) {
     return this.getDeletableMessages()

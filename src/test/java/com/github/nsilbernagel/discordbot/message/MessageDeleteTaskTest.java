@@ -15,7 +15,7 @@ class MessageDeleteTaskTest {
   public void setUp() {
     this.messageDeleteTask = spy(new MessageDeleteTask() {
       @Override
-      public void execute(MessageDeleteEvent messageDeleteEvent) {
+      public void execute(Snowflake channelId, Snowflake messageId) {
 
       }
     });
