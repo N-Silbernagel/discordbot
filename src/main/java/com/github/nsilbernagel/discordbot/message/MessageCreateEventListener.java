@@ -12,7 +12,6 @@ import com.github.nsilbernagel.discordbot.listener.EventListener;
 import com.github.nsilbernagel.discordbot.task.TaskException;
 
 import discord4j.core.GatewayDiscordClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
@@ -39,7 +38,15 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
 
   private final MessageFilter messageFilter;
 
-  public MessageCreateEventListener(SpamRegistry spamRegistry, ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel, List<MessageTask> tasks, GatewayDiscordClient discordClient, Environment env, @Lazy MessageFilter messageFilter) {
+  public MessageCreateEventListener(
+      SpamRegistry spamRegistry,
+      ChannelBlacklist channelBlacklist,
+      ExclusiveBotChannel exclusiveBotChannel,
+      List<MessageTask> tasks,
+      GatewayDiscordClient discordClient,
+      Environment env,
+      @Lazy MessageFilter messageFilter
+  ) {
     super(discordClient, env);
     this.spamRegistry = spamRegistry;
     this.channelBlacklist = channelBlacklist;
@@ -99,13 +106,11 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
 
     if(this.spamRegistry.isEnabled()){
       if (this.spamRegistry.memberHasExceededThreshold(taskRequest.getAuthor())) {
-        Emoji.GUARD.reactOn(message).subscribe();
+        Emoji.GUARD.reactOn(message).block();
         return;
       }
 
-      if (tasks.size() > 0) {
-        this.spamRegistry.countMemberUp(taskRequest.getAuthor());
-      }
+      this.spamRegistry.countMemberUp(taskRequest.getAuthor());
     }
 
     tasks.forEach(task ->

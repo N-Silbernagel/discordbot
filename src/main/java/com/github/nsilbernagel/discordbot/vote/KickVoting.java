@@ -2,21 +2,19 @@ package com.github.nsilbernagel.discordbot.vote;
 
 import com.github.nsilbernagel.discordbot.task.TaskException;
 
-import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.VoiceChannel;
-import reactor.core.publisher.Flux;
+
+import java.time.Duration;
 
 
 public class KickVoting extends Voting {
   final public static int requiredVoiceChannelMembers = 3;
 
   public KickVoting(Member memberToKick, Message trigger) {
-    super(calculateVotesRequired(memberToKick), trigger);
+    super(calculateVotesRequired(memberToKick), trigger, Duration.ofMinutes(5));
 
     this.targetMember = memberToKick;
-    this.createMessageWithNumberOfRemainingVotes();
   }
 
   /**

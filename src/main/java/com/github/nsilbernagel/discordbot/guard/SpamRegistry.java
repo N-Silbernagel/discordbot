@@ -13,6 +13,7 @@ import discord4j.rest.util.Permission;
 import discord4j.rest.util.PermissionSet;
 import lombok.Getter;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Component
 public class SpamRegistry {
@@ -32,15 +33,14 @@ public class SpamRegistry {
    * Count up the users messages counter or register him if not present yet
    *
    * @param member the member who created the message
-   * @return the new number of user messages
    */
-  public Integer countMemberUp(Member member) throws AssertionError {
+  public void countMemberUp(Member member) throws AssertionError {
     PermissionSet membersPermissions = member.getBasePermissions().block();
 
     assert membersPermissions != null;
 
     if (membersPermissions.contains(Permission.ADMINISTRATOR)) {
-      return 0;
+      return;
     }
 
     this.memberMessageCountMap.putIfAbsent(member, 0);
@@ -51,19 +51,17 @@ public class SpamRegistry {
 
     this.scheduleReduction(member);
 
-    return currentMemberMessageCount;
   }
 
   /**
    * Reduce the spam count of a member
    *
-   * @return new spam count
    */
-  public Integer reduceMemberCount(Member member) {
+  public void reduceMemberCount(Member member) {
     Optional<Integer> countForMember = Optional.ofNullable(this.memberMessageCountMap.get(member));
 
     if (countForMember.isEmpty()) {
-      return 0;
+      return;
     }
 
     Integer newCount = countForMember.get() - 1;
@@ -72,17 +70,15 @@ public class SpamRegistry {
 
     if (newCount == 0) {
       this.memberMessageCountMap.remove(member);
-      return 0;
     }
 
-    return newCount;
   }
 
   /**
    * Schedule the reduction of a members spam count
    */
   private void scheduleReduction(Member member) {
-    Mono.delay(Duration.ofMillis(this.reductionInterval))
+    Mono.delay(Duration.ofMillis(this.reductionInterval), Schedulers.single())
         .doOnSuccess(onSuccess -> reduceMemberCount(member))
         .subscribe();
   }

@@ -7,7 +7,6 @@ import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.listener.EventListener;
 import com.github.nsilbernagel.discordbot.task.MemberMissingOrBotException;
-import com.github.nsilbernagel.discordbot.task.TaskException;
 
 import discord4j.core.GatewayDiscordClient;
 import org.springframework.core.env.Environment;
@@ -68,9 +67,11 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
 
     List<ReactionTask> tasks = this.getTasksForReactionEmoji(event.getEmoji());
 
-    tasks.forEach(task ->
-        task.execute(this.taskRequest.get())
-    );
+    try {
+      tasks.forEach(task ->
+          task.execute(this.taskRequest.get())
+      );
+    } catch (MessageNotReactableException ignored) { }
   }
 
   /**
@@ -87,12 +88,7 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
     return result;
   }
 
-  protected void onCheckedException(TaskException exception) {
-    // no error handling to reactions for now, dont spam the text channel for
-    // simple reactions
-    // might need to add it for future applications
-  }
-
+  @Override
   protected void onUncheckedException(Exception uncheckedException) {
     Emoji.BUG.reactOn(this.taskRequest.get().getMessage()).subscribe();
   }
