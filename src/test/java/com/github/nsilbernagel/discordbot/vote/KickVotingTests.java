@@ -1,7 +1,6 @@
 package com.github.nsilbernagel.discordbot.vote;
 
 import com.github.nsilbernagel.discordbot.task.TaskException;
-import com.github.nsilbernagel.discordbot.vote.KickVoting;
 import discord4j.common.util.Snowflake;
 import discord4j.core.object.VoiceState;
 import discord4j.core.object.entity.Member;
@@ -12,9 +11,10 @@ import discord4j.core.spec.GuildMemberEditSpec;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class KickVotingTests {
   @Mock
   private Member memberMock;
@@ -45,7 +46,6 @@ public class KickVotingTests {
       VoiceState voiceStateMock = mock(VoiceState.class);
       Member memberMock = mock(Member.class);
       when(voiceStateMock.getMember()).thenReturn(Mono.just(memberMock));
-      when(memberMock.isBot()).thenReturn(false);
       otherVoiceStates.add(voiceStateMock);
     }
 
@@ -55,16 +55,6 @@ public class KickVotingTests {
   private void addVote(KickVoting voting) {
     Member votedMemberMock = mock(Member.class);
     voting.addVote(votedMemberMock, Instant.now());
-  }
-
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.initMocks(this);
-
-    // mock remainingVotesMessage
-    when(messageMock.getChannel()).thenReturn(Mono.just(channelMock));
-    when(channelMock.createMessage(any(String.class))).thenReturn(Mono.just(remainingVotesMessageMock));
-    when(remainingVotesMessageMock.edit(any(Consumer.class))).thenReturn(Mono.just(messageMock));
   }
 
   @Test

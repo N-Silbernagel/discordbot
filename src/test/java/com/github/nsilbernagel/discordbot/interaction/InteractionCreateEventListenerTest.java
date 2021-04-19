@@ -9,8 +9,9 @@ import discord4j.discordjson.json.InteractionData;
 import discord4j.discordjson.possible.Possible;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class InteractionCreateEventListenerTest {
   @Mock
   private GatewayDiscordClient discordClient;
@@ -44,8 +46,6 @@ class InteractionCreateEventListenerTest {
 
   @BeforeEach
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
-
     this.replyMono = new TestableMono<>();
 
     when(this.interactionCreateEventMock.getInteraction()).thenReturn(this.interactionMock);
@@ -53,8 +53,6 @@ class InteractionCreateEventListenerTest {
     when(this.interactionData.data()).thenReturn(Possible.of(this.applicationCommandInteractionData));
 
     when(this.interactionCreateEventMock.getCommandName()).thenReturn(this.testCommand);
-
-    when(this.interactionCreateEventMock.reply(anyString())).thenReturn(this.replyMono.getMono());
 
     this.interactionCreateEventListener = new InteractionCreateEventListener(this.discordClient, this.env, this.interactionTasks);
     this.interactionTasks.add(this.interactionTaskOne);

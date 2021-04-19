@@ -9,14 +9,16 @@ import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class VoteKickTaskTest {
   @Mock
   private VotingRegistry votingRegistry;
@@ -33,14 +35,11 @@ class VoteKickTaskTest {
 
   @BeforeEach
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
-
     voteKickTask = new VoteKickTask(this.votingRegistry, this.voteKickPlusTask, this.voteKickMessageDeleteTask);
 
     msgTaskRequest = MessageTestUtil.generateMsgTaskRequest();
 
     when(msgTaskRequest.getMessage().getGuild()).thenReturn(Mono.just(guild));
-    when(guild.getId()).thenReturn(guildId);
   }
 
   @Test

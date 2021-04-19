@@ -8,8 +8,10 @@ import discord4j.core.event.domain.message.ReactionAddEvent;
 import discord4j.core.object.entity.Member;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.Optional;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 public class ReactionAddEventListenerTests {
   @Mock
   private ChannelBlacklist channelBlacklistMock;
@@ -33,11 +36,6 @@ public class ReactionAddEventListenerTests {
   private GatewayDiscordClient discordClientMock;
   @Mock
   private Environment envMock;
-
-  @BeforeEach
-  public void setUp(){
-    MockitoAnnotations.initMocks(this);
-  }
 
   @Test
   public void it_does_not_handle_its_own_reactions() {

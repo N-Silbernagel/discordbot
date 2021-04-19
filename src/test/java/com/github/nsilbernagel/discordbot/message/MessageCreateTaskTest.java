@@ -5,13 +5,15 @@ import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.rest.util.PermissionSet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 class MessageCreateTaskTest {
   @Spy
   private final MsgTaskRequest msgTaskRequest = MessageTestUtil.generateMsgTaskRequest();
@@ -22,8 +24,6 @@ class MessageCreateTaskTest {
 
   @BeforeEach
   public void setUp(){
-    MockitoAnnotations.initMocks(this);
-
     when(msgTaskRequest.getAuthor().getBasePermissions()).thenReturn(permissionSetMono);
 
     when(msgTaskRequest.getMessage().addReaction(any(ReactionEmoji.Unicode.class))).thenReturn(guardReactionMono.getMono());
