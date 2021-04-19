@@ -1,7 +1,7 @@
 package com.github.nsilbernagel.discordbot.maintainance;
 
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
-import com.github.nsilbernagel.discordbot.message.MessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageCreateTask;
 
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import discord4j.rest.util.Permission;
 
 @Component
 @NeedsPermission(Permission.BAN_MEMBERS)
-public class CleanTask extends MessageTask {
+public class CleanTask extends MessageCreateTask {
 
   public static final String KEYWORD = "clean";
 

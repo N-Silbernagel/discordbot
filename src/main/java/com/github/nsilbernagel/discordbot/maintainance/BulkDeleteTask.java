@@ -1,7 +1,7 @@
 package com.github.nsilbernagel.discordbot.maintainance;
 
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
-import com.github.nsilbernagel.discordbot.message.MessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageCreateTask;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.message.validation.rules.Max;
 import com.github.nsilbernagel.discordbot.message.validation.rules.Min;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Flux;
 
 @Component
 @NeedsPermission(Permission.ADMINISTRATOR)
-public class BulkDeleteTask extends MessageTask {
+public class BulkDeleteTask extends MessageCreateTask {
 
   public final static String KEYWORD = "delete";
 

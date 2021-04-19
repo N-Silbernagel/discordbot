@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class MessageTaskTest {
+class MessageCreateTaskTest {
   @Spy
   private final MsgTaskRequest msgTaskRequest = MessageTestUtil.generateMsgTaskRequest();
 
@@ -31,7 +31,7 @@ class MessageTaskTest {
 
   @Test
   public void every_user_may_trigger_tasks_if_no_permission_is_required() {
-    MessageTask unrestrictedMessageTask = spy(new MessageTask() {
+    MessageCreateTask unrestrictedMessageTask = spy(new MessageCreateTask() {
       @Override
       protected void action(MsgTaskRequest taskRequest) {
       }

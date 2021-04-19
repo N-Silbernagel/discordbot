@@ -12,7 +12,7 @@ import discord4j.core.object.entity.Member;
 import java.util.Optional;
 
 @Component
-public class VoteKickTask extends MessageTask implements ExplainedMessageTask {
+public class VoteKickTask extends MessageCreateTask implements ExplainedMessageTask {
   public final static String KEYWORD = "votekick";
 
   private final VotingRegistry registry;

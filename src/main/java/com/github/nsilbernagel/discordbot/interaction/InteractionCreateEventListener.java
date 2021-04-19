@@ -1,7 +1,6 @@
 package com.github.nsilbernagel.discordbot.interaction;
 
 import com.github.nsilbernagel.discordbot.listener.EventListener;
-import com.github.nsilbernagel.discordbot.task.TaskException;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.discordjson.json.ApplicationCommandInteractionData;
@@ -13,7 +12,7 @@ import java.util.Optional;
 
 @Component
 public class InteractionCreateEventListener extends EventListener<InteractionCreateEvent> {
-  private List<InteractionTask> interactionTasks;
+  private final List<InteractionTask> interactionTasks;
 
   public InteractionCreateEventListener(GatewayDiscordClient discordClient, Environment env, List<InteractionTask> interactionTasks) {
     super(discordClient, env);

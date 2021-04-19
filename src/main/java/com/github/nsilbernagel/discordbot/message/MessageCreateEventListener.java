@@ -32,7 +32,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
 
   private final ExclusiveBotChannel exclusiveBotChannel;
 
-  private final List<MessageTask> tasks;
+  private final List<MessageCreateTask> tasks;
 
   private final ThreadLocal<MsgTaskRequest> localMsgTaskRequest = new ThreadLocal<>();
 
@@ -42,7 +42,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
       SpamRegistry spamRegistry,
       ChannelBlacklist channelBlacklist,
       ExclusiveBotChannel exclusiveBotChannel,
-      List<MessageTask> tasks,
+      List<MessageCreateTask> tasks,
       GatewayDiscordClient discordClient,
       Environment env,
       @Lazy MessageFilter messageFilter
@@ -96,7 +96,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
       return;
     }
 
-    List<MessageTask> tasks = this.getTasksForCommand(taskRequest.getCommand());
+    List<MessageCreateTask> tasks = this.getTasksForCommand(taskRequest.getCommand());
 
     if (tasks.isEmpty()) {
       // react to members message with question mark emoji to show that the command was not found
@@ -121,9 +121,9 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   /**
    * Get tasks that can handle a given command
    */
-  private List<MessageTask> getTasksForCommand(String command) {
-    List<MessageTask> result = new ArrayList<>();
-    for (MessageTask task : this.tasks) {
+  private List<MessageCreateTask> getTasksForCommand(String command) {
+    List<MessageCreateTask> result = new ArrayList<>();
+    for (MessageCreateTask task : this.tasks) {
       if (task.canHandle(command)) {
         result.add(task);
       }

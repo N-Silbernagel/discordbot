@@ -64,7 +64,7 @@ public class SpamRegistry {
       return;
     }
 
-    Integer newCount = countForMember.get() - 1;
+    int newCount = countForMember.get() - 1;
 
     this.memberMessageCountMap.replace(member, newCount);
 

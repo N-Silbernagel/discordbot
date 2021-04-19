@@ -2,7 +2,7 @@ package com.github.nsilbernagel.discordbot.audio;
 
 import java.util.Optional;
 
-import com.github.nsilbernagel.discordbot.message.MessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageCreateTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskException;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SoundTask extends MessageTask implements ExplainedMessageTask {
+public class SoundTask extends MessageCreateTask implements ExplainedMessageTask {
   public static final String KEYWORD = "sound";
 
   @Autowired
