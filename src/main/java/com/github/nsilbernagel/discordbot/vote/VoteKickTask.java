@@ -8,8 +8,7 @@ import org.springframework.stereotype.Component;
 
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
-
-import java.util.Optional;
+import reactor.core.publisher.Mono;
 
 @Component
 public class VoteKickTask extends MessageCreateTask implements ExplainedMessageTask {
@@ -17,8 +16,6 @@ public class VoteKickTask extends MessageCreateTask implements ExplainedMessageT
 
   private final VotingRegistry registry;
   private final VoteKickMessageDeleteTask voteKickMessageDeleteTask;
-
-
   private final VoteKickPlusTask voteKickPlusTask;
 
   public VoteKickTask(VotingRegistry registry, VoteKickPlusTask voteKickPlusTask, VoteKickMessageDeleteTask voteKickMessageDeleteTask) {
@@ -39,41 +36,35 @@ public class VoteKickTask extends MessageCreateTask implements ExplainedMessageT
 
     assert guild != null;
 
-    Optional<Member> memberToKick = Optional.ofNullable(
-        taskRequest.getMessage()
+    Member memberToKick = taskRequest.getMessage()
         .getUserMentions()
         .filter((userMention) -> !userMention.isBot())
         .flatMap(user -> user.asMember(guild.getId()))
-        .blockFirst()
-    );
+        .switchIfEmpty(Mono.error(new TaskException("Bitte gib einen Nutzer an, indem du ihn mit '@NUTZER' markierst.")))
+        .blockFirst();
 
-    if (memberToKick.isEmpty()) {
-      throw new TaskException("Bitte gib einen Nutzer an, indem du ihn mit '@NUTZER' markierst.");
-    }
+    // only one kickVoting on a user may be running
+    this.registry.getByMember(memberToKick, KickVoting.class)
+        .ifPresent((runningVoting) -> {throw new TaskException("Es läuft bereits eine Abstimmung zum kicken von " + runningVoting.getTargetMember().getDisplayName());});
 
-    Optional<KickVoting> runningKickVoting = this.registry.getByMember(memberToKick.get(), KickVoting.class);
+    KickVoting newKickVoting = new KickVoting(memberToKick, taskRequest.getMessage());
+    newKickVoting.setEnoughVotesCallBack(this::handleFinishedVoting);
 
-    if (runningKickVoting.isPresent()) {
-      throw new TaskException("Es läuft bereits eine Abstimmung zum kicken von " + runningKickVoting.get().getTargetMember().getDisplayName());
-    }
-
-    KickVoting newKickVoting = new KickVoting(memberToKick.get(), taskRequest.getMessage());
-
+    this.registry.addVoting(newKickVoting);
+    // register the voting's message on the react and delete tasks, so those get triggered when actions on the message are registered
+    this.voteKickPlusTask.addMessage(taskRequest.getMessage());
     this.voteKickMessageDeleteTask.addDeletableMessage(new MessageInChannel(
         taskRequest.getChannel().getId(),
         taskRequest.getMessage().getId()
     ));
 
-    newKickVoting.setEnoughVotesCallBack(this::handleFinishedVoting);
-
-    this.registry.addVoting(newKickVoting);
-    this.voteKickPlusTask.addMessage(taskRequest.getMessage());
-
+    // add first vote from the user who wrote the message
     newKickVoting.addVote(
         taskRequest.getAuthor(),
         taskRequest.getMessage().getTimestamp()
     );
 
+    // send message that tracks the status of the kickvoting
     Message remainingVotesMessage = newKickVoting.getTrigger()
         .getChannel()
         .flatMap((channel) -> channel.createMessage("```" +
