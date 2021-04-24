@@ -1,6 +1,6 @@
 package com.github.nsilbernagel.discordbot.audio;
 
-import com.github.nsilbernagel.discordbot.message.MessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageCreateTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.message.validation.rules.Required;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.ExecutionException;
 
 @Component
-public class PlayTask extends MessageTask implements ExplainedMessageTask {
+public class PlayTask extends MessageCreateTask implements ExplainedMessageTask {
   public final static String KEYWORD = "play";
 
   private final SummonTask summonTask;

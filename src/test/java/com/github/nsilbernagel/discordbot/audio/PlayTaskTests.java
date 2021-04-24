@@ -8,8 +8,10 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import discord4j.core.object.entity.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class PlayTaskTests {
   @Mock
   private LavaPlayerAudioProvider lavaPlayerAudioProviderMock;
@@ -37,8 +40,6 @@ public class PlayTaskTests {
 
   @BeforeEach
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
-
     this.playTask = new PlayTask(this.summonTaskMock, this.lavaPlayerAudioProviderMock, this.lavaTrackSchedulerMock);
 
     this.alertMessageMono = new TestableMono<>();
@@ -61,8 +62,6 @@ public class PlayTaskTests {
     })
         .when(this.audioPlayerManagerMock)
         .loadItem(eq(this.requestIdFake), any(LavaResultHandler.class));
-
-    when(taskRequest.getChannel().createMessage(any(String.class))).thenReturn(Mono.empty());
 
     this.playTask.loadAudioSource(this.requestIdFake, taskRequest);
 

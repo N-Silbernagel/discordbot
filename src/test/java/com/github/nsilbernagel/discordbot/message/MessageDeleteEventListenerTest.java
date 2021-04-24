@@ -5,8 +5,10 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageDeleteEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class MessageDeleteEventListenerTest {
   @Mock
   private Environment env;
@@ -37,8 +40,6 @@ class MessageDeleteEventListenerTest {
 
   @BeforeEach
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
-
     this.messageDeleteTasks.add(this.messageDeleteTask);
 
     this.messageDeleteEventListener = new MessageDeleteEventListener(this.discordClient, this.env, this.messageDeleteTasks);

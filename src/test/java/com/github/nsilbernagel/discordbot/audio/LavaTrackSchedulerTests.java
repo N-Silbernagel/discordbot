@@ -15,9 +15,11 @@ import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.discordjson.json.gateway.StatusUpdate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 
@@ -28,6 +30,7 @@ import java.util.Locale;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 public class LavaTrackSchedulerTests {
   @Mock
   private LavaPlayerAudioProvider lavaPlayerAudioProviderMock;
@@ -52,7 +55,6 @@ public class LavaTrackSchedulerTests {
 
   @BeforeEach
   public void setUp() {
-    MockitoAnnotations.initMocks(this);
     this.presenceManager = new PresenceManager(this.gatewayDiscordClientMock);
     this.lavaTrackScheduler = new LavaTrackScheduler(this.lavaPlayerAudioProviderMock, this.presenceManager);
 
@@ -66,11 +68,10 @@ public class LavaTrackSchedulerTests {
     lavaTrackScheduler.getAudioRequest()
         .put(this.requestIdFake, audioRequest);
 
-    when(this.lavaPlayerAudioProviderMock.getPlayer()).thenReturn(this.audioPlayerMock);
-    when(this.gatewayDiscordClientMock.updatePresence(statusUpdateArgumentCaptor.capture())).thenReturn(this.updatePresence.getMono());
+    lenient().when(this.lavaPlayerAudioProviderMock.getPlayer()).thenReturn(this.audioPlayerMock);
+    lenient().when(this.gatewayDiscordClientMock.updatePresence(statusUpdateArgumentCaptor.capture())).thenReturn(this.updatePresence.getMono());
 
-    when(this.audioTrackMock.getInfo()).thenReturn(audioTrackInfoMock);
-
+    lenient().when(this.audioTrackMock.getInfo()).thenReturn(audioTrackInfoMock);
   }
 
   @Test

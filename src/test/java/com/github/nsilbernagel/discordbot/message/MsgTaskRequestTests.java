@@ -1,23 +1,19 @@
 package com.github.nsilbernagel.discordbot.message;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 public class MsgTaskRequestTests {
   @Spy
-  private MsgTaskRequest msgTaskRequest = MessageTestUtil.generateMsgTaskRequest();
-
-  @BeforeEach
-  public void setUp() {
-    MockitoAnnotations.initMocks(this);
-  }
+  private final MsgTaskRequest msgTaskRequest = MessageTestUtil.generateMsgTaskRequest();
 
   @Test
   public void it_calculates_the_correct_command(){

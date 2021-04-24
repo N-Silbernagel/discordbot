@@ -10,13 +10,16 @@ import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.voice.VoiceConnection;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Consumer;
 
+@ExtendWith(MockitoExtension.class)
 public class SummonTaskTest {
   @Mock
   private Member memberMock;

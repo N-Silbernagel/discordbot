@@ -1,7 +1,6 @@
 package com.github.nsilbernagel.discordbot.interaction;
 
 import com.github.nsilbernagel.discordbot.listener.EventListener;
-import com.github.nsilbernagel.discordbot.task.TaskException;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.discordjson.json.ApplicationCommandInteractionData;
@@ -13,7 +12,7 @@ import java.util.Optional;
 
 @Component
 public class InteractionCreateEventListener extends EventListener<InteractionCreateEvent> {
-  private List<InteractionTask> interactionTasks;
+  private final List<InteractionTask> interactionTasks;
 
   public InteractionCreateEventListener(GatewayDiscordClient discordClient, Environment env, List<InteractionTask> interactionTasks) {
     super(discordClient, env);
@@ -35,14 +34,13 @@ public class InteractionCreateEventListener extends EventListener<InteractionCre
       return;
     }
 
-    this.interactionTasks.forEach(interactionTask ->
-        this.executeTaskThatCanHandleCommandName(interactionTask, event)
-    );
-  }
+    InteractionTaskRequest request = InteractionTaskRequest.fromEvent(event);
 
-  private void executeTaskThatCanHandleCommandName(InteractionTask task, InteractionCreateEvent event) {
-    if (task.canHandle(event.getCommandName())){
-      task.execute(event);
-    }
+    this.interactionTasks.forEach(interactionTask -> {
+      if (interactionTask.canHandle(request.getCommandName())) {
+        event.acknowledgeEphemeral();
+        interactionTask.execute(request);
+      }
+    });
   }
 }

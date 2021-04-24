@@ -7,13 +7,16 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import discord4j.core.object.entity.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 public class VolumeTaskTest {
   @Mock
   private LavaPlayerAudioProvider lavaPlayerAudioProviderMock;
@@ -23,8 +26,6 @@ public class VolumeTaskTest {
 
   @BeforeEach
   public void SetUp() {
-    MockitoAnnotations.initMocks(this);
-
     this.volumeTask = spy(new VolumeTask(this.lavaPlayerAudioProviderMock));
   }
 

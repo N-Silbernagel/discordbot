@@ -1,12 +1,12 @@
 package com.github.nsilbernagel.discordbot.other;
 
-import com.github.nsilbernagel.discordbot.message.MessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageCreateTask;
 
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PongTask extends MessageTask {
+public class PongTask extends MessageCreateTask {
   public final static String KEYWORD = "ping";
 
   @Override

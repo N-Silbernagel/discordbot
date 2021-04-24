@@ -4,7 +4,7 @@ import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import discord4j.rest.util.Permission;
 
 @NeedsPermission(Permission.ADMINISTRATOR)
-public class AdminMessageTaskStub extends MessageTask {
+public class AdminMessageTaskStub extends MessageCreateTask {
   @Override
   protected void action(MsgTaskRequest taskRequest) {
   }

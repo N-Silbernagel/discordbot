@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.nsilbernagel.discordbot.task.Task;
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.TextChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
 import lombok.Getter;
 

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
-import com.github.nsilbernagel.discordbot.message.MessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageCreateTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import discord4j.voice.VoiceConnection;
 
 @Component
-public class LeaveTask extends MessageTask implements ExplainedMessageTask {
+public class LeaveTask extends MessageCreateTask implements ExplainedMessageTask {
 
   public final static String KEYWORD = "leave";
 

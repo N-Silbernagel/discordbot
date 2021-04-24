@@ -3,7 +3,7 @@ package com.github.nsilbernagel.discordbot.voice;
 import java.util.Optional;
 
 import com.github.nsilbernagel.discordbot.audio.LavaPlayerAudioProvider;
-import com.github.nsilbernagel.discordbot.message.MessageTask;
+import com.github.nsilbernagel.discordbot.message.MessageCreateTask;
 import com.github.nsilbernagel.discordbot.message.ExplainedMessageTask;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.task.TaskException;
@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Component
-public class SummonTask extends MessageTask implements ExplainedMessageTask {
+public class SummonTask extends MessageCreateTask implements ExplainedMessageTask {
 
   public final static String KEYWORD = "summon";
 
