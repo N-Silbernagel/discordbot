@@ -14,8 +14,8 @@ public class BlackListedChannelEntity {
   private long id;
 
   @Getter
-  @Column(unique = true)
-  private long channel_id;
+  @Column(name = "channel_id", unique = true)
+  private long channelId;
 
   @Getter
   @OneToOne(cascade = CascadeType.REMOVE)
@@ -24,8 +24,8 @@ public class BlackListedChannelEntity {
 
   public BlackListedChannelEntity() {}
 
-  public BlackListedChannelEntity(long channel_id, GuildEntity guild) {
-    this.channel_id = channel_id;
+  public BlackListedChannelEntity(long channelId, GuildEntity guild) {
+    this.channelId = channelId;
     this.guild = guild;
   }
 }

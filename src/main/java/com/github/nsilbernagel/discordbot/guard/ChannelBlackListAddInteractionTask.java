@@ -1,10 +1,13 @@
 package com.github.nsilbernagel.discordbot.guard;
 
+import com.github.nsilbernagel.discordbot.guild.GuildEntity;
 import com.github.nsilbernagel.discordbot.guild.GuildRepo;
 import com.github.nsilbernagel.discordbot.interaction.InteractionTask;
 import com.github.nsilbernagel.discordbot.interaction.InteractionTaskRequest;
-import com.github.nsilbernagel.discordbot.message.validation.rules.Required;
+import discord4j.common.util.Snowflake;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 public class ChannelBlackListAddInteractionTask extends InteractionTask {
@@ -18,10 +21,29 @@ public class ChannelBlackListAddInteractionTask extends InteractionTask {
 
   @Override
   public void action(InteractionTaskRequest request) {
-    String animal = request.getOptionValue("channel")
-        .as(String.class);
+    long channelId = request.getOptionValue("channel")
+        .as(Long.class);
 
-    request.getEvent().replyEphemeral(animal).block();
+    Optional<Snowflake> guildId = request.getEvent().getInteraction().getGuildId();
+
+    if(guildId.isEmpty()){
+      request.getEvent().replyEphemeral("Dieser Befehl kann nur auf Servern verwendet werden");
+      return;
+    }
+
+    GuildEntity guild = guildRepo.findBydcId(guildId.get().asLong()).orElseGet(() -> {
+      GuildEntity g = new GuildEntity(guildId.get().asLong());
+      guildRepo.save(g);
+      return g;
+    });
+
+    channelBlacklistRepo.findByChannelId(channelId).orElseGet(() -> {
+      BlackListedChannelEntity c = new BlackListedChannelEntity(channelId, guild);
+      channelBlacklistRepo.save(c);
+      return c;
+    });
+
+    request.getEvent().replyEphemeral("Kanal wurde zur Blacklist hinzugefügt.").block();
   }
 
   @Override

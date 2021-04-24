@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd
+      http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd"
+>
+    <changeSet  id="create guild table"  author="n.silbernagel">
+        <createTable  tableName="guild">
+            <column  name="id"  type="bigint"  autoIncrement="true">
+                <constraints  primaryKey="true"  nullable="false"/>
+            </column>
+            <column  name="dc_id"  type="bigint">
+                <constraints  nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet  id="crate channel_blacklist table"  author="n.silbernagel">
+        <createTable  tableName="channel_blacklist">
+            <column  name="id"  type="bigint"  autoIncrement="true">
+                <constraints  primaryKey="true"  nullable="false"/>
+            </column>
+            <column  name="channel_id"  type="bigint">
+                <constraints  nullable="false"/>
+            </column>
+            <column  name="guild_id"  type="bigint">
+                <constraints  nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint  baseColumnNames="guild_id"
+                                  baseTableName="channel_blacklist"
+                                  constraintName="fk_channel_blacklist_guild"
+                                  deferrable="true"
+                                  initiallyDeferred="true"
+                                  onDelete="CASCADE"
+                                  onUpdate="RESTRICT"
+                                  referencedColumnNames="id"
+                                  referencedTableName="guild"
+        />
+    </changeSet>
+
+    <changeSet  id="crate exclusive_channel table"  author="n.silbernagel">
+        <createTable  tableName="exclusive_channel">
+            <column  name="id"  type="bigint"  autoIncrement="true">
+                <constraints  primaryKey="true"  nullable="false"/>
+            </column>
+            <column  name="channel_id"  type="bigint">
+                <constraints  nullable="false"/>
+            </column>
+            <column  name="guild_id"  type="bigint">
+                <constraints  nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint  baseColumnNames="guild_id"
+                                  baseTableName="exclusive_channel"
+                                  constraintName="fk_exclusive_channel_guild"
+                                  deferrable="true"
+                                  initiallyDeferred="true"
+                                  onDelete="CASCADE"
+                                  onUpdate="RESTRICT"
+                                  referencedColumnNames="id"
+                                  referencedTableName="guild"
+        />
+    </changeSet>
+
+</databaseChangeLog>
