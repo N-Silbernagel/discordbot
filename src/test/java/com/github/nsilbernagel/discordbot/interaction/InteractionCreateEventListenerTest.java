@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.interaction;
 
-import com.github.nsilbernagel.discordbot.TestableMono;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.core.object.command.Interaction;
@@ -38,21 +37,21 @@ class InteractionCreateEventListenerTest {
   private InteractionData interactionData;
   @Mock
   private ApplicationCommandInteractionData applicationCommandInteractionData;
-  private List<InteractionTask> interactionTasks = new ArrayList<>();
-  private InteractionCreateEventListener interactionCreateEventListener;
-  private TestableMono<Void> replyMono;
 
-  private String testCommand = "test";
+  private final List<InteractionTask> interactionTasks = new ArrayList<>();
+  private InteractionCreateEventListener interactionCreateEventListener;
+
+  private final String testCommand = "test";
 
   @BeforeEach
   public void setUp() {
-    this.replyMono = new TestableMono<>();
+    when(this.interactionCreateEventMock.getCommandName()).thenReturn(this.testCommand);
 
     when(this.interactionCreateEventMock.getInteraction()).thenReturn(this.interactionMock);
     when(this.interactionMock.getData()).thenReturn(this.interactionData);
     when(this.interactionData.data()).thenReturn(Possible.of(this.applicationCommandInteractionData));
 
-    when(this.interactionCreateEventMock.getCommandName()).thenReturn(this.testCommand);
+    when(this.applicationCommandInteractionData.options()).thenReturn(Possible.absent());
 
     this.interactionCreateEventListener = new InteractionCreateEventListener(this.discordClient, this.env, this.interactionTasks);
     this.interactionTasks.add(this.interactionTaskOne);
@@ -66,18 +65,18 @@ class InteractionCreateEventListenerTest {
 
     this.interactionCreateEventListener.execute(this.interactionCreateEventMock);
 
-    verify(this.interactionTaskOne).execute(eq(this.interactionCreateEventMock));
-    verify(this.interactionTaskTwo).execute(eq(this.interactionCreateEventMock));
+    verify(this.interactionTaskOne).execute(any(InteractionTaskRequest.class));
+    verify(this.interactionTaskTwo).execute(any(InteractionTaskRequest.class));
   }
 
   @Test
-  public void it_executes_the_tasks_not_fitting() {
+  public void it_does_not_execute_the_tasks_that_dont_fit() {
     when(this.interactionTaskOne.canHandle(eq(this.testCommand))).thenReturn(true);
     when(this.interactionTaskTwo.canHandle(eq(this.testCommand))).thenReturn(false);
 
     this.interactionCreateEventListener.execute(this.interactionCreateEventMock);
 
-    verify(this.interactionTaskOne).execute(eq(this.interactionCreateEventMock));
-    verify(this.interactionTaskTwo, times(0)).execute(eq(this.interactionCreateEventMock));
+    verify(this.interactionTaskOne).execute(any(InteractionTaskRequest.class));
+    verify(this.interactionTaskTwo, times(0)).execute(any(InteractionTaskRequest.class));
   }
 }

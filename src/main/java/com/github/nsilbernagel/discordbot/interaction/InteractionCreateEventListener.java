@@ -34,14 +34,13 @@ public class InteractionCreateEventListener extends EventListener<InteractionCre
       return;
     }
 
-    this.interactionTasks.forEach(interactionTask ->
-        this.executeTaskThatCanHandleCommandName(interactionTask, event)
-    );
-  }
+    InteractionTaskRequest request = InteractionTaskRequest.fromEvent(event);
 
-  private void executeTaskThatCanHandleCommandName(InteractionTask task, InteractionCreateEvent event) {
-    if (task.canHandle(event.getCommandName())){
-      task.execute(event);
-    }
+    this.interactionTasks.forEach(interactionTask -> {
+      if (interactionTask.canHandle(request.getCommandName())) {
+        event.acknowledgeEphemeral();
+        interactionTask.execute(request);
+      }
+    });
   }
 }

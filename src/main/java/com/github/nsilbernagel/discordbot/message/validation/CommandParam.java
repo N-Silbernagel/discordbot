@@ -21,6 +21,10 @@ public class CommandParam {
     this.raw = raw;
   }
 
+  public static CommandParam empty() {
+    return new CommandParam(null);
+  }
+
   public <R extends ValidationRule> CommandParam is(R rule, String errorMessage){
     boolean valid = rule.validate(this);
 
