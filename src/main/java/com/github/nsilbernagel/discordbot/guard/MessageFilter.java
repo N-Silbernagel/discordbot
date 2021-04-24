@@ -9,7 +9,7 @@ import java.util.List;
 @Component
 public class MessageFilter {
   @Getter
-  private final List<String> regexFilters = List.of(".+restposten.de.+", "");
+  private final List<String> regexFilters = List.of(".+restposten.de.+");
 
   public void execute(Message message) {
     this.getRegexFilters().forEach(regex -> this.deleteMessageMatchingRegex(message, regex));
