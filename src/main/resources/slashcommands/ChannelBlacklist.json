@@ -1,0 +1,32 @@
+{
+  "name": "blacklist",
+  "description": "Edit Channel Blacklist",
+  "options": [
+    {
+      "name": "Add",
+      "description": "Add channel to the blacklist",
+      "type": 1,
+      "options": [
+        {
+          "name": "Channel",
+          "description": "The Channel to add to the blacklist",
+          "type": 7,
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Remove",
+      "description": "Remove channel from the blacklist",
+      "type": 1,
+      "options": [
+        {
+          "name": "Channel",
+          "description": "The Channel to remove from the blacklist",
+          "type": 7,
+          "required": true
+        }
+      ]
+    }
+  ]
+}

@@ -13,7 +13,7 @@
                 <constraints  primaryKey="true"  nullable="false"/>
             </column>
             <column  name="dc_id"  type="bigint">
-                <constraints  nullable="false"/>
+                <constraints  nullable="false"  unique="true"/>
             </column>
         </createTable>
     </changeSet>
