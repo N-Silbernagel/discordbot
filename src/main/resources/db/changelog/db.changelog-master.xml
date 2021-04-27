@@ -7,6 +7,12 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd
       http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd"
 >
+    <changeSet  id="create sequence"  author="n.silbernagel">
+        <createSequence
+                         sequenceName="hibernate_sequence"
+        />
+    </changeSet>
+
     <changeSet  id="create guild table"  author="n.silbernagel">
         <createTable  tableName="guild">
             <column  name="id"  type="bigint"  autoIncrement="true">
