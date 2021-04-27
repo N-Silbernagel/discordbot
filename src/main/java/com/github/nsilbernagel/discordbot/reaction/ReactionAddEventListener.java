@@ -3,7 +3,6 @@ package com.github.nsilbernagel.discordbot.reaction;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.listener.EventListener;
 import com.github.nsilbernagel.discordbot.task.MemberMissingOrBotException;
@@ -19,15 +18,13 @@ import discord4j.core.object.reaction.ReactionEmoji;
 @Component
 public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
 
-  private final ChannelBlacklist channelBlacklist;
   private final ExclusiveBotChannel exclusiveBotChannel;
   private final List<ReactionTask> tasks;
 
   private final ThreadLocal<ReactionTaskRequest> taskRequest = new ThreadLocal<>();
 
-  public ReactionAddEventListener(ChannelBlacklist channelBlacklist, ExclusiveBotChannel exclusiveBotChannel, List<ReactionTask> tasks, GatewayDiscordClient discordClient, Environment env) {
+  public ReactionAddEventListener(ExclusiveBotChannel exclusiveBotChannel, List<ReactionTask> tasks, GatewayDiscordClient discordClient, Environment env) {
     super(discordClient, env);
-    this.channelBlacklist = channelBlacklist;
     this.exclusiveBotChannel = exclusiveBotChannel;
     this.tasks = tasks;
   }
@@ -53,10 +50,6 @@ public class ReactionAddEventListener extends EventListener<ReactionAddEvent> {
       );
     } catch (ClassCastException e) {
       // probably using a private channel which we dont support yet
-      return;
-    }
-
-    if (!this.channelBlacklist.canAnswerOnChannel(this.taskRequest.get().getChannel())) {
       return;
     }
 
