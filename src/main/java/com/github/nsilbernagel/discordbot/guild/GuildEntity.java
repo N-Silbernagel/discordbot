@@ -14,7 +14,8 @@ public class GuildEntity {
   private long id;
 
   @Getter
-  private long dc_id;
+  @Column(name = "dc_id", unique = true)
+  private long dcId;
 
   @Getter
   @OneToOne(mappedBy = "guild")
@@ -22,7 +23,7 @@ public class GuildEntity {
 
   public GuildEntity() {}
 
-  public GuildEntity(long dc_id) {
-    this.dc_id = dc_id;
+  public GuildEntity(long dcId) {
+    this.dcId = dcId;
   }
 }

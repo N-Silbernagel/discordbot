@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.github.nsilbernagel.discordbot.guard.MessageFilter;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
-import com.github.nsilbernagel.discordbot.guard.ChannelBlacklist;
 import com.github.nsilbernagel.discordbot.guard.ExclusiveBotChannel;
 import com.github.nsilbernagel.discordbot.guard.SpamRegistry;
 import com.github.nsilbernagel.discordbot.listener.EventListener;
@@ -27,20 +26,14 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   private String commandToken;
 
   private final SpamRegistry spamRegistry;
-
-  private final ChannelBlacklist channelBlacklist;
-
   private final ExclusiveBotChannel exclusiveBotChannel;
-
   private final List<MessageCreateTask> tasks;
+  private final MessageFilter messageFilter;
 
   private final ThreadLocal<MsgTaskRequest> localMsgTaskRequest = new ThreadLocal<>();
 
-  private final MessageFilter messageFilter;
-
   public MessageCreateEventListener(
       SpamRegistry spamRegistry,
-      ChannelBlacklist channelBlacklist,
       ExclusiveBotChannel exclusiveBotChannel,
       List<MessageCreateTask> tasks,
       GatewayDiscordClient discordClient,
@@ -49,7 +42,6 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
   ) {
     super(discordClient, env);
     this.spamRegistry = spamRegistry;
-    this.channelBlacklist = channelBlacklist;
     this.exclusiveBotChannel = exclusiveBotChannel;
     this.tasks = tasks;
     this.messageFilter = messageFilter;
@@ -86,10 +78,6 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
     );
 
     this.localMsgTaskRequest.set(taskRequest);
-
-    if (!this.channelBlacklist.canAnswerOnChannel(taskRequest.getChannel())) {
-      return;
-    }
 
     if (!this.exclusiveBotChannel.isOnExclusiveChannel(message)) {
       this.exclusiveBotChannel.handleMessageOnOtherChannel(message);
