@@ -49,4 +49,9 @@
         />
     </changeSet>
 
+    <changeSet id="drop guild table" author="n.silbernagel">
+        <dropForeignKeyConstraint baseTableName="exclusive_channel" constraintName="fk_exclusive_channel_guild"/>
+        <dropTable tableName="guild"/>
+    </changeSet>
+
 </databaseChangeLog>

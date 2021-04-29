@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.guard;
 
-import com.github.nsilbernagel.discordbot.guild.GuildEntity;
 import lombok.Getter;
 
 import javax.persistence.*;
@@ -14,17 +13,17 @@ public class ExclusiveChannelEntity {
   private long id;
 
   @Getter
-  private long channel_id;
+  @Column(name = "channel_id", unique = true, nullable = false)
+  private long channelId;
 
   @Getter
-  @OneToOne(cascade = CascadeType.REMOVE)
-  @JoinColumn(name = "guild_id", referencedColumnName = "id", unique = true, nullable = false)
-  private GuildEntity guild;
+  @Column(name = "guild_id", unique = true, nullable = false)
+  private long guildId;
 
   public ExclusiveChannelEntity() {}
 
-  public ExclusiveChannelEntity(long channel_id, GuildEntity guild) {
-    this.channel_id = channel_id;
-    this.guild = guild;
+  public ExclusiveChannelEntity(long channelId, long guildId) {
+    this.channelId = channelId;
+    this.guildId = guildId;
   }
 }
