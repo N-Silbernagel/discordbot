@@ -61,6 +61,9 @@ public class InteractionTaskRequest extends TaskRequest {
   }
 
   public CommandParam getOptionValue(String optionName) {
+    if(this.getOptions() == null) {
+      return CommandParam.empty();
+    }
     Optional<ApplicationCommandInteractionOptionData> optionData = this.getOptions().stream()
         .filter(option -> option.name().equals(optionName))
         .findAny();

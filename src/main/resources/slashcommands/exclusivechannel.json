@@ -1,0 +1,12 @@
+{
+  "name": "exclusivechannel",
+  "description": "Set a channel as the exclusive bot channel for the current guild",
+  "options": [
+    {
+      "name": "channel",
+      "description": "The Channel to use as exclusive bot channel",
+      "type": 7,
+      "required": false
+    }
+  ]
+}

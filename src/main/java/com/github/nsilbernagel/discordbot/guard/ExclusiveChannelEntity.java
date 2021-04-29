@@ -1,11 +1,14 @@
 package com.github.nsilbernagel.discordbot.guard;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "exclusive_channel")
+@EqualsAndHashCode
 public class ExclusiveChannelEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -13,6 +16,7 @@ public class ExclusiveChannelEntity {
   private long id;
 
   @Getter
+  @Setter
   @Column(name = "channel_id", unique = true, nullable = false)
   private long channelId;
 

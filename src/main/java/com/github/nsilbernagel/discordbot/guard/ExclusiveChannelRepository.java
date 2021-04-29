@@ -7,12 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface ExclusiveChannelRepository extends CrudRepository<ExclusiveChannelEntity, Long> {
-  @Override
-  long count();
-
-  @Override
-  Optional<ExclusiveChannelEntity> findById(Long aLong);
-
-  @Override
-  <S extends ExclusiveChannelEntity> S save(S entity);
+  Optional<ExclusiveChannelEntity> findByguildId(Long guildId);
 }

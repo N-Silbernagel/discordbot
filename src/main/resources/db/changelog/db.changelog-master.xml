@@ -54,4 +54,12 @@
         <dropTable tableName="guild"/>
     </changeSet>
 
+    <changeSet id="make exclusive_channel channel_id unqiue" author="n.silbernagel">
+        <addUniqueConstraint tableName="exclusive_channel" columnNames="channel_id"/>
+    </changeSet>
+
+    <changeSet id="make exclusive_channel guild_id unqiue" author="n.silbernagel">
+        <addUniqueConstraint tableName="exclusive_channel" columnNames="guild_id"/>
+    </changeSet>
+
 </databaseChangeLog>
