@@ -1,15 +1,18 @@
 package com.github.nsilbernagel.discordbot.guard;
 
+import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
 import com.github.nsilbernagel.discordbot.interaction.InteractionTask;
 import com.github.nsilbernagel.discordbot.interaction.InteractionTaskRequest;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.Channel;
+import discord4j.rest.util.Permission;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@NeedsPermission(Permission.ADMINISTRATOR)
 public class ExclusiveChannelInteractionTask extends InteractionTask {
 
   private final ExclusiveChannelRepository exclusiveChannelRepository;
