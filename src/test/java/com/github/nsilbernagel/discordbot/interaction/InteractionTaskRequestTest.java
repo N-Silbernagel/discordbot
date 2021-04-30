@@ -1,5 +1,6 @@
 package com.github.nsilbernagel.discordbot.interaction;
 
+import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
 import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.core.object.command.Interaction;
 import discord4j.discordjson.json.ApplicationCommandInteractionData;
@@ -94,5 +95,50 @@ class InteractionTaskRequestTest {
     InteractionTaskRequest interactionTaskRequest = InteractionTaskRequest.fromEvent(interactionCreateEvent);
 
     assertEquals(commandName + "/" + subcommandName, interactionTaskRequest.getCommandName());
+  }
+
+  @Test
+  public void it_returns_an_empty_command_param_for_option_values_when_there_are_no_options() {
+    when(interactionData.data()).thenReturn(Possible.of(applicationCommandInteractionData));
+
+    when(applicationCommandInteractionData.options()).thenReturn(Possible.absent());
+
+    InteractionTaskRequest interactionTaskRequest = InteractionTaskRequest.fromEvent(interactionCreateEvent);
+
+    assertEquals(interactionTaskRequest.getOptionValue("test"), CommandParam.empty());
+  }
+
+  @Test
+  public void it_returns_an_empty_command_param_for_option_values_when_the_option_is_not_available() {
+    when(interactionData.data()).thenReturn(Possible.of(applicationCommandInteractionData));
+
+    ApplicationCommandInteractionOptionData otherOption = mock(ApplicationCommandInteractionOptionData.class);
+    when(otherOption.name()).thenReturn("someothername");
+    when(otherOption.options()).thenReturn(Possible.absent());
+    List<ApplicationCommandInteractionOptionData> options = List.of(otherOption);
+    when(applicationCommandInteractionData.options()).thenReturn(Possible.of(options));
+
+    InteractionTaskRequest interactionTaskRequest = InteractionTaskRequest.fromEvent(interactionCreateEvent);
+
+    assertEquals(interactionTaskRequest.getOptionValue("test"), CommandParam.empty());
+  }
+
+  @Test
+  public void it_returns_a_command_param_with_the_value_of_an_option() {
+    String optionName = "test";
+    String optionValue = "value";
+
+    when(interactionData.data()).thenReturn(Possible.of(applicationCommandInteractionData));
+
+    ApplicationCommandInteractionOptionData option = mock(ApplicationCommandInteractionOptionData.class);
+    when(option.name()).thenReturn(optionName);
+    when(option.value()).thenReturn(Possible.of(optionValue));
+    when(option.options()).thenReturn(Possible.absent());
+    List<ApplicationCommandInteractionOptionData> options = List.of(option);
+    when(applicationCommandInteractionData.options()).thenReturn(Possible.of(options));
+
+    InteractionTaskRequest interactionTaskRequest = InteractionTaskRequest.fromEvent(interactionCreateEvent);
+
+    assertEquals(interactionTaskRequest.getOptionValue(optionName).getRaw(), optionValue);
   }
 }
