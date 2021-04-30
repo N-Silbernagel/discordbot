@@ -25,14 +25,17 @@ final public class ExclusiveBotChannel {
   @Value("${app.discord.channels.exclusive:}")
   private String exclusiveBotChannelIdString;
 
-  @Autowired
-  private GatewayDiscordClient gatewayDiscordClient;
+  private final GatewayDiscordClient gatewayDiscordClient;
 
   @Getter
   private TextChannel exclusiveBotChannel;
 
   @Getter
   private boolean exclusiveBotChannelConfigured;
+
+  public ExclusiveBotChannel(GatewayDiscordClient gatewayDiscordClient) {
+    this.gatewayDiscordClient = gatewayDiscordClient;
+  }
 
   /**
    * bootstrap exclusive bot channel guard from config values
@@ -51,8 +54,7 @@ final public class ExclusiveBotChannel {
       this.exclusiveBotChannel = (TextChannel) this.gatewayDiscordClient.getChannelById(exclusiveBotChannelId)
           .block();
     } catch (Throwable e) {
-      throw new RuntimeException("Textchannel configured under prop app.discord.channels.exclusive could not be found.",
-          e);
+      throw new RuntimeException("Textchannel configured under prop app.discord.channels.exclusive could not be found.", e);
     }
   }
 
