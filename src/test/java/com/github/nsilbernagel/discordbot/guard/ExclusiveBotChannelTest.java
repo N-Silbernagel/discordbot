@@ -1,16 +1,18 @@
 package com.github.nsilbernagel.discordbot.guard;
 
+import com.github.nsilbernagel.discordbot.TestableMono;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.channel.Channel;
 import discord4j.core.object.entity.channel.TextChannel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -18,23 +20,35 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ExclusiveBotChannelTest {
   @Mock
-  private GatewayDiscordClient discordClient;
+  private ExclusiveChannelRepository exclusiveChannelRepository;
   @Mock
-  private TextChannel exclusiveBotChannel;
+  private ExclusiveChannelEntity exclusiveChannelEntity;
+  @Mock
+  private TextChannel exclusiveChannel;
   @Mock
   private Message message;
+  @Mock
+  private GatewayDiscordClient discordClient;
+
+  private ExclusiveBotChannel exclusiveBotChannel;
+
+  private final Snowflake guildId = Snowflake.of(1L);
+
+  @BeforeEach
+  public void setUp() {
+    this.exclusiveBotChannel = new ExclusiveBotChannel(this.exclusiveChannelRepository, this.discordClient);
+  }
 
   @Test
   public void it_knows_if_a_message_was_on_the_exclusive_channel() {
     Snowflake exclusiveChannelId = Snowflake.of(123L);
 
-    when(discordClient.getChannelById(exclusiveChannelId)).thenReturn(Mono.just(exclusiveBotChannel));
+    when(this.discordClient.getChannelById(exclusiveChannelId)).thenReturn(Mono.just(this.exclusiveChannel));
+    when(message.getGuildId()).thenReturn(Optional.of(guildId));
+    when(exclusiveChannelRepository.findByguildId(guildId.asLong())).thenReturn(Optional.of(exclusiveChannelEntity));
     when(message.getChannelId()).thenReturn(exclusiveChannelId);
-    when(exclusiveBotChannel.getId()).thenReturn(exclusiveChannelId);
 
-    ExclusiveBotChannel exclusiveBotChannel = new ExclusiveBotChannel(this.discordClient);
-    ReflectionTestUtils.setField(exclusiveBotChannel, "exclusiveBotChannelIdString", exclusiveChannelId.asString());
-    exclusiveBotChannel.execute();
+    when(exclusiveChannelEntity.getChannelId()).thenReturn(exclusiveChannelId.asLong());
 
     assertTrue(exclusiveBotChannel.isOnExclusiveChannel(message));
   }
@@ -44,13 +58,12 @@ class ExclusiveBotChannelTest {
     Snowflake exclusiveChannelId = Snowflake.of(123L);
     Snowflake otherChannelId = Snowflake.of(321L);
 
-    when(discordClient.getChannelById(exclusiveChannelId)).thenReturn(Mono.just(exclusiveBotChannel));
+    when(this.discordClient.getChannelById(exclusiveChannelId)).thenReturn(Mono.just(this.exclusiveChannel));
+    when(message.getGuildId()).thenReturn(Optional.of(guildId));
+    when(exclusiveChannelRepository.findByguildId(guildId.asLong())).thenReturn(Optional.of(exclusiveChannelEntity));
     when(message.getChannelId()).thenReturn(otherChannelId);
-    when(exclusiveBotChannel.getId()).thenReturn(exclusiveChannelId);
 
-    ExclusiveBotChannel exclusiveBotChannel = new ExclusiveBotChannel(this.discordClient);
-    ReflectionTestUtils.setField(exclusiveBotChannel, "exclusiveBotChannelIdString", exclusiveChannelId.asString());
-    exclusiveBotChannel.execute();
+    when(exclusiveChannelEntity.getChannelId()).thenReturn(exclusiveChannelId.asLong());
 
     assertFalse(exclusiveBotChannel.isOnExclusiveChannel(message));
   }
@@ -59,24 +72,23 @@ class ExclusiveBotChannelTest {
   public void it_throws_if_the_channel_cannot_be_found() {
     Snowflake exclusiveChannelId = Snowflake.of(123L);
 
-    when(discordClient.getChannelById(exclusiveChannelId)).thenReturn(Mono.empty());
+    when(this.discordClient.getChannelById(exclusiveChannelId)).thenReturn(Mono.empty());
+    when(message.getGuildId()).thenReturn(Optional.of(guildId));
+    when(exclusiveChannelRepository.findByguildId(guildId.asLong())).thenReturn(Optional.of(exclusiveChannelEntity));
 
-    ExclusiveBotChannel exclusiveBotChannel = new ExclusiveBotChannel(this.discordClient);
-    ReflectionTestUtils.setField(exclusiveBotChannel, "exclusiveBotChannelIdString", exclusiveChannelId.asString());
+    when(exclusiveChannelEntity.getChannelId()).thenReturn(exclusiveChannelId.asLong());
 
-    assertThrows(RuntimeException.class, exclusiveBotChannel::execute);
+    assertThrows(ChannelNotFoundException.class, () -> exclusiveBotChannel.isOnExclusiveChannel(message));
   }
 
   @Test
-  public void it_throws_if_the_channel_is_not_a_guild_textchannel() {
-    Snowflake exclusiveChannelId = Snowflake.of(123L);
-    Channel nonGuildTextChannelChannel = mock(Channel.class);
+  public void it_deletes_a_message_on_another_channel() {
+    TestableMono<Void> deleteMono = new TestableMono<>();
+    when(message.delete()).thenReturn(deleteMono.getMono());
+    when(message.getAuthor()).thenReturn(Optional.empty());
 
-    when(discordClient.getChannelById(exclusiveChannelId)).thenReturn(Mono.just(nonGuildTextChannelChannel));
+    exclusiveBotChannel.handleMessageOnOtherChannel(message);
 
-    ExclusiveBotChannel exclusiveBotChannel = new ExclusiveBotChannel(this.discordClient);
-    ReflectionTestUtils.setField(exclusiveBotChannel, "exclusiveBotChannelIdString", exclusiveChannelId.asString());
-
-    assertThrows(RuntimeException.class, exclusiveBotChannel::execute);
+    assertTrue(deleteMono.wasSubscribedTo());
   }
 }
