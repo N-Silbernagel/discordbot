@@ -31,12 +31,16 @@ public class TimeVaryingChannelSetInteractionTask extends InteractionTask {
   public void action(InteractionTaskRequest request) {
     Optional<Snowflake> guildId = request.getEvent().getInteraction().getGuildId();
 
-    Long channelId = request.getOptionValue("channel")
-        .as(Long.class);
-    String defaultName = request.getOptionValue("default")
-        .as(String.class);
+    Long channelId = request.getOptionValue("channel").as(Long.class);
+    String defaultName = request.getOptionValue("default").as(String.class);
+
+    Optional<String> morningName = Optional.ofNullable(request.getOptionValue("morning").as(String.class));
+    Optional<String> noonName = Optional.ofNullable(request.getOptionValue("noon").as(String.class));
+    Optional<String> eveningName = Optional.ofNullable(request.getOptionValue("evening").as(String.class));
 
     Channel givenChannel = discordClient.getChannelById(Snowflake.of(channelId)).block();
+
+    assert givenChannel != null;
 
     if(!List.of(Channel.Type.GUILD_TEXT, Channel.Type.GUILD_VOICE).contains(givenChannel.getType())) {
       request.getEvent().replyEphemeral(WRONG_TYPE_MESSAGE).block();
@@ -45,6 +49,9 @@ public class TimeVaryingChannelSetInteractionTask extends InteractionTask {
 
     TimeVaryingChannelEntity timeVaryingChannel = this.timeVaryingChannelRepo.findByguildId(guildId.get().asLong()).orElse(new TimeVaryingChannelEntity(channelId, guildId.get().asLong(), defaultName));
     timeVaryingChannel.setChannelId(channelId);
+    timeVaryingChannel.setMorningName(morningName.orElse(null));
+    timeVaryingChannel.setNoonName(noonName.orElse(null));
+    timeVaryingChannel.setEveningName(eveningName.orElse(null));
 
     this.timeVaryingChannelRepo.save(timeVaryingChannel);
     request.getEvent().replyEphemeral(this.PERSIST_MESSAGE).block();

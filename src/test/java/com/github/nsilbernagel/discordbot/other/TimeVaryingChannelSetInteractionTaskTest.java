@@ -72,10 +72,40 @@ class TimeVaryingChannelSetInteractionTaskTest {
 
     when(timeVaryingChannelRepo.findByguildId(currentGuildId.asLong())).thenReturn(Optional.of(existingTimeVaryingChannel));
 
+    when(request.getOptionValue("morning")).thenReturn(CommandParam.empty());
+    when(request.getOptionValue("noon")).thenReturn(CommandParam.empty());
+    when(request.getOptionValue("evening")).thenReturn(CommandParam.empty());
+
     task.action(request);
 
     verify(existingTimeVaryingChannel).setChannelId(newChannelId.asLong());
     verify(timeVaryingChannelRepo).save(existingTimeVaryingChannel);
+  }
+
+  @Test
+  public void it_persists_the_channels_names() {
+    when(discordClient.getChannelById(newChannelId)).thenReturn(Mono.just(newChannel));
+    when(request.getOptionValue("channel")).thenReturn(new CommandParam(newChannelId.asString()));
+    when(newChannel.getType()).thenReturn(Channel.Type.GUILD_VOICE);
+    when(event.replyEphemeral(task.PERSIST_MESSAGE)).thenReturn(successMsgMono.getMono());
+
+    TimeVaryingChannelEntity expectedChannelEntity = new TimeVaryingChannelEntity(newChannelId.asLong(), currentGuildId.asLong(), newDefaultName);
+    String mName = "test1";
+    String nName = "test2";
+    String eName = "test3";
+    expectedChannelEntity.setMorningName(mName);
+    expectedChannelEntity.setNoonName(nName);
+    expectedChannelEntity.setEveningName(eName);
+
+    when(request.getOptionValue("morning")).thenReturn(new CommandParam(mName));
+    when(request.getOptionValue("noon")).thenReturn(new CommandParam(nName));
+    when(request.getOptionValue("evening")).thenReturn(new CommandParam(eName));
+
+    when(timeVaryingChannelRepo.findByguildId(currentGuildId.asLong())).thenReturn(Optional.empty());
+
+    task.action(request);
+
+    verify(timeVaryingChannelRepo).save(eq(expectedChannelEntity));
   }
 
   @ParameterizedTest
@@ -95,6 +125,10 @@ class TimeVaryingChannelSetInteractionTaskTest {
     } else {
       when(event.replyEphemeral(task.WRONG_TYPE_MESSAGE)).thenReturn(wrongTypeMono.getMono());
     }
+
+    when(request.getOptionValue("morning")).thenReturn(CommandParam.empty());
+    when(request.getOptionValue("noon")).thenReturn(CommandParam.empty());
+    when(request.getOptionValue("evening")).thenReturn(CommandParam.empty());
 
     task.action(request);
 

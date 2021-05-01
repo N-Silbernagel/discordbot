@@ -13,7 +13,7 @@ import java.util.Optional;
 @NeedsPermission(Permission.ADMINISTRATOR)
 public class TimeVaryingChannelUnsetInteractionTask extends InteractionTask {
   public final String NO_CHANNEL_MESSAGE = "Es ist kein channel konfiguriert.";
-  public final String UNSET_MESSAGE = "Channel ändert sich nun nicht mehr anhand der Zeit.";
+  public final String UNSET_MESSAGE = "Channel entfernt.";
 
   private final TimeVaryingChannelRepo timeVaryingChannelRepo;
 

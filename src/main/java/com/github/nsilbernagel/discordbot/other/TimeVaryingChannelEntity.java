@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Optional;
 
 @Entity
 @Table(name = "time_varying_channel")
@@ -29,20 +30,29 @@ public class TimeVaryingChannelEntity {
   @Column(name = "default_name", nullable = false)
   private String defaultName;
 
-  @Getter
   @Setter
   @Column(name = "morning_name")
   private String morningName;
 
-  @Getter
   @Setter
   @Column(name = "noon_name")
   private String noonName;
 
-  @Getter
   @Setter
   @Column(name = "evening_name")
   private String eveningName;
+
+  public Optional<String> getMorningName() {
+    return Optional.ofNullable(morningName);
+  }
+
+  public Optional<String> getNoonName() {
+    return Optional.ofNullable(noonName);
+  }
+
+  public Optional<String> getEveningName() {
+    return Optional.ofNullable(eveningName);
+  }
 
   public TimeVaryingChannelEntity() {}
 
