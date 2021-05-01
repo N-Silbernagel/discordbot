@@ -10,16 +10,21 @@ import org.springframework.scheduling.annotation.Scheduled;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.VoiceChannel;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ChannelNameClock {
 
   @Value("${app.discord.channels.rename}")
   private Snowflake channelId;
 
-  @Autowired
-  private GatewayDiscordClient discordClient;
+  private final GatewayDiscordClient discordClient;
 
   private VoiceChannel channel;
+
+  public ChannelNameClock(GatewayDiscordClient discordClient) {
+    this.discordClient = discordClient;
+  }
 
   @PostConstruct
   public void initialize() {
