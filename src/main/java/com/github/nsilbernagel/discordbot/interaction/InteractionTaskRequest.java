@@ -14,6 +14,7 @@ import java.util.*;
 @EqualsAndHashCode(callSuper = true)
 @RequiredArgsConstructor
 public class InteractionTaskRequest extends TaskRequest {
+  public final static List<Integer> SUBCOMMAND_OR_GROUP = List.of(1, 2);
   @Getter
   @NonNull
   private final InteractionCreateEvent event;
@@ -26,34 +27,36 @@ public class InteractionTaskRequest extends TaskRequest {
   private final List<ApplicationCommandInteractionOptionData> options;
 
   public static InteractionTaskRequest fromEvent(InteractionCreateEvent event) {
-    //get command name for the request, building it once
-    //Get the command name by using the name of the original slash command plus all the subcommands, separated by slash
-
     StringBuilder commandName = new StringBuilder(event.getCommandName());
 
     Optional<ApplicationCommandInteractionData> data = event.getInteraction()
         .getData()
-        .data().toOptional();
+        .data()
+        .toOptional();
 
     // if the command has no data, only use the slash command's name
-    if (data.isEmpty() || data.get().options().toOptional().isEmpty()){
-      return new InteractionTaskRequest(event, commandName.toString(), null);
+    if (data.isEmpty() || data.get().options().isAbsent()){
+      return new InteractionTaskRequest(event, commandName.toString(), new ArrayList<>(0));
     }
 
     List<ApplicationCommandInteractionOptionData> requestOptions = data.get().options().get();
 
     Optional<ApplicationCommandInteractionOptionData> optionData = requestOptions.stream()
-        .filter(option -> !option.options().isAbsent())
+        .filter(InteractionTaskRequest::isSubCommandOrGroup)
         .findFirst();
 
     // while there are options that have options (thus being sub commands), append their names to the command name
     while (optionData.isPresent()){
-      requestOptions = optionData.get().options().get();
-
       commandName.append("/").append(optionData.get().name());
 
+      if(optionData.get().options().isAbsent()){
+        return new InteractionTaskRequest(event, commandName.toString(), new ArrayList<>(0));
+      }
+
+      requestOptions = optionData.get().options().get();
+
       optionData = optionData.get().options().get().stream()
-          .filter(option -> !option.options().isAbsent())
+          .filter(InteractionTaskRequest::isSubCommandOrGroup)
           .findFirst();
     }
 
@@ -73,5 +76,9 @@ public class InteractionTaskRequest extends TaskRequest {
     }
 
     return new CommandParam(optionData.get().value().get());
+  }
+
+  private static boolean isSubCommandOrGroup(ApplicationCommandInteractionOptionData option) {
+    return SUBCOMMAND_OR_GROUP.contains(option.type());
   }
 }

@@ -28,7 +28,7 @@ class InteractionTaskRequestTest {
   @Mock
   private InteractionData interactionData;
   @Mock
-  private ApplicationCommandInteractionData applicationCommandInteractionData;
+  private ApplicationCommandInteractionData commandData;
 
   private final String commandName = "test";
 
@@ -51,9 +51,9 @@ class InteractionTaskRequestTest {
 
   @Test
   public void its_command_name_equals_the_event_command_name_when_no_options_are_available() {
-    when(interactionData.data()).thenReturn(Possible.of(applicationCommandInteractionData));
+    when(interactionData.data()).thenReturn(Possible.of(commandData));
 
-    when(applicationCommandInteractionData.options()).thenReturn(Possible.absent());
+    when(commandData.options()).thenReturn(Possible.absent());
 
     InteractionTaskRequest interactionTaskRequest = InteractionTaskRequest.fromEvent(interactionCreateEvent);
 
@@ -62,11 +62,11 @@ class InteractionTaskRequestTest {
 
   @Test
   public void its_command_name_equals_the_event_command_name_when_no_subcommands_are_available() {
-    when(interactionData.data()).thenReturn(Possible.of(applicationCommandInteractionData));
+    when(interactionData.data()).thenReturn(Possible.of(commandData));
 
     List<ApplicationCommandInteractionOptionData> interactionOptionDataList = new ArrayList<>(0);
 
-    when(applicationCommandInteractionData.options()).thenReturn(Possible.of(interactionOptionDataList));
+    when(commandData.options()).thenReturn(Possible.of(interactionOptionDataList));
 
     InteractionTaskRequest interactionTaskRequest = InteractionTaskRequest.fromEvent(interactionCreateEvent);
 
@@ -75,22 +75,20 @@ class InteractionTaskRequestTest {
 
   @Test
   public void its_command_name_is_constructed_of_the_slash_commands_name_and_the_chosen_subcommands() {
-    when(interactionData.data()).thenReturn(Possible.of(applicationCommandInteractionData));
+    when(interactionData.data()).thenReturn(Possible.of(commandData));
 
     String subcommandName = "sub";
 
     ApplicationCommandInteractionOptionData subCommand = mock(ApplicationCommandInteractionOptionData.class);
     List<ApplicationCommandInteractionOptionData> slashCommandOptions = List.of(subCommand);
+    List<ApplicationCommandInteractionOptionData> subCommandOptions = new ArrayList<>(0);
 
-    ApplicationCommandInteractionOptionData subCommandOption = mock(ApplicationCommandInteractionOptionData.class);
-    List<ApplicationCommandInteractionOptionData> subcommandOptions = List.of(subCommandOption);
+    when(subCommand.type()).thenReturn(1);
 
-    when(subCommand.options()).thenReturn(Possible.of(subcommandOptions));
-
-    when(applicationCommandInteractionData.options()).thenReturn(Possible.of(slashCommandOptions));
+    when(commandData.options()).thenReturn(Possible.of(slashCommandOptions));
 
     when(subCommand.name()).thenReturn(subcommandName);
-    when(subCommandOption.options()).thenReturn(Possible.absent());
+    when(subCommand.options()).thenReturn(Possible.of(subCommandOptions));
 
     InteractionTaskRequest interactionTaskRequest = InteractionTaskRequest.fromEvent(interactionCreateEvent);
 
@@ -99,9 +97,9 @@ class InteractionTaskRequestTest {
 
   @Test
   public void it_returns_an_empty_command_param_for_option_values_when_there_are_no_options() {
-    when(interactionData.data()).thenReturn(Possible.of(applicationCommandInteractionData));
+    when(interactionData.data()).thenReturn(Possible.of(commandData));
 
-    when(applicationCommandInteractionData.options()).thenReturn(Possible.absent());
+    when(commandData.options()).thenReturn(Possible.absent());
 
     InteractionTaskRequest interactionTaskRequest = InteractionTaskRequest.fromEvent(interactionCreateEvent);
 
@@ -110,13 +108,12 @@ class InteractionTaskRequestTest {
 
   @Test
   public void it_returns_an_empty_command_param_for_option_values_when_the_option_is_not_available() {
-    when(interactionData.data()).thenReturn(Possible.of(applicationCommandInteractionData));
+    when(interactionData.data()).thenReturn(Possible.of(commandData));
 
     ApplicationCommandInteractionOptionData otherOption = mock(ApplicationCommandInteractionOptionData.class);
     when(otherOption.name()).thenReturn("someothername");
-    when(otherOption.options()).thenReturn(Possible.absent());
     List<ApplicationCommandInteractionOptionData> options = List.of(otherOption);
-    when(applicationCommandInteractionData.options()).thenReturn(Possible.of(options));
+    when(commandData.options()).thenReturn(Possible.of(options));
 
     InteractionTaskRequest interactionTaskRequest = InteractionTaskRequest.fromEvent(interactionCreateEvent);
 
@@ -128,14 +125,13 @@ class InteractionTaskRequestTest {
     String optionName = "test";
     String optionValue = "value";
 
-    when(interactionData.data()).thenReturn(Possible.of(applicationCommandInteractionData));
+    when(interactionData.data()).thenReturn(Possible.of(commandData));
 
     ApplicationCommandInteractionOptionData option = mock(ApplicationCommandInteractionOptionData.class);
     when(option.name()).thenReturn(optionName);
     when(option.value()).thenReturn(Possible.of(optionValue));
-    when(option.options()).thenReturn(Possible.absent());
     List<ApplicationCommandInteractionOptionData> options = List.of(option);
-    when(applicationCommandInteractionData.options()).thenReturn(Possible.of(options));
+    when(commandData.options()).thenReturn(Possible.of(options));
 
     InteractionTaskRequest interactionTaskRequest = InteractionTaskRequest.fromEvent(interactionCreateEvent);
 
