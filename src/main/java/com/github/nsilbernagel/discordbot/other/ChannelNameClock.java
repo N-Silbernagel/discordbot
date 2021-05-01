@@ -30,6 +30,7 @@ public class ChannelNameClock {
   @Scheduled(cron = "0 0 */1 * * ?")
   public void changeChannelName() {
     CustomTime time = new CustomTime();
+
     if (time.getHour() >= 6 && time.getHour() < 12) {
       this.channel.edit(spec -> spec.setName(time.getString() + " |  Morgenrunde")).block();
     } else if (time.getHour() >= 12 && time.getHour() < 18) {

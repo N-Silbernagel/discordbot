@@ -62,4 +62,24 @@
         <addUniqueConstraint tableName="exclusive_channel" columnNames="guild_id"/>
     </changeSet>
 
+    <changeSet id="add time_varying_channel_table" author="n.silbernagel">
+        <createTable  tableName="time_varying_channel">
+            <column  name="id"  type="bigint"  autoIncrement="true">
+                <constraints  primaryKey="true"  nullable="false"/>
+            </column>
+            <column  name="channel_id"  type="bigint">
+                <constraints unique="true"  nullable="false"/>
+            </column>
+            <column  name="guild_id"  type="bigint">
+                <constraints unique="true"  nullable="false"/>
+            </column>
+            <column  name="default_name"  type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="morning_name" type="VARCHAR(255)"/>
+            <column name="noon_name" type="VARCHAR(255)"/>
+            <column name="evening_name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
