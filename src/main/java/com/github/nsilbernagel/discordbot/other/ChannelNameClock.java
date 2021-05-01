@@ -12,8 +12,18 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
+
 @Component
 public class ChannelNameClock {
+  public final static String DEFAULT_NAME = "Stammtisch";
+  public final static String MORNING_NAME = "Morgenrunde";
+  public final static String NOON_NAME = "Mittagsrunde";
+  public final static String EVENING_NAME = "Abendrunde";
+
+  public final static int MORNING_BEGIN = 6;
+  public final static int NOON_BEGIN = 12;
+  public final static int EVENING_BEGIN = 18;
 
   @Value("${app.discord.channels.rename}")
   private Snowflake channelId;
@@ -34,20 +44,28 @@ public class ChannelNameClock {
 
   @Scheduled(cron = "0 0 */1 * * ?")
   public void changeChannelName() {
-    CustomTime time = new CustomTime();
+    int hour = this.getHourOfDay();
 
-    if (time.getHour() >= 6 && time.getHour() < 12) {
-      this.channel.edit(spec -> spec.setName(time.getString() + " |  Morgenrunde")).block();
-    } else if (time.getHour() >= 12 && time.getHour() < 18) {
-      this.channel.edit(spec -> spec.setName(time.getString() + " |  Mittagsrunde")).block();
+    if (hour >= MORNING_BEGIN && hour < NOON_BEGIN) {
+      this.channel.edit(spec -> spec.setName(hourString(hour) + " |  " + MORNING_NAME)).block();
+    } else if (hour >= NOON_BEGIN && hour < EVENING_BEGIN) {
+      this.channel.edit(spec -> spec.setName(hourString(hour) + " |  " + NOON_NAME)).block();
     } else {
-      this.channel.edit(spec -> spec.setName(time.getString() + " |  Abendrunde")).block();
+      this.channel.edit(spec -> spec.setName(hourString(hour) + " |  " + EVENING_NAME)).block();
     }
+  }
+
+  public int getHourOfDay() {
+    return Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+  }
+
+  private static String hourString(int hourOfDay) {
+    return hourOfDay + " Uhr";
   }
 
   @PreDestroy
   public void shutdown() {
-    this.channel.edit(spec -> spec.setName("Stammtisch")).block();
+    this.channel.edit(spec -> spec.setName(DEFAULT_NAME)).block();
   }
 
 }
