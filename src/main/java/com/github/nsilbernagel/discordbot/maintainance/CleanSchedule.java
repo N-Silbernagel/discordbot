@@ -1,42 +1,40 @@
 package com.github.nsilbernagel.discordbot.maintainance;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import com.github.nsilbernagel.discordbot.guard.ExclusiveChannelEntity;
+import com.github.nsilbernagel.discordbot.guard.ExclusiveChannelRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.TextChannel;
+import org.springframework.stereotype.Component;
 
+@Component
+@Profile("prod")
 public class CleanSchedule {
+  private final GatewayDiscordClient discordClient;
+  private final ChannelCleaner channelCleaner;
+  private final ExclusiveChannelRepository exclusiveChannelRepo;
 
-  @Value("${app.discord.channels.exclusive}")
-  private Snowflake channelIdString;
-
-  @Autowired
-  private GatewayDiscordClient discordClient;
-
-  @Autowired
-  private ChannelCleaner channelCleaner;
-
-  private TextChannel channelToClean;
-
-  @PostConstruct
-  private void fetchChannelToClean() {
-    try {
-      this.channelToClean = (TextChannel) this.discordClient.getChannelById(this.channelIdString)
-          .block();
-    } catch (Throwable e) {
-      throw new RuntimeException("Textchannel configured under prop app.discord.channels.exclusive could not be found.",
-          e);
-    }
+  public CleanSchedule(GatewayDiscordClient discordClient, ChannelCleaner channelCleaner, ExclusiveChannelRepository exclusiveChannelRepo) {
+    this.discordClient = discordClient;
+    this.channelCleaner = channelCleaner;
+    this.exclusiveChannelRepo = exclusiveChannelRepo;
   }
 
   @Scheduled(cron = "0 0 0 * * ?")
-  public void cleanBotChannel() {
-    this.channelCleaner.execute(channelToClean);
+  public void cleanBotChannels() {
+    exclusiveChannelRepo.findAll().forEach(this::cleanChannel);
+  }
+
+
+  private void cleanChannel(ExclusiveChannelEntity channel) {
+    Snowflake exclusiveChannelId = Snowflake.of(channel.getChannelId());
+    TextChannel exclusiveChannel = (TextChannel) discordClient.getChannelById(exclusiveChannelId).block();
+    assert exclusiveChannel != null;
+
+    this.channelCleaner.execute(exclusiveChannel);
   }
 
 }

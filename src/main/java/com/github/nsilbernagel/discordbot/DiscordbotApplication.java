@@ -55,11 +55,4 @@ public class DiscordbotApplication implements CommandLineRunner {
         .login()
         .block();
   }
-
-  // TODO: this won't work anymore as we don't have that config anymore. It'll have to run anyways and check the db when running
-  @Bean
-  @ConditionalOnExpression("!T(org.springframework.util.StringUtils).isEmpty('${app.discord.channels.exclusive:}')")
-  public CleanSchedule cleanSchedule() {
-    return new CleanSchedule();
-  }
 }
