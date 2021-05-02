@@ -3,8 +3,7 @@ package com.github.nsilbernagel.discordbot.other;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import discord4j.common.util.Snowflake;
@@ -15,43 +14,52 @@ import org.springframework.stereotype.Component;
 import java.util.Calendar;
 
 @Component
+@Profile("prod")
 public class ChannelNameClock {
-  public final static String DEFAULT_NAME = "Stammtisch";
-  public final static String MORNING_NAME = "Morgenrunde";
-  public final static String NOON_NAME = "Mittagsrunde";
-  public final static String EVENING_NAME = "Abendrunde";
-
   public final static int MORNING_BEGIN = 6;
   public final static int NOON_BEGIN = 12;
   public final static int EVENING_BEGIN = 18;
 
-  @Value("${app.discord.channels.rename}")
-  private Snowflake channelId;
-
   private final GatewayDiscordClient discordClient;
+  private final TimeVaryingChannelRepo repo;
 
-  private VoiceChannel channel;
-
-  public ChannelNameClock(GatewayDiscordClient discordClient) {
+  public ChannelNameClock(GatewayDiscordClient discordClient, TimeVaryingChannelRepo repo) {
     this.discordClient = discordClient;
+    this.repo = repo;
   }
 
   @PostConstruct
-  public void initialize() {
-    this.channel = (VoiceChannel) discordClient.getChannelById(channelId).block();
-    this.changeChannelName();
+  public void init() {
+    this.changeChannelNames();
   }
 
   @Scheduled(cron = "0 0 */1 * * ?")
-  public void changeChannelName() {
+  public void changeChannelNames() {
+    repo.findAll().forEach(this::setChannelName);
+  }
+
+  @PreDestroy
+  public void shutdown() {
+    repo.findAll().forEach(this::resetChannelName);
+  }
+
+  private void setChannelName(TimeVaryingChannelEntity entity) {
+    Snowflake channelId = Snowflake.of(entity.getChannelId());
+    VoiceChannel channel = (VoiceChannel) discordClient.getChannelById(channelId).block();
+
+    assert channel != null;
+    this.timeVaryName(channel, entity);
+  }
+
+  private void timeVaryName(VoiceChannel channel, TimeVaryingChannelEntity entity) {
     int hour = this.getHourOfDay();
 
     if (hour >= MORNING_BEGIN && hour < NOON_BEGIN) {
-      this.channel.edit(spec -> spec.setName(hourString(hour) + " |  " + MORNING_NAME)).block();
+      channel.edit(spec -> spec.setName(hourString(hour) + " |  " + entity.getMorningName().orElse(entity.getDefaultName()))).block();
     } else if (hour >= NOON_BEGIN && hour < EVENING_BEGIN) {
-      this.channel.edit(spec -> spec.setName(hourString(hour) + " |  " + NOON_NAME)).block();
+      channel.edit(spec -> spec.setName(hourString(hour) + " |  " + entity.getNoonName().orElse(entity.getDefaultName()))).block();
     } else {
-      this.channel.edit(spec -> spec.setName(hourString(hour) + " |  " + EVENING_NAME)).block();
+      channel.edit(spec -> spec.setName(hourString(hour) + " |  " + entity.getEveningName().orElse(entity.getDefaultName()))).block();
     }
   }
 
@@ -63,9 +71,11 @@ public class ChannelNameClock {
     return hourOfDay + " Uhr";
   }
 
-  @PreDestroy
-  public void shutdown() {
-    this.channel.edit(spec -> spec.setName(DEFAULT_NAME)).block();
+  private void resetChannelName(TimeVaryingChannelEntity entity) {
+    VoiceChannel channel = (VoiceChannel) discordClient.getChannelById(Snowflake.of(entity.getChannelId())).block();
+
+    assert channel != null;
+    channel.edit(spec -> spec.setName(entity.getDefaultName())).block();
   }
 
 }

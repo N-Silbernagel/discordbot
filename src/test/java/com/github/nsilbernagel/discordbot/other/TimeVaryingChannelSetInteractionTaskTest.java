@@ -87,7 +87,7 @@ class TimeVaryingChannelSetInteractionTaskTest {
     when(discordClient.getChannelById(newChannelId)).thenReturn(Mono.just(newChannel));
     when(request.getOptionValue("channel")).thenReturn(new CommandParam(newChannelId.asString()));
     when(newChannel.getType()).thenReturn(Channel.Type.GUILD_VOICE);
-    when(event.replyEphemeral(task.PERSIST_MESSAGE)).thenReturn(successMsgMono.getMono());
+    when(event.replyEphemeral(TimeVaryingChannelSetInteractionTask.PERSIST_MESSAGE)).thenReturn(successMsgMono.getMono());
 
     TimeVaryingChannelEntity expectedChannelEntity = new TimeVaryingChannelEntity(newChannelId.asLong(), currentGuildId.asLong(), newDefaultName);
     String mName = "test1";
@@ -110,7 +110,7 @@ class TimeVaryingChannelSetInteractionTaskTest {
 
   @ParameterizedTest
   @MethodSource("channelTypesProvider")
-  public void it_persists_guild_text_and_voice_channels(Class<Channel> klass, Channel.Type channelType, boolean shouldGetSaved) {
+  public void it_only_persists_guild_voice_channels(Class<Channel> klass, Channel.Type channelType, boolean shouldGetSaved) {
     Snowflake givenChannelId = Snowflake.of(6L);
     Channel givenChannel = mock(klass);
     when(givenChannel.getType()).thenReturn(channelType);
@@ -121,9 +121,9 @@ class TimeVaryingChannelSetInteractionTaskTest {
     TestableMono<Void> wrongTypeMono = new TestableMono<>();
     if(shouldGetSaved) {
       when(timeVaryingChannelRepo.findByguildId(currentGuildId.asLong())).thenReturn(Optional.empty());
-      when(event.replyEphemeral(task.PERSIST_MESSAGE)).thenReturn(successMsgMono.getMono());
+      when(event.replyEphemeral(TimeVaryingChannelSetInteractionTask.PERSIST_MESSAGE)).thenReturn(successMsgMono.getMono());
     } else {
-      when(event.replyEphemeral(task.WRONG_TYPE_MESSAGE)).thenReturn(wrongTypeMono.getMono());
+      when(event.replyEphemeral(TimeVaryingChannelSetInteractionTask.WRONG_TYPE_MESSAGE)).thenReturn(wrongTypeMono.getMono());
     }
 
     when(request.getOptionValue("morning")).thenReturn(CommandParam.empty());
@@ -144,7 +144,7 @@ class TimeVaryingChannelSetInteractionTaskTest {
 
   private static Object[][] channelTypesProvider() {
     return new Object[][] {
-        {TextChannel.class, Channel.Type.GUILD_TEXT, true},
+        {TextChannel.class, Channel.Type.GUILD_TEXT, false},
         {VoiceChannel.class, Channel.Type.GUILD_VOICE, true},
         {TextChannel.class, Channel.Type.DM, false},
         {Category.class, Channel.Type.GUILD_CATEGORY, false}

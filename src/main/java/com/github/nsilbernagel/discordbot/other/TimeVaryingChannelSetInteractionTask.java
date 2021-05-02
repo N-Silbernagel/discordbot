@@ -7,17 +7,15 @@ import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.Channel;
 import discord4j.rest.util.Permission;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
 @NeedsPermission(Permission.ADMINISTRATOR)
 public class TimeVaryingChannelSetInteractionTask extends InteractionTask {
-  public final String PERSIST_MESSAGE = "Channel set.";
-  public final String WRONG_TYPE_MESSAGE = "Channel must be a guild's text or voice channel.";
+  public final static String PERSIST_MESSAGE = "Kanal gespeichert.";
+  public final static String WRONG_TYPE_MESSAGE = "Der kanal muss ein Sprachkanal sein.";
 
   private final TimeVaryingChannelRepo timeVaryingChannelRepo;
   private final GatewayDiscordClient discordClient;
@@ -42,7 +40,7 @@ public class TimeVaryingChannelSetInteractionTask extends InteractionTask {
 
     assert givenChannel != null;
 
-    if(!List.of(Channel.Type.GUILD_TEXT, Channel.Type.GUILD_VOICE).contains(givenChannel.getType())) {
+    if(!givenChannel.getType().equals(Channel.Type.GUILD_VOICE)) {
       request.getEvent().replyEphemeral(WRONG_TYPE_MESSAGE).block();
       return;
     }
@@ -54,7 +52,7 @@ public class TimeVaryingChannelSetInteractionTask extends InteractionTask {
     timeVaryingChannel.setEveningName(eveningName.orElse(null));
 
     this.timeVaryingChannelRepo.save(timeVaryingChannel);
-    request.getEvent().replyEphemeral(this.PERSIST_MESSAGE).block();
+    request.getEvent().replyEphemeral(PERSIST_MESSAGE).block();
   }
 
   @Override
