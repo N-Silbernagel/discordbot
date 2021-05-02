@@ -1,0 +1,48 @@
+{
+  "name": "timechannel",
+  "description": "Let a channel vary be the time of day",
+  "options": [
+    {
+      "name": "set",
+      "description": "Set time varying channel",
+      "type": 1,
+      "options": [
+        {
+          "name": "channel",
+          "description": "The channel",
+          "type": 7,
+          "required": true
+        },
+        {
+          "name": "default",
+          "description": "The default name of the channel",
+          "type": 3,
+          "required": true
+        },
+        {
+          "name": "morning",
+          "description": "The name of the channel in the morning",
+          "type": 3,
+          "required": false
+        },
+        {
+          "name": "noon",
+          "description": "The name of the channel in the noon",
+          "type": 3,
+          "required": false
+        },
+        {
+          "name": "evening",
+          "description": "The name of the channel in the evening",
+          "type": 3,
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "unset",
+      "description": "Unset time varying channel",
+      "type": 1
+    }
+  ]
+}
