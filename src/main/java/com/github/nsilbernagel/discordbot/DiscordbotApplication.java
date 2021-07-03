@@ -25,11 +25,14 @@ public class DiscordbotApplication implements CommandLineRunner {
   @Value("${app.discord.token:}")
   private String botToken;
 
-  @Autowired
-  private GatewayDiscordClient discordClient;
+  private final GatewayDiscordClient discordClient;
 
-  @Autowired
-  private List<EventListener<?>> eventListeners;
+  private final List<EventListener<?>> eventListeners;
+
+  public DiscordbotApplication(GatewayDiscordClient discordClient, List<EventListener<?>> eventListeners) {
+    this.discordClient = discordClient;
+    this.eventListeners = eventListeners;
+  }
 
   @Override
   public void run(String... args) {
