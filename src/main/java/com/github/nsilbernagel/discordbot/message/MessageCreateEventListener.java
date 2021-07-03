@@ -38,7 +38,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
       List<MessageCreateTask> tasks,
       GatewayDiscordClient discordClient,
       Environment env,
-      @Lazy MessageFilter messageFilter
+      MessageFilter messageFilter
   ) {
     super(discordClient, env);
     this.spamRegistry = spamRegistry;
@@ -69,8 +69,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
       return;
     }
 
-    MsgTaskRequest taskRequest;
-    taskRequest = new MsgTaskRequest(
+    MsgTaskRequest taskRequest = new MsgTaskRequest(
         message,
         channel,
         message.getAuthorAsMember().block(),
@@ -102,7 +101,7 @@ public class MessageCreateEventListener extends EventListener<MessageCreateEvent
     }
 
     tasks.forEach(task ->
-        task.execute(this.localMsgTaskRequest.get())
+        task.execute(taskRequest)
     );
   }
 

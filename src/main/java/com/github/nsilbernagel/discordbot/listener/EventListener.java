@@ -11,7 +11,6 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.Arrays;
 
-@Component
 public abstract class EventListener<E extends Event> {
   private final GatewayDiscordClient discordClient;
 
