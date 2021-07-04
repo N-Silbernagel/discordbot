@@ -8,6 +8,7 @@ import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,14 +24,11 @@ public class DiscordbotApplication implements CommandLineRunner {
   @Getter
   private String botToken;
 
-  private final GatewayDiscordClient discordClient;
+  @Autowired
+  private GatewayDiscordClient discordClient;
 
-  private final List<EventListener<?>> eventListeners;
-
-  public DiscordbotApplication(GatewayDiscordClient discordClient, List<EventListener<?>> eventListeners) {
-    this.discordClient = discordClient;
-    this.eventListeners = eventListeners;
-  }
+  @Autowired
+  private List<EventListener<?>> eventListeners;
 
   @Override
   public void run(String... args) {
