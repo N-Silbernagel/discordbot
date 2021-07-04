@@ -55,7 +55,7 @@ class EventListenerTest {
   public void a_discord_event_triggers_the_execute_method() {
     EventListener<MessageCreateEvent> eventListener = spy(new FakeListener(discordClientMock, envMock));
 
-    TestPublisher<MessageCreateEvent> eventTestPublisher = TestPublisher.create();
+    TestPublisher<MessageCreateEvent> fakeDiscordEventPublisher = TestPublisher.create();
 
     MessageCreateEvent fakeMessageCreateEvent = new MessageCreateEvent(
         discordClientMock,
@@ -66,12 +66,12 @@ class EventListenerTest {
     );
 
     when(this.discordClientMock.on(eventListener.getEventType()))
-        .thenReturn(eventTestPublisher.flux());
+        .thenReturn(fakeDiscordEventPublisher.flux());
 
     eventListener.register();
 
-    eventTestPublisher.next(fakeMessageCreateEvent);
-    eventTestPublisher.complete();
+    fakeDiscordEventPublisher.next(fakeMessageCreateEvent);
+    fakeDiscordEventPublisher.complete();
 
     verify(eventListener).execute(fakeMessageCreateEvent);
   }
