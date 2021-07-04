@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.audio;
 
-import com.github.nsilbernagel.discordbot.TestableMono;
 import com.github.nsilbernagel.discordbot.message.MessageTestUtil;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.voice.SummonTask;
@@ -10,9 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import reactor.core.publisher.Mono;
+import reactor.test.publisher.PublisherProbe;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,13 +34,13 @@ public class PlayTaskTests {
 
   private final String requestIdFake = "test";
 
-  private TestableMono<Message> alertMessageMono;
+  private PublisherProbe<Message> alertMessageMono;
 
   @BeforeEach
   public void setUp() {
     this.playTask = new PlayTask(this.summonTaskMock, this.lavaPlayerAudioProviderMock, this.lavaTrackSchedulerMock);
 
-    this.alertMessageMono = new TestableMono<>();
+    this.alertMessageMono = PublisherProbe.empty();
   }
 
   @Test
@@ -78,11 +76,11 @@ public class PlayTaskTests {
     when(lavaPlayerAudioProviderMock.getPlayerManager()).thenReturn(this.audioPlayerManagerMock);
     when(this.audioPlayerManagerMock.loadItem(eq(this.requestIdFake), any(LavaResultHandler.class))).thenReturn(CompletableFuture.completedFuture(null));
 
-    when(taskRequest.getChannel().createMessage(any(String.class))).thenReturn(this.alertMessageMono.getMono());
+    when(taskRequest.getChannel().createMessage(any(String.class))).thenReturn(this.alertMessageMono.mono());
 
     this.playTask.loadAudioSource(this.requestIdFake, taskRequest);
 
-    assertTrue(this.alertMessageMono.wasSubscribedTo());
+    this.alertMessageMono.assertWasSubscribed();
   }
 
   @Test
@@ -96,7 +94,7 @@ public class PlayTaskTests {
     when(lavaPlayerAudioProviderMock.getPlayerManager()).thenReturn(this.audioPlayerManagerMock);
     when(this.audioPlayerManagerMock.loadItem(eq(this.requestIdFake), any(LavaResultHandler.class))).thenReturn(CompletableFuture.completedFuture(null));
 
-    when(taskRequest.getChannel().createMessage(any(String.class))).thenReturn(this.alertMessageMono.getMono());
+    when(taskRequest.getChannel().createMessage(any(String.class))).thenReturn(this.alertMessageMono.mono());
 
     this.playTask.loadAudioSource(this.requestIdFake, taskRequest);
 

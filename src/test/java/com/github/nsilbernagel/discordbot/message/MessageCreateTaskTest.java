@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.message;
 
-import com.github.nsilbernagel.discordbot.TestableMono;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.rest.util.PermissionSet;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,16 +8,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
+import reactor.test.publisher.PublisherProbe;
 
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class MessageCreateTaskTest {
   @Spy
   private final MsgTaskRequest msgTaskRequest = MessageTestUtil.generateMsgTaskRequest();
 
-  private final TestableMono<Void> guardReactionMono = new TestableMono<>();
+  private final PublisherProbe<Void> guardReactionMono = PublisherProbe.empty();
   private final PermissionSet emptyPermissionSet = PermissionSet.none();
   private final Mono<PermissionSet> permissionSetMono = Mono.just(emptyPermissionSet);
 
@@ -26,7 +25,7 @@ class MessageCreateTaskTest {
   public void setUp(){
     when(msgTaskRequest.getAuthor().getBasePermissions()).thenReturn(permissionSetMono);
 
-    when(msgTaskRequest.getMessage().addReaction(any(ReactionEmoji.Unicode.class))).thenReturn(guardReactionMono.getMono());
+    when(msgTaskRequest.getMessage().addReaction(any(ReactionEmoji.Unicode.class))).thenReturn(guardReactionMono.mono());
   }
 
   @Test
@@ -51,7 +50,7 @@ class MessageCreateTaskTest {
   public void a_user_who_doesnt_have_the_required_permissions_may_not_execute_the_task(){
     AdminMessageTaskStub adminMessageTaskStub = spy(new AdminMessageTaskStub());
 
-    when(msgTaskRequest.getMessage().addReaction(any(ReactionEmoji.Unicode.class))).thenReturn(guardReactionMono.getMono());
+    when(msgTaskRequest.getMessage().addReaction(any(ReactionEmoji.Unicode.class))).thenReturn(guardReactionMono.mono());
 
     verify(adminMessageTaskStub, times(0)).action(msgTaskRequest);
   }
@@ -62,6 +61,6 @@ class MessageCreateTaskTest {
 
     adminMessageTaskStub.execute(msgTaskRequest);
 
-    assertTrue(this.guardReactionMono.wasSubscribedTo());
+   guardReactionMono.assertWasSubscribed();
   }
 }

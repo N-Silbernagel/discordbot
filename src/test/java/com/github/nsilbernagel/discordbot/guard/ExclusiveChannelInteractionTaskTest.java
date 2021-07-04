@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.guard;
 
-import com.github.nsilbernagel.discordbot.TestableMono;
 import com.github.nsilbernagel.discordbot.interaction.InteractionTaskRequest;
 import com.github.nsilbernagel.discordbot.message.validation.CommandParam;
 import discord4j.common.util.Snowflake;
@@ -16,10 +15,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
+import reactor.test.publisher.PublisherProbe;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,12 +53,12 @@ class ExclusiveChannelInteractionTaskTest {
     when(this.request.getOptionValue("channel")).thenReturn(CommandParam.empty());
     when(this.exclusiveChannelRepository.findByguildId(any(long.class))).thenReturn(Optional.empty());
 
-    TestableMono<Void> replyMono = new TestableMono<>();
-    when(this.interactionCreateEvent.replyEphemeral(anyString())).thenReturn(replyMono.getMono());
+    PublisherProbe<Void> replyMono = PublisherProbe.empty();
+    when(this.interactionCreateEvent.replyEphemeral(anyString())).thenReturn(replyMono.mono());
 
     exclusiveChannelInteractionTask.action(this.request);
 
-    assertTrue(replyMono.wasSubscribedTo());
+    replyMono.assertWasSubscribed();
   }
 
   @Test
@@ -67,12 +66,12 @@ class ExclusiveChannelInteractionTaskTest {
     when(this.request.getOptionValue("channel")).thenReturn(CommandParam.empty());
     when(this.exclusiveChannelRepository.findByguildId(any(long.class))).thenReturn(Optional.of(this.existingExclusiveChannel));
 
-    TestableMono<Void> replyMono = new TestableMono<>();
-    when(this.request.getEvent().replyEphemeral(anyString())).thenReturn(replyMono.getMono());
+    PublisherProbe<Void> replyMono = PublisherProbe.empty();
+    when(this.request.getEvent().replyEphemeral(anyString())).thenReturn(replyMono.mono());
 
     exclusiveChannelInteractionTask.action(this.request);
 
-    assertTrue(replyMono.wasSubscribedTo());
+    replyMono.assertWasSubscribed();
     verify(this.exclusiveChannelRepository).delete(eq(this.existingExclusiveChannel));
   }
 
@@ -84,15 +83,15 @@ class ExclusiveChannelInteractionTaskTest {
 
     when(this.request.getOptionValue("channel")).thenReturn(new CommandParam(voiceChannelId.asString()));
 
-    TestableMono<Void> replyMono = new TestableMono<>();
-    when(this.interactionCreateEvent.replyEphemeral(anyString())).thenReturn(replyMono.getMono());
+    PublisherProbe<Void> replyMono = PublisherProbe.empty();
+    when(this.interactionCreateEvent.replyEphemeral(anyString())).thenReturn(replyMono.mono());
 
-    TestableMono<Channel> getChannelMono = new TestableMono<>(Mono.just(givenVoiceChannel));
-    when(this.discordClient.getChannelById(voiceChannelId)).thenReturn(getChannelMono.getMono());
+    PublisherProbe<Channel> getChannelMono = PublisherProbe.of(Mono.just(givenVoiceChannel));
+    when(this.discordClient.getChannelById(voiceChannelId)).thenReturn(getChannelMono.mono());
 
     exclusiveChannelInteractionTask.action(this.request);
 
-    assertTrue(replyMono.wasSubscribedTo());
+    replyMono.assertWasSubscribed();
   }
 
   @Test
@@ -103,15 +102,15 @@ class ExclusiveChannelInteractionTaskTest {
 
     when(this.request.getOptionValue("channel")).thenReturn(new CommandParam(textChannelId.asString()));
 
-    TestableMono<Void> replyMono = new TestableMono<>();
-    when(this.request.getEvent().replyEphemeral(anyString())).thenReturn(replyMono.getMono());
+    PublisherProbe<Void> replyMono = PublisherProbe.empty();
+    when(this.request.getEvent().replyEphemeral(anyString())).thenReturn(replyMono.mono());
 
-    TestableMono<Channel> getChannelMono = new TestableMono<>(Mono.just(givenTextChannel));
-    when(this.discordClient.getChannelById(textChannelId)).thenReturn(getChannelMono.getMono());
+    PublisherProbe<Channel> getChannelMono = PublisherProbe.of(Mono.just(givenTextChannel));
+    when(this.discordClient.getChannelById(textChannelId)).thenReturn(getChannelMono.mono());
 
     exclusiveChannelInteractionTask.action(this.request);
 
-    assertTrue(replyMono.wasSubscribedTo());
+    replyMono.assertWasSubscribed();
     verify(this.exclusiveChannelRepository).save(eq(new ExclusiveChannelEntity(textChannelId.asLong(), this.guildId.asLong())));
   }
 
@@ -125,15 +124,15 @@ class ExclusiveChannelInteractionTaskTest {
 
     when(this.exclusiveChannelRepository.findByguildId(any(long.class))).thenReturn(Optional.of(this.existingExclusiveChannel));
 
-    TestableMono<Void> replyMono = new TestableMono<>();
-    when(this.request.getEvent().replyEphemeral(anyString())).thenReturn(replyMono.getMono());
+    PublisherProbe<Void> replyMono = PublisherProbe.empty();
+    when(this.request.getEvent().replyEphemeral(anyString())).thenReturn(replyMono.mono());
 
-    TestableMono<Channel> getChannelMono = new TestableMono<>(Mono.just(givenTextChannel));
-    when(this.discordClient.getChannelById(textChannelId)).thenReturn(getChannelMono.getMono());
+    PublisherProbe<Channel> getChannelMono = PublisherProbe.of(Mono.just(givenTextChannel));
+    when(this.discordClient.getChannelById(textChannelId)).thenReturn(getChannelMono.mono());
 
     exclusiveChannelInteractionTask.action(this.request);
 
-    assertTrue(replyMono.wasSubscribedTo());
+    replyMono.assertWasSubscribed();
     verify(this.existingExclusiveChannel).setChannelId(textChannelId.asLong());
     verify(this.exclusiveChannelRepository).save(eq(this.existingExclusiveChannel));
   }

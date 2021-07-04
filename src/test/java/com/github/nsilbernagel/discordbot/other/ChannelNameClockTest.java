@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.other;
 
-import com.github.nsilbernagel.discordbot.TestableMono;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.channel.VoiceChannel;
@@ -14,6 +13,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
+import reactor.test.publisher.PublisherProbe;
 
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +57,8 @@ class ChannelNameClockTest {
   @Test
   public void it_sets_the_channel_names_to_their_default_names_on_shutdown() {
     ArgumentCaptor<Consumer<VoiceChannelEditSpec>> renameCaptor = ArgumentCaptor.forClass(Consumer.class);
-    TestableMono<VoiceChannel> editMono = new TestableMono<>();
-    when(renameChannel.edit(renameCaptor.capture())).thenReturn(editMono.getMono());
+    PublisherProbe<VoiceChannel> editMono = PublisherProbe.empty();
+    when(renameChannel.edit(renameCaptor.capture())).thenReturn(editMono.mono());
 
     channelNameClock.shutdown();
 
@@ -73,8 +73,8 @@ class ChannelNameClockTest {
     when(channelNameClock.getHourOfDay()).thenReturn(timeOfDay);
 
     ArgumentCaptor<Consumer<VoiceChannelEditSpec>> renameCaptor = ArgumentCaptor.forClass(Consumer.class);
-    TestableMono<VoiceChannel> editMono = new TestableMono<>();
-    when(renameChannel.edit(renameCaptor.capture())).thenReturn(editMono.getMono());
+    PublisherProbe<VoiceChannel> editMono = PublisherProbe.empty();
+    when(renameChannel.edit(renameCaptor.capture())).thenReturn(editMono.mono());
 
     lenient().when(renameChannelEntity.getMorningName()).thenReturn(Optional.of(morningName));
     lenient().when(renameChannelEntity.getNoonName()).thenReturn(Optional.of(noonName));
