@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.interaction;
 
-import com.github.nsilbernagel.discordbot.TestableMono;
 import discord4j.core.event.domain.InteractionCreateEvent;
 import discord4j.core.object.command.Interaction;
 import discord4j.core.object.entity.Member;
@@ -8,10 +7,10 @@ import discord4j.rest.util.Permission;
 import discord4j.rest.util.PermissionSet;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+import reactor.test.publisher.PublisherProbe;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class InteractionTaskTest {
@@ -21,7 +20,7 @@ class InteractionTaskTest {
     InteractionCreateEvent event = mock(InteractionCreateEvent.class);
     Interaction interaction = mock(Interaction.class);
 
-    TestableMono<Void> replyMono = new TestableMono<>();
+    PublisherProbe<Void> replyMono = PublisherProbe.empty();
 
     InteractionTaskRequest request = mock(InteractionTaskRequest.class);
 
@@ -31,10 +30,10 @@ class InteractionTaskTest {
     when(request.getEvent()).thenReturn(event);
     when(event.getInteraction()).thenReturn(interaction);
     when(interaction.getMember()).thenReturn(Optional.of(restrictedMember));
-    when(request.getEvent().replyEphemeral(anyString())).thenReturn(replyMono.getMono());
+    when(request.getEvent().replyEphemeral(anyString())).thenReturn(replyMono.mono());
 
     adminInteractionTaskStub.execute(request);
-    assertTrue(replyMono.wasSubscribedTo());
+    replyMono.assertWasSubscribed();
   }
 
   @Test
@@ -43,7 +42,7 @@ class InteractionTaskTest {
     InteractionCreateEvent event = mock(InteractionCreateEvent.class);
     Interaction interaction = mock(Interaction.class);
 
-    TestableMono<Void> replyMono = new TestableMono<>();
+    PublisherProbe<Void> replyMono = PublisherProbe.empty();
 
     InteractionTaskRequest request = mock(InteractionTaskRequest.class);
 
@@ -53,9 +52,9 @@ class InteractionTaskTest {
     when(request.getEvent()).thenReturn(event);
     when(event.getInteraction()).thenReturn(interaction);
     when(interaction.getMember()).thenReturn(Optional.of(restrictedMember));
-    when(request.getEvent().replyEphemeral(anyString())).thenReturn(replyMono.getMono());
+    when(request.getEvent().replyEphemeral(anyString())).thenReturn(replyMono.mono());
 
     adminInteractionTaskStub.execute(request);
-    assertFalse(replyMono.wasSubscribedTo());
+    replyMono.assertWasNotSubscribed();
   }
 }

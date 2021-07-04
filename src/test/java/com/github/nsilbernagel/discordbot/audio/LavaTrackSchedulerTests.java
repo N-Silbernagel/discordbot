@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.audio;
 
-import com.github.nsilbernagel.discordbot.TestableMono;
 import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
 import com.github.nsilbernagel.discordbot.presence.PresenceManager;
 import com.github.nsilbernagel.discordbot.reaction.Emoji;
@@ -18,10 +17,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
+import reactor.test.publisher.PublisherProbe;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,7 +46,7 @@ public class LavaTrackSchedulerTests {
   private PresenceManager presenceManager;
 
   private final String requestIdFake = "test";
-  private TestableMono<Void> updatePresence;
+  private PublisherProbe<Void> updatePresenceProbe;
 
   private LavaTrackScheduler lavaTrackScheduler;
 
@@ -63,13 +62,13 @@ public class LavaTrackSchedulerTests {
         this.taskRequestMock
     );
 
-    this.updatePresence = new TestableMono<>();
+    this.updatePresenceProbe = PublisherProbe.empty();
 
     lavaTrackScheduler.getAudioRequest()
         .put(this.requestIdFake, audioRequest);
 
     lenient().when(this.lavaPlayerAudioProviderMock.getPlayer()).thenReturn(this.audioPlayerMock);
-    lenient().when(this.gatewayDiscordClientMock.updatePresence(statusUpdateArgumentCaptor.capture())).thenReturn(this.updatePresence.getMono());
+    lenient().when(this.gatewayDiscordClientMock.updatePresence(statusUpdateArgumentCaptor.capture())).thenReturn(this.updatePresenceProbe.mono());
 
     lenient().when(this.audioTrackMock.getInfo()).thenReturn(audioTrackInfoMock);
   }
@@ -152,12 +151,12 @@ public class LavaTrackSchedulerTests {
     TextChannel textChannelMock = mock(TextChannel.class);
 
     when(this.taskRequestMock.getChannel()).thenReturn(textChannelMock);
-    TestableMono<Message> alertMessageMono = new TestableMono<>();
-    when(textChannelMock.createMessage(any(String.class))).thenReturn(alertMessageMono.getMono());
+    PublisherProbe<Message> alertMessageMono = PublisherProbe.empty();
+    when(textChannelMock.createMessage(any(String.class))).thenReturn(alertMessageMono.mono());
 
     this.lavaTrackScheduler.onTrackException(this.audioPlayerMock, this.audioTrackMock, mock(FriendlyException.class));
 
-    assertTrue(alertMessageMono.wasSubscribedTo());
+    alertMessageMono.assertWasSubscribed();
   }
 
   @Test
@@ -173,7 +172,7 @@ public class LavaTrackSchedulerTests {
 
     this.lavaTrackScheduler.onTrackStart(this.audioPlayerMock, this.audioTrackMock);
 
-    assertTrue(this.updatePresence.wasSubscribedTo());
+    updatePresenceProbe.wasSubscribed();
 
     assertEquals(trackTitleTestValue, statusUpdateArgumentCaptor.getValue().game().get().name());
   }
@@ -187,7 +186,7 @@ public class LavaTrackSchedulerTests {
 
     this.lavaTrackScheduler.nextTrack();
 
-    assertTrue(this.updatePresence.wasSubscribedTo());
+    updatePresenceProbe.assertWasSubscribed();
 
     assertTrue(statusUpdateArgumentCaptor.getValue().game().isEmpty());
     assertEquals("online", statusUpdateArgumentCaptor.getValue().status().toLowerCase(Locale.ROOT));
@@ -202,7 +201,7 @@ public class LavaTrackSchedulerTests {
 
     this.lavaTrackScheduler.onTrackEnd(this.audioPlayerMock, this.audioTrackMock, AudioTrackEndReason.CLEANUP);
 
-    assertTrue(this.updatePresence.wasSubscribedTo());
+    updatePresenceProbe.wasSubscribed();
 
     assertTrue(statusUpdateArgumentCaptor.getValue().game().isEmpty());
     assertEquals("online", statusUpdateArgumentCaptor.getValue().status().toLowerCase(Locale.ROOT));
@@ -223,7 +222,7 @@ public class LavaTrackSchedulerTests {
 
     this.lavaTrackScheduler.onPlayerPause(this.audioPlayerMock);
 
-    assertTrue(this.updatePresence.wasSubscribedTo());
+    updatePresenceProbe.wasSubscribed();
 
     assertTrue(
         statusUpdateArgumentCaptor.getValue()
@@ -249,7 +248,7 @@ public class LavaTrackSchedulerTests {
 
     this.lavaTrackScheduler.onPlayerResume(this.audioPlayerMock);
 
-    assertTrue(this.updatePresence.wasSubscribedTo());
+    updatePresenceProbe.wasSubscribed();
 
     assertEquals(trackTitleTestValue, statusUpdateArgumentCaptor.getValue().game().get().name());
   }

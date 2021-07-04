@@ -46,9 +46,7 @@ class VoteKickTaskTest {
   public void a_user_needs_to_be_mentioned() {
     when(msgTaskRequest.getMessage().getUserMentions()).thenReturn(Flux.empty());
 
-    assertThrows(TaskException.class, () -> {
-      voteKickTask.execute(msgTaskRequest);
-    });
+    assertThrows(TaskException.class, () -> voteKickTask.execute(msgTaskRequest));
   }
 
   // test setup for other test with member mentioned, because I coded it before noticing I dont need it

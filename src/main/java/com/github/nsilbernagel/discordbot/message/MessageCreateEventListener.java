@@ -12,7 +12,6 @@ import com.github.nsilbernagel.discordbot.task.TaskException;
 
 import discord4j.core.GatewayDiscordClient;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 

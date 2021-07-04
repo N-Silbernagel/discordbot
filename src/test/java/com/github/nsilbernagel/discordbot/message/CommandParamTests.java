@@ -15,9 +15,7 @@ public class CommandParamTests {
   public void it_can_be_validated_against_a_validation_rule(){
     CommandParam commandParam = new CommandParam("test");
 
-    assertThrows(MessageValidationException.class, () -> {
-      commandParam.is(new Numeric(), "Fail");
-    });
+    assertThrows(MessageValidationException.class, () -> commandParam.is(new Numeric(), "Fail"));
   }
 
   @Test
@@ -26,9 +24,7 @@ public class CommandParamTests {
 
     String expectedErrorMessage = "Fail";
 
-    assertThrows(MessageValidationException.class, () -> {
-      commandParam.is(new Numeric(), expectedErrorMessage);
-    }, expectedErrorMessage);
+    assertThrows(MessageValidationException.class, () -> commandParam.is(new Numeric(), expectedErrorMessage), expectedErrorMessage);
   }
 
   @Test

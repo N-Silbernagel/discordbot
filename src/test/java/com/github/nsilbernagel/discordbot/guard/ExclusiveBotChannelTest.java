@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.guard;
 
-import com.github.nsilbernagel.discordbot.TestableMono;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.Message;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
+import reactor.test.publisher.PublisherProbe;
 
 import java.util.Optional;
 
@@ -83,12 +83,12 @@ class ExclusiveBotChannelTest {
 
   @Test
   public void it_deletes_a_message_on_another_channel() {
-    TestableMono<Void> deleteMono = new TestableMono<>();
-    when(message.delete()).thenReturn(deleteMono.getMono());
+    PublisherProbe<Void> deleteMono = PublisherProbe.empty();
+    when(message.delete()).thenReturn(deleteMono.mono());
     when(message.getAuthor()).thenReturn(Optional.empty());
 
     exclusiveBotChannel.handleMessageOnOtherChannel(message);
 
-    assertTrue(deleteMono.wasSubscribedTo());
+    deleteMono.assertWasSubscribed();
   }
 }

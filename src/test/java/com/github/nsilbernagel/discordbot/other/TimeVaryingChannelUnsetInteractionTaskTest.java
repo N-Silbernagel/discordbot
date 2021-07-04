@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.other;
 
-import com.github.nsilbernagel.discordbot.TestableMono;
 import com.github.nsilbernagel.discordbot.interaction.InteractionTaskRequest;
 import discord4j.common.util.Snowflake;
 import discord4j.core.event.domain.InteractionCreateEvent;
@@ -10,10 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.test.publisher.PublisherProbe;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,12 +42,12 @@ class TimeVaryingChannelUnsetInteractionTaskTest {
   public void it_replies_ephermally_if_no_time_varying_channel_was_set_before() {
     when(this.timeVaryingChannelRepo.findByguildId(currentGuildId.asLong())).thenReturn(Optional.empty());
 
-    TestableMono<Void> replyMono = new TestableMono<>();
-    when(event.replyEphemeral(task.NO_CHANNEL_MESSAGE)).thenReturn(replyMono.getMono());
+    PublisherProbe<Void> replyMonoProbe = PublisherProbe.empty();
+    when(event.replyEphemeral(task.NO_CHANNEL_MESSAGE)).thenReturn(replyMonoProbe.mono());
 
     this.task.action(request);
 
-    assertTrue(replyMono.wasSubscribedTo());
+    replyMonoProbe.wasSubscribed();
   }
 
   @Test
@@ -56,12 +55,12 @@ class TimeVaryingChannelUnsetInteractionTaskTest {
     TimeVaryingChannelEntity timeVaryingChannel = mock(TimeVaryingChannelEntity.class);
     when(this.timeVaryingChannelRepo.findByguildId(currentGuildId.asLong())).thenReturn(Optional.of(timeVaryingChannel));
 
-    TestableMono<Void> replyMono = new TestableMono<>();
-    when(event.replyEphemeral(task.UNSET_MESSAGE)).thenReturn(replyMono.getMono());
+    PublisherProbe<Void> replyMono = PublisherProbe.empty();
+    when(event.replyEphemeral(task.UNSET_MESSAGE)).thenReturn(replyMono.mono());
 
     this.task.action(request);
 
     verify(timeVaryingChannelRepo).delete(timeVaryingChannel);
-    assertTrue(replyMono.wasSubscribedTo());
+    replyMono.wasSubscribed();
   }
 }

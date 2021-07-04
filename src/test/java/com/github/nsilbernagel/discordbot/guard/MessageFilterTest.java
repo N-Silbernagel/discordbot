@@ -1,17 +1,15 @@
 package com.github.nsilbernagel.discordbot.guard;
 
-import com.github.nsilbernagel.discordbot.TestableMono;
 import discord4j.core.object.entity.Message;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.test.publisher.PublisherProbe;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,12 +24,12 @@ class MessageFilterTest {
     when(this.messageFilter.getRegexFilters()).thenReturn(List.of(".*abc.*"));
     when(this.message.getContent()).thenReturn("test abc 123");
 
-    TestableMono<Void> messageDeleteMono = new TestableMono<>();
-    when(this.message.delete()).thenReturn(messageDeleteMono.getMono());
+    PublisherProbe<Void> messageDeleteMono = PublisherProbe.empty();
+    when(this.message.delete()).thenReturn(messageDeleteMono.mono());
 
     this.messageFilter.execute(this.message);
 
-    assertTrue(messageDeleteMono.wasSubscribedTo());
+    messageDeleteMono.assertWasSubscribed();
   }
 
   @Test
@@ -39,10 +37,10 @@ class MessageFilterTest {
     when(this.messageFilter.getRegexFilters()).thenReturn(List.of("abc"));
     when(this.message.getContent()).thenReturn("test 123");
 
-    TestableMono<Void> messageDeleteMono = new TestableMono<>();
+    PublisherProbe<Void> messageDeleteMono = PublisherProbe.empty();
 
     this.messageFilter.execute(this.message);
 
-    assertFalse(messageDeleteMono.wasSubscribedTo());
+    messageDeleteMono.assertWasNotSubscribed();
   }
 }

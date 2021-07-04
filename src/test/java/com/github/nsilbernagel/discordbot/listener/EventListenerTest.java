@@ -1,17 +1,19 @@
 package com.github.nsilbernagel.discordbot.listener;
 
-import com.github.nsilbernagel.discordbot.TestableFlux;
-import com.github.nsilbernagel.discordbot.task.TaskException;
+import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.Event;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Message;
+import discord4j.gateway.ShardInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
+import reactor.test.publisher.PublisherProbe;
+import reactor.test.publisher.TestPublisher;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,43 +24,55 @@ class EventListenerTest {
   private GatewayDiscordClient discordClientMock;
   @Mock
   private Environment envMock;
+  @Mock
+  private ShardInfo shardInfo;
+  @Mock
+  private Message message;
+  @Mock
+  private Member member;
 
-  private TestableFlux<MessageCreateEvent> onEventFlux;
+  private final Snowflake guildId = Snowflake.of(1);
+
+  private PublisherProbe<MessageCreateEvent> onEventFluxProbe;
 
   @BeforeEach
   public void setUp() {
-    this.onEventFlux = new TestableFlux<>();
+    this.onEventFluxProbe = PublisherProbe.empty();
   }
 
   @Test
   public void it_registers_itself_on_the_discord_client() {
-    when(this.discordClientMock.on(eq(MessageCreateEvent.class))).thenReturn(this.onEventFlux.getFlux());
-
-    EventListener<MessageCreateEvent> eventListener = this.eventListenerStub();
+    EventListener<MessageCreateEvent> eventListener = new FakeListener(discordClientMock, envMock);
+    when(this.discordClientMock.on(eq(eventListener.getEventType())))
+        .thenReturn(onEventFluxProbe.flux());
 
     eventListener.register();
 
-    assertTrue(this.onEventFlux.wasSubscribedTo());
+    onEventFluxProbe.wasSubscribed();
   }
 
-  private EventListener<MessageCreateEvent> eventListenerStub() {
-    return new EventListener<>(this.discordClientMock, this.envMock) {
-      @Override
-      public Class<MessageCreateEvent> getEventType() {
-        return MessageCreateEvent.class;
-      }
+  @Test
+  public void a_discord_event_triggers_the_execute_method() {
+    EventListener<MessageCreateEvent> eventListener = spy(new FakeListener(discordClientMock, envMock));
 
-      @Override
-      public void execute(MessageCreateEvent event) {
-      }
+    TestPublisher<MessageCreateEvent> fakeDiscordEventPublisher = TestPublisher.create();
 
-      @Override
-      protected void onCheckedException(TaskException checkedException) {
-      }
+    MessageCreateEvent fakeMessageCreateEvent = new MessageCreateEvent(
+        discordClientMock,
+        shardInfo,
+        message,
+        guildId.asLong(),
+        member
+    );
 
-      @Override
-      protected void onUncheckedException(Exception uncheckedException) {
-      }
-    };
+    when(this.discordClientMock.on(eventListener.getEventType()))
+        .thenReturn(fakeDiscordEventPublisher.flux());
+
+    eventListener.register();
+
+    fakeDiscordEventPublisher.next(fakeMessageCreateEvent);
+    fakeDiscordEventPublisher.complete();
+
+    verify(eventListener).execute(fakeMessageCreateEvent);
   }
 }

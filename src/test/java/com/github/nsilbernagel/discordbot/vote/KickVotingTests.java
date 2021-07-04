@@ -9,7 +9,6 @@ import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.entity.channel.VoiceChannel;
 import discord4j.core.spec.GuildMemberEditSpec;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -143,7 +142,7 @@ public class KickVotingTests {
     // test that it does throw when there are at enough members but one is a bot
     List<VoiceState> otherVoiceStates = this.mockOtherVoiceStates(KickVoting.requiredVoiceChannelMembers);
 
-    Member botMemberMock = mock(Member.class);
+    var botMemberMock = mock(Member.class);
     Mono<Member> memberMonoMock = mock(Mono.class);
     when(memberMonoMock.block()).thenReturn(botMemberMock);
     when(botMemberMock.isBot()).thenReturn(true);
@@ -151,8 +150,6 @@ public class KickVotingTests {
     when(otherVoiceStates.get(1).getMember()).thenReturn(memberMonoMock);
     when(voiceChannelMock.getVoiceStates()).thenReturn(Flux.fromIterable(otherVoiceStates));
 
-    Assertions.assertThrows(TaskException.class, () -> {
-      new KickVoting(memberMock, messageMock);
-    });
+    Assertions.assertThrows(TaskException.class, () -> new KickVoting(memberMock, messageMock));
   }
 }

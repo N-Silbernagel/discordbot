@@ -5,8 +5,5 @@ import java.time.Instant;
 import discord4j.core.object.entity.Member;
 import lombok.Data;
 
-@Data
-public class Vote {
-  private final Member voter;
-  private final Instant time;
+public record Vote(Member voter, Instant time) {
 }

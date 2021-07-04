@@ -3,18 +3,15 @@ package com.github.nsilbernagel.discordbot;
 import java.util.List;
 
 import com.github.nsilbernagel.discordbot.listener.EventListener;
-import com.github.nsilbernagel.discordbot.other.ChannelNameClock;
-import com.github.nsilbernagel.discordbot.maintainance.CleanSchedule;
 
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.annotation.DependsOn;
@@ -23,13 +20,17 @@ import org.springframework.context.annotation.DependsOn;
 @SpringBootApplication
 public class DiscordbotApplication implements CommandLineRunner {
   @Value("${app.discord.token:}")
+  @Getter
   private String botToken;
 
-  @Autowired
-  private GatewayDiscordClient discordClient;
+  private final GatewayDiscordClient discordClient;
 
-  @Autowired
-  private List<EventListener<?>> eventListeners;
+  private final List<EventListener<?>> eventListeners;
+
+  public DiscordbotApplication(GatewayDiscordClient discordClient, List<EventListener<?>> eventListeners) {
+    this.discordClient = discordClient;
+    this.eventListeners = eventListeners;
+  }
 
   @Override
   public void run(String... args) {
@@ -47,11 +48,11 @@ public class DiscordbotApplication implements CommandLineRunner {
   @Bean
   @DependsOn("LavaPlayerAudioProvider")
   public GatewayDiscordClient getDiscordClient() {
-    if (botToken.length() == 0) {
+    if (getBotToken() == null || getBotToken().length() == 0) {
       throw new MissingTokenException();
     }
 
-    return DiscordClient.create(this.botToken)
+    return DiscordClient.create(this.getBotToken())
         .login()
         .block();
   }
