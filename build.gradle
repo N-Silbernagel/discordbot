@@ -24,6 +24,8 @@ dependencies {
     exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
   }
 
+  testImplementation 'io.projectreactor:reactor-test:3.4.7'
+
   implementation 'com.h2database:h2'
   implementation 'org.postgresql:postgresql'
   implementation 'org.liquibase:liquibase-core'
