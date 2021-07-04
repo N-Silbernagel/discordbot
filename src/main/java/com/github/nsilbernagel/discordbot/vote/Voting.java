@@ -91,7 +91,7 @@ public abstract class Voting {
   public boolean memberHasVotedAsOftenAsHeMay(Member member) {
     List<Vote> votesByMember = this.votes
         .stream()
-        .filter((vote) -> vote.getVoter().getId().equals(member.getId()))
+        .filter((vote) -> vote.voter().getId().equals(member.getId()))
         .collect(Collectors.toList());
 
     return votesByMember.size() >= this.votesPerUser;
