@@ -36,7 +36,6 @@ public class SummonTaskTest {
 
   @Test
   public void it_joins_a_voice_channel() {
-    MockitoAnnotations.initMocks(this);
     Mockito.when(memberMock.getVoiceState()).thenReturn(Mono.just(voiceStateMock));
     Mockito.when(voiceStateMock.getChannel()).thenReturn(Mono.just(voiceChannelMock));
     Mockito.when(voiceChannelMock.join(Mockito.any(Consumer.class))).thenReturn(Mono.just(voiceConnectionMock));

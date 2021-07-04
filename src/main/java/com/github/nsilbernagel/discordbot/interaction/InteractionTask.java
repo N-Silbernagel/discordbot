@@ -1,10 +1,7 @@
 package com.github.nsilbernagel.discordbot.interaction;
 
 import com.github.nsilbernagel.discordbot.guard.annotations.NeedsPermission;
-import com.github.nsilbernagel.discordbot.message.MsgTaskRequest;
-import com.github.nsilbernagel.discordbot.reaction.Emoji;
 import com.github.nsilbernagel.discordbot.task.Task;
-import discord4j.core.event.domain.InteractionCreateEvent;
 
 import java.util.Optional;
 

@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.listener;
 
-import com.github.nsilbernagel.discordbot.task.TaskException;
 import discord4j.common.util.Snowflake;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;

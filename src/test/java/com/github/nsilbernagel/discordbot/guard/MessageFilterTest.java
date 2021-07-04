@@ -41,6 +41,6 @@ class MessageFilterTest {
 
     this.messageFilter.execute(this.message);
 
-    messageDeleteMono.assertWasNotSubscribed();;
+    messageDeleteMono.assertWasNotSubscribed();
   }
 }

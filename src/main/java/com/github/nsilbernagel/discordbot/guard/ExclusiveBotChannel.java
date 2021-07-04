@@ -1,6 +1,5 @@
 package com.github.nsilbernagel.discordbot.guard;
 
-import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.User;
 import org.springframework.stereotype.Component;
 
