@@ -2,7 +2,6 @@ package com.github.nsilbernagel.discordbot.listener;
 
 import com.github.nsilbernagel.discordbot.task.TaskException;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.Event;
